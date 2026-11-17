@@ -126,8 +126,19 @@ function createGear(group, spec) {
 
 function createWheel(group, spec) {
   const [radius = 10, width = 7] = spec.size || [];
-  const tire = addMesh(group, new THREE.CylinderGeometry(radius, radius, width, 32), spec.color || '#252d34', 'rubber-tire');
-  tire.rotation.x = Math.PI / 2;
+  const hubOnly = spec.id === 'wheel-hub';
+  if (!hubOnly) {
+    const tire = addMesh(group, new THREE.CylinderGeometry(radius, radius, width, 32), spec.color || '#252d34', 'rubber-tire');
+    tire.rotation.x = Math.PI / 2;
+    if (spec.id === 'tire-offroad') {
+      for (let i = 0; i < 18; i++) {
+        const angle = i / 18 * Math.PI * 2;
+        const lug = addMesh(group, new THREE.BoxGeometry(3.2, width + 0.6, 1.6), '#303941', 'offroad-tread-lug');
+        lug.position.set(Math.cos(angle) * (radius + 0.45), Math.sin(angle) * (radius + 0.45), 0);
+        lug.rotation.z = angle;
+      }
+    }
+  }
   const rim = addMesh(group, new THREE.CylinderGeometry(radius * 0.58, radius * 0.58, width + 0.5, 24), '#c7cbd0', 'wheel-rim');
   rim.rotation.x = Math.PI / 2;
   const hub = addMesh(group, new THREE.CylinderGeometry(radius * 0.22, radius * 0.22, width + 1, 20), '#4a5964', 'wheel-hub');
@@ -404,6 +415,15 @@ function createDifferential(group, spec) {
 
 function createTrack(group, spec) {
   const [radius = 8, spacing = 28, treadWidth = 8, links = 18] = spec.size || [];
+  if (links <= 1) {
+    const shoe = addMesh(group, new THREE.BoxGeometry(spacing, 3.2, treadWidth), spec.color, 'single-track-shoe');
+    for (const x of [-spacing * 0.35, spacing * 0.35]) {
+      const pin = addMesh(group, new THREE.CylinderGeometry(1.4,1.4,treadWidth + 1,12), '#b7c1c9', 'track-link-pin');
+      pin.rotation.x = Math.PI / 2;
+      pin.position.x = x;
+    }
+    return;
+  }
   for (const sign of [-1,1]) {
     const wheel = addMesh(group, new THREE.CylinderGeometry(radius, radius, treadWidth * 0.72, 24), '#252d34', 'track-idler');
     wheel.rotation.x = Math.PI / 2;
