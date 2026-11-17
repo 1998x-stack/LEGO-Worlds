@@ -20,7 +20,7 @@ export const ANCHOR_COMPATIBILITY = Object.freeze({
   'axle-hole': ['axle'], 'gear-axis': ['axle'], 'wheel-axis': ['axle'],
   'clip': ['bar'], 'bar': ['clip'], 'ball': ['ball-socket'],
   'ball-socket': ['ball'], 'hinge-axis': ['hinge-axis'],
-  'gear-mesh': ['gear-mesh'], 'rack-mesh': ['gear-mesh'],
+  'gear-mesh': ['gear-mesh', 'rack-mesh'], 'rack-mesh': ['gear-mesh'],
   'rotary-axis': ['rotary-axis'], 'track-joint': ['track-joint'],
   'panel-mount': ['panel-mount'], 'surface-mount': ['surface-mount', 'spring-end'],
   'spring-end': ['surface-mount'], 'decorative-mount': ['decorative-mount']
