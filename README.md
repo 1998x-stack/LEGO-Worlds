@@ -10,12 +10,13 @@ An independent, open-source 3D brick system explorer. Discover reusable componen
 
 ## First release
 
+- **100-piece Component Library** — ten families covering bricks, plates, curves, SNOT connectors, Technic, gears, motion, architecture, nature and special elements.
 - **Brick System** — foundational bricks, plates, tiles, slopes, jumpers and connection pieces.
 - **Technic Mechanics** — beams, pins, axles, gears, wheels and mechanical assemblies.
 - **Modular City** — reusable architectural modules and small urban scenes.
 - **Creative Lab** — original showcase builds, beginning with *Clockwork Koi Garden*.
 
-Every featured build is assembled from named, reusable parts. The 3D viewer supports orbit, zoom, exploded-view inspection, part selection and guided assembly steps.
+The component library contains exactly 100 coded, parameterized component definitions across ten families. Every featured build is assembled from named, reusable parts. The 3D viewer supports orbit, zoom, exploded-view inspection, part selection and guided assembly steps.
 
 ## Run locally
 
