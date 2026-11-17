@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { buildAssembly } from './brick-system.js';
+import { createAnchorDebugGroup, getPartAnchors } from './connection-anchors.js';
 
 function disposeObject(object) {
   object.traverse(node => {
@@ -33,6 +34,13 @@ export function mountViewer(canvas, model, options = {}) {
   scene.add(object);
 
   const bounds = new THREE.Box3().setFromObject(object);
+  const anchorDebugGroups = [];
+  assembly.parts.forEach((part, index) => {
+    const helper = createAnchorDebugGroup(getPartAnchors(model.parts[index] || {}));
+    helper.visible = false;
+    part.add(helper);
+    anchorDebugGroups.push(helper);
+  });
   const center = bounds.getCenter(new THREE.Vector3());
   const dimensions = bounds.getSize(new THREE.Vector3());
   const diameter = Math.max(dimensions.length(), 0.14);
@@ -78,6 +86,13 @@ export function mountViewer(canvas, model, options = {}) {
 
   function render() {
     if (!disposed) renderer.render(scene, camera);
+  }
+
+  function setAnchorsVisible(visible) {
+    const nextVisible = Boolean(visible);
+    for (const helper of anchorDebugGroups) helper.visible = nextVisible;
+    render();
+    return nextVisible;
   }
 
   function resize() {
@@ -179,6 +194,7 @@ export function mountViewer(canvas, model, options = {}) {
     setExplode,
     setStep,
     selectPart,
+    setAnchorsVisible,
     resetView,
     dispose
   };
