@@ -142,7 +142,7 @@ export const MODELS = [
       part('cafe-left-wall', 'Left wall panel', 'panel', [-44, 31, 0], '#f0d7a8', [4, 48, 72], 2),
       part('cafe-right-wall', 'Right wall panel', 'panel', [44, 31, 0], '#f0d7a8', [4, 48, 72], 2),
       part('cafe-front-pier-left', 'Front façade pier left', 'panel', [-34, 31, 36], '#f0d7a8', [8, 48, 4], 2),
-      part('cafe-front-pier-right', 'Front façade pier right', 'panel', [8, 48, 4], 2),
+      part('cafe-front-pier-right', 'Front façade pier right', 'panel', [34, 31, 36], '#f0d7a8', [8, 48, 4], 2),
       part('cafe-window', 'Large front window', 'window', [-13, 31, 38], '#f4f0e6', [30, 32, 4], 3),
       part('cafe-door', 'Entry door', 'door', [27, 29, 38], '#b76b3f', [18, 44, 4], 3),
       part('cafe-counter', 'Service counter', 'panel', [-5, 16, -10], '#b76b3f', [42, 18, 12], 3),
