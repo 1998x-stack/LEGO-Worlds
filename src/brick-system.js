@@ -73,7 +73,7 @@ function createBeam(group, spec) {
   const [length = 5] = spec.size || [];
   const span = length * STUD - 0.3;
   const height = 7.8;
-  const depth = 7.8;
+  const depth = Number(spec.size?.[1]) || 7.8;
   const shape = new THREE.Shape();
   shape.moveTo(-span / 2, -height / 2);
   shape.lineTo(span / 2, -height / 2);
@@ -201,6 +201,311 @@ function createSphere(group, spec) {
   mesh.scale.set(x, y, z);
 }
 
+
+function addExtruded(group, shape, depth, color, name, options = {}) {
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 24, steps: 1 });
+  geometry.translate(0, 0, -depth / 2);
+  return addMesh(group, geometry, color, name, options);
+}
+
+function createCurvedSlope(group, spec, plate = false) {
+  const [sx = 2, sz = 2] = spec.size || [];
+  const width = sx * STUD - 0.2;
+  const depth = sz * STUD - 0.2;
+  const height = plate ? PLATE_H : BRICK_H;
+  const shape = new THREE.Shape();
+  shape.moveTo(-width / 2, -height / 2);
+  shape.lineTo(width / 2, -height / 2);
+  shape.lineTo(width / 2, height * 0.08);
+  shape.quadraticCurveTo(width * 0.12, height * 0.72, -width / 2, height * 0.12);
+  shape.lineTo(-width / 2, -height / 2);
+  shape.closePath();
+  addExtruded(group, shape, depth, spec.color, plate ? 'curved-tile' : 'curved-slope');
+  if (!plate) addStuds(group, sx, sz, height / 2 + STUD_H / 2, spec.color);
+}
+
+function createArch(group, spec) {
+  const [width = 32, height = 24, depth = 4, wall = 4] = spec.size || [];
+  const shape = new THREE.Shape();
+  shape.moveTo(-width / 2, -height / 2);
+  shape.lineTo(width / 2, -height / 2);
+  shape.lineTo(width / 2, height / 2);
+  shape.lineTo(-width / 2, height / 2);
+  shape.closePath();
+  const innerW = Math.max(4, width - wall * 2);
+  const innerH = Math.max(4, height - wall);
+  const hole = new THREE.Path();
+  hole.moveTo(-innerW / 2, -height / 2);
+  hole.lineTo(innerW / 2, -height / 2);
+  hole.lineTo(innerW / 2, 0);
+  hole.quadraticCurveTo(innerW / 2, innerH * 0.55, 0, innerH / 2);
+  hole.quadraticCurveTo(-innerW / 2, innerH * 0.55, -innerW / 2, 0);
+  hole.lineTo(-innerW / 2, -height / 2);
+  shape.holes.push(hole);
+  addExtruded(group, shape, depth, spec.color, 'arch-frame');
+}
+
+function createCone(group, spec) {
+  const [radius = 4, height = 9.6] = spec.size || [];
+  addMesh(group, new THREE.ConeGeometry(radius, height, 24), spec.color, 'cone-element');
+}
+
+function createBracket(group, spec) {
+  const [width = 16, height = 16, depth = 8, thickness = 3] = spec.size || [];
+  const foot = addMesh(group, new THREE.BoxGeometry(width, thickness, depth), spec.color, 'bracket-foot');
+  foot.position.y = -height / 2 + thickness / 2;
+  const back = addMesh(group, new THREE.BoxGeometry(thickness, height, depth), spec.color, 'bracket-wall');
+  back.position.x = -width / 2 + thickness / 2;
+}
+
+function createClip(group, spec) {
+  const [opening = 7, depth = 8, thickness = 3] = spec.size || [];
+  const outer = opening + thickness * 2;
+  const base = addMesh(group, new THREE.BoxGeometry(outer, thickness, depth), spec.color, 'clip-base');
+  base.position.y = -thickness / 2;
+  for (const x of [-opening / 2 - thickness / 2, opening / 2 + thickness / 2]) {
+    const arm = addMesh(group, new THREE.BoxGeometry(thickness, opening, depth), spec.color, 'clip-arm');
+    arm.position.set(x, opening / 2 - thickness / 2, 0);
+  }
+}
+
+function createBar(group, spec) {
+  const [length = 32, radius = 2] = spec.size || [];
+  const bar = addMesh(group, new THREE.CylinderGeometry(radius, radius, length, 18), spec.color, 'bar-element');
+  bar.rotation.z = Math.PI / 2;
+}
+
+function createHinge(group, spec) {
+  const [length = 24, leafWidth = 10, depth = 4] = spec.size || [];
+  const left = addMesh(group, new THREE.BoxGeometry(length / 2, leafWidth, depth), spec.color, 'hinge-leaf-a');
+  left.position.y = -leafWidth / 2;
+  const right = addMesh(group, new THREE.BoxGeometry(length / 2, leafWidth, depth), spec.color, 'hinge-leaf-b');
+  right.position.y = leafWidth / 2;
+  const barrel = addMesh(group, new THREE.CylinderGeometry(depth * 0.48, depth * 0.48, length, 18), '#68747d', 'hinge-barrel');
+  barrel.rotation.z = Math.PI / 2;
+}
+
+function createConnector(group, spec) {
+  const [length = 14, radius = 2.8] = spec.size || [];
+  addMesh(group, new THREE.SphereGeometry(radius, 20, 16), spec.color, 'connector-hub');
+  for (const axis of ['x','z']) {
+    const shaft = addMesh(group, new THREE.CylinderGeometry(radius * 0.58, radius * 0.58, length, 16), spec.color, 'connector-shaft');
+    if (axis === 'x') shaft.rotation.z = Math.PI / 2;
+  }
+}
+
+function createCorner(group, spec) {
+  const [width = 24, depth = 24, height = 4, thickness = 3] = spec.size || [];
+  const a = addMesh(group, new THREE.BoxGeometry(width, height, thickness), spec.color, 'corner-arm-a');
+  a.position.set(0, 0, -depth / 2 + thickness / 2);
+  const b = addMesh(group, new THREE.BoxGeometry(thickness, height, depth), spec.color, 'corner-arm-b');
+  b.position.set(-width / 2 + thickness / 2, 0, 0);
+}
+
+function createAngleBeam(group, spec) {
+  const [horizontal = 3, vertical = 5] = spec.size || [];
+  const a = new THREE.Group();
+  createBeam(a, { ...spec, size: [horizontal, 7.8] });
+  const b = new THREE.Group();
+  createBeam(b, { ...spec, size: [vertical, 7.8] });
+  b.rotation.z = Math.PI / 2;
+  b.position.set(-horizontal * STUD / 2 + 3.9, vertical * STUD / 2 - 3.9, 0);
+  group.add(a, b);
+}
+
+function createFrame(group, spec) {
+  const [width = 40, height = 34, depth = 8, rail = 5] = spec.size || [];
+  const vertices = [
+    new THREE.Vector3(-width/2,-height/2,0),
+    new THREE.Vector3(width/2,-height/2,0),
+    new THREE.Vector3(0,height/2,0)
+  ];
+  for (let i = 0; i < 3; i++) {
+    const a = vertices[i], b = vertices[(i+1)%3];
+    const delta = b.clone().sub(a);
+    const mesh = addMesh(group, new THREE.BoxGeometry(delta.length(),rail,depth), spec.color, 'triangle-frame-rail');
+    mesh.position.copy(a.clone().add(b).multiplyScalar(0.5));
+    mesh.rotation.z = Math.atan2(delta.y,delta.x);
+  }
+}
+
+function createBushing(group, spec) {
+  const [outer = 4, inner = 2.2, width = 2] = spec.size || [];
+  const shape = new THREE.Shape();
+  shape.absarc(0,0,outer,0,Math.PI*2,false);
+  const hole = new THREE.Path();
+  hole.absarc(0,0,inner,0,Math.PI*2,true);
+  shape.holes.push(hole);
+  addExtruded(group, shape, width, spec.color, 'axle-bushing');
+}
+
+function createWormGear(group, spec) {
+  const [radius = 4, length = 24, turns = 4] = spec.size || [];
+  const core = addMesh(group, new THREE.CylinderGeometry(radius * 0.72, radius * 0.72, length, 20), spec.color, 'worm-core');
+  core.rotation.x = Math.PI / 2;
+  const points = [];
+  const samples = Math.max(48, turns * 24);
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const angle = t * turns * Math.PI * 2;
+    points.push(new THREE.Vector3(Math.cos(angle) * radius * 0.88, Math.sin(angle) * radius * 0.88, (t - 0.5) * length));
+  }
+  const helix = new THREE.CatmullRomCurve3(points);
+  addMesh(group, new THREE.TubeGeometry(helix, samples, Math.max(0.65, radius * 0.2), 6, false), '#d8dce0', 'worm-thread', { metalness: 0.42, roughness: 0.3 });
+}
+
+function createRackGear(group, spec) {
+  const [length = 48, teeth = 10, thickness = 3] = spec.size || [];
+  const base = addMesh(group, new THREE.BoxGeometry(length, thickness * 2, thickness), spec.color, 'rack-base');
+  base.position.y = -thickness / 2;
+  for (let i = 0; i < teeth; i++) {
+    const x = (i - (teeth - 1) / 2) * (length / teeth);
+    const tooth = addMesh(group, new THREE.BoxGeometry(length / teeth * 0.62, thickness * 1.25, thickness), spec.color, 'rack-tooth');
+    tooth.position.set(x, thickness * 1.05, 0);
+  }
+}
+
+function createBevelGear(group, spec) {
+  const [radius = 8, teeth = 12, thickness = 4] = spec.size || [];
+  const cone = addMesh(group, new THREE.ConeGeometry(radius, thickness * 1.6, Math.max(16, teeth)), spec.color, 'bevel-gear-cone');
+  cone.rotation.x = Math.PI / 2;
+  const hub = addMesh(group, new THREE.CylinderGeometry(radius * 0.24, radius * 0.24, thickness * 2, 18), '#d8dce0', 'bevel-hub');
+  hub.rotation.x = Math.PI / 2;
+  for (let i = 0; i < teeth; i++) {
+    const a = i / teeth * Math.PI * 2;
+    const tooth = addMesh(group, new THREE.BoxGeometry(2.2, 2.2, thickness), spec.color, 'bevel-tooth');
+    tooth.position.set(Math.cos(a) * radius * 0.82, Math.sin(a) * radius * 0.82, 0);
+    tooth.rotation.z = a;
+  }
+}
+
+function createTurntable(group, spec) {
+  const [radius = 16, height = 5] = spec.size || [];
+  addMesh(group, new THREE.CylinderGeometry(radius, radius, height * 0.42, 48), '#303941', 'turntable-base');
+  const upper = addMesh(group, new THREE.CylinderGeometry(radius * 0.9, radius * 0.9, height * 0.32, 48), spec.color, 'turntable-top');
+  upper.position.y = height * 0.32;
+  const race = addMesh(group, new THREE.TorusGeometry(radius * 0.72, Math.max(0.7, height * 0.08), 8, 48), '#d8dce0', 'turntable-race', { metalness: 0.5 });
+  race.rotation.x = Math.PI / 2;
+  race.position.y = height * 0.05;
+}
+
+function createDifferential(group, spec) {
+  const [radius = 12, width = 18] = spec.size || [];
+  const caseMesh = addMesh(group, new THREE.SphereGeometry(radius, 24, 18), spec.color, 'differential-case');
+  caseMesh.scale.z = width / (radius * 2);
+  for (const sign of [-1,1]) {
+    const axle = addMesh(group, new THREE.CylinderGeometry(2,2,width * 0.7,16), '#b7c1c9', 'differential-output');
+    axle.rotation.x = Math.PI / 2;
+    axle.position.z = sign * (width * 0.55);
+  }
+  const ring = addMesh(group, new THREE.TorusGeometry(radius * 0.76, 1.2, 8, 28), '#d8dce0', 'differential-ring');
+  ring.rotation.x = Math.PI / 2;
+}
+
+function createTrack(group, spec) {
+  const [radius = 8, spacing = 28, treadWidth = 8, links = 18] = spec.size || [];
+  for (const sign of [-1,1]) {
+    const wheel = addMesh(group, new THREE.CylinderGeometry(radius, radius, treadWidth * 0.72, 24), '#252d34', 'track-idler');
+    wheel.rotation.x = Math.PI / 2;
+    wheel.position.x = sign * spacing / 2;
+  }
+  const half = spacing / 2;
+  const perimeter = 2 * spacing + 2 * Math.PI * radius;
+  const step = perimeter / links;
+  for (let i = 0; i < links; i++) {
+    const d = i * step;
+    let x, y, angle;
+    if (d < spacing) {
+      x = -half + d; y = radius; angle = 0;
+    } else if (d < spacing + Math.PI * radius) {
+      const a = (d - spacing) / radius - Math.PI / 2;
+      x = half + Math.cos(a) * radius; y = radius + Math.sin(a) * radius; angle = a + Math.PI / 2;
+    } else if (d < 2 * spacing + Math.PI * radius) {
+      const local = d - spacing - Math.PI * radius;
+      x = half - local; y = -radius; angle = Math.PI;
+    } else {
+      const a = (d - 2 * spacing - Math.PI * radius) / radius + Math.PI / 2;
+      x = -half + Math.cos(a) * radius; y = -radius + Math.sin(a) * radius; angle = a + Math.PI / 2;
+    }
+    const link = addMesh(group, new THREE.BoxGeometry(step * 0.94, 3.2, treadWidth), spec.color, 'track-link');
+    link.position.set(x, y, 0);
+    link.rotation.z = angle;
+  }
+}
+
+function createFlower(group, spec) {
+  const [radius = 5, stemLength = 18] = spec.size || [];
+  const stem = addMesh(group, new THREE.CylinderGeometry(0.7,0.9,stemLength,8), '#398653', 'flower-stem');
+  stem.position.y = -stemLength / 2;
+  for (let i = 0; i < 6; i++) {
+    const a = i / 6 * Math.PI * 2;
+    const petal = addMesh(group, new THREE.SphereGeometry(1,14,10), spec.color, 'flower-petal');
+    petal.scale.set(radius * 0.65, radius * 0.32, radius * 0.42);
+    petal.position.set(Math.cos(a) * radius * 0.72, stemLength * 0.1, Math.sin(a) * radius * 0.72);
+  }
+  const center = addMesh(group, new THREE.SphereGeometry(radius * 0.34,16,12), '#f4a62a', 'flower-center');
+  center.position.y = stemLength * 0.1;
+}
+
+function createTreeTrunk(group, spec) {
+  const [height = 34, radius = 5] = spec.size || [];
+  const trunk = addMesh(group, new THREE.CylinderGeometry(radius * 0.75, radius, height, 12), spec.color, 'tree-trunk');
+  trunk.position.y = height / 2;
+  for (let i = 0; i < 3; i++) {
+    const branch = addMesh(group, new THREE.CylinderGeometry(radius * 0.22, radius * 0.35, height * 0.38, 8), spec.color, 'tree-branch');
+    branch.position.set((i - 1) * radius * 1.2, height * (0.55 + (i % 2) * 0.12), 0);
+    branch.rotation.z = (i - 1) * 0.45;
+  }
+}
+
+function createRock(group, spec) {
+  const [radius = 10] = spec.size || [];
+  const geometry = new THREE.IcosahedronGeometry(radius, 1);
+  const positions = geometry.attributes.position;
+  for (let i = 0; i < positions.count; i++) {
+    const x = positions.getX(i), y = positions.getY(i), z = positions.getZ(i);
+    const factor = 0.86 + ((i * 17) % 11) / 50;
+    positions.setXYZ(i, x * factor, y * factor * 0.68, z * factor);
+  }
+  positions.needsUpdate = true;
+  geometry.computeVertexNormals();
+  addMesh(group, geometry, spec.color, 'rock-mesh');
+}
+
+function createSpring(group, spec) {
+  const [radius = 4, height = 24, turns = 5] = spec.size || [];
+  const points = [];
+  const samples = Math.max(48, turns * 24);
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const a = t * turns * Math.PI * 2;
+    points.push(new THREE.Vector3(Math.cos(a) * radius, (t - 0.5) * height, Math.sin(a) * radius));
+  }
+  const curve = new THREE.CatmullRomCurve3(points);
+  addMesh(group, new THREE.TubeGeometry(curve, samples, 0.8, 8, false), spec.color, 'spring-coil', { metalness: 0.5, roughness: 0.3 });
+}
+
+function createTransparentShell(group, spec) {
+  const [radius = 14] = spec.size || [];
+  addMesh(group, new THREE.SphereGeometry(radius, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), spec.color, 'transparent-shell', { transparent: true, opacity: 0.32, roughness: 0.12, metalness: 0.08, side: THREE.DoubleSide });
+}
+
+function createLightBrick(group, spec) {
+  createBrickLike(group, spec, 'brick');
+  const lens = addMesh(group, new THREE.SphereGeometry(2.4, 18, 12), '#fff1a6', 'light-lens', { emissive: '#ffcf00', emissiveIntensity: 0.55, roughness: 0.2 });
+  lens.position.set(0, BRICK_H / 2 + STUD_H + 1.2, 0);
+}
+
+function createGrille(group, spec) {
+  const [width = 40, height = 24, depth = 3, slats = 7] = spec.size || [];
+  addMesh(group, new THREE.BoxGeometry(width,height,depth), spec.color, 'grille-frame');
+  for (let i = 0; i < slats; i++) {
+    const x = (i - (slats - 1) / 2) * (width / (slats + 1));
+    const bar = addMesh(group, new THREE.BoxGeometry(1.4,height * 0.84,depth * 1.25), '#303941', 'grille-slat');
+    bar.position.x = x;
+  }
+}
+
 export function createPart(spec) {
   const group = new THREE.Group();
   group.name = spec.name || spec.id || 'unnamed-part';
@@ -212,7 +517,90 @@ export function createPart(spec) {
       createBrickLike(group, spec, spec.type);
       break;
     case 'slope':
+    case 'wedge':
       createSlope(group, spec);
+      break;
+    case 'inverted-slope':
+      createSlope(group, spec);
+      group.scale.y = -1;
+      break;
+    case 'curved-slope':
+      createCurvedSlope(group, spec, false);
+      break;
+    case 'curved-tile':
+      createCurvedSlope(group, spec, true);
+      break;
+    case 'arch':
+      createArch(group, spec);
+      break;
+    case 'cone':
+      createCone(group, spec);
+      break;
+    case 'bracket':
+      createBracket(group, spec);
+      break;
+    case 'clip':
+      createClip(group, spec);
+      break;
+    case 'bar':
+      createBar(group, spec);
+      break;
+    case 'hinge':
+      createHinge(group, spec);
+      break;
+    case 'connector':
+      createConnector(group, spec);
+      break;
+    case 'corner':
+      createCorner(group, spec);
+      break;
+    case 'angle-beam':
+      createAngleBeam(group, spec);
+      break;
+    case 'frame':
+      createFrame(group, spec);
+      break;
+    case 'bushing':
+      createBushing(group, spec);
+      break;
+    case 'worm-gear':
+      createWormGear(group, spec);
+      break;
+    case 'rack-gear':
+      createRackGear(group, spec);
+      break;
+    case 'bevel-gear':
+      createBevelGear(group, spec);
+      break;
+    case 'turntable':
+      createTurntable(group, spec);
+      break;
+    case 'differential':
+      createDifferential(group, spec);
+      break;
+    case 'track':
+      createTrack(group, spec);
+      break;
+    case 'flower':
+      createFlower(group, spec);
+      break;
+    case 'tree-trunk':
+      createTreeTrunk(group, spec);
+      break;
+    case 'rock':
+      createRock(group, spec);
+      break;
+    case 'spring':
+      createSpring(group, spec);
+      break;
+    case 'transparent-shell':
+      createTransparentShell(group, spec);
+      break;
+    case 'light-brick':
+      createLightBrick(group, spec);
+      break;
+    case 'grille':
+      createGrille(group, spec);
       break;
     case 'beam':
       createBeam(group, spec);
