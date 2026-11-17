@@ -178,8 +178,8 @@ function componentAsModel(component) {
     series: component.series,
     title: component.name,
     titleZh: component.zh,
-    subtitle: component.family + ' / Component study',
-    description: component.description + ' 名义尺寸：' + component.dimensions + '。此组件预览采用程序化示意几何。',
+    subtitle: component.family + ' / ' + component.code + ' / Component study',
+    description: component.description + ' 名义尺寸：' + component.dimensions + '。接口分类：' + component.connectionProfile + '。此组件预览采用程序化示意几何。',
     accent: component.color,
     parts: [{ id: component.id, name: component.name, type: component.type, size: component.size, pos: [0, y, 0], color: component.color, step: 1, transparent: component.transparent }],
     steps: ['Inspect the component']
