@@ -38,6 +38,8 @@ test('all 100 catalogue components expose stable, finite, oriented anchors', () 
       assert.ok(Math.abs(Math.hypot(...anchor.normal) - 1) < 1e-6, 'normal is not normalized: ' + anchor.id);
       assert.equal(anchor.up.length, 3);
       assert.ok(anchor.up.every(Number.isFinite));
+      const normalUpDot = anchor.normal.reduce((sum, value, index) => sum + value * anchor.up[index], 0);
+      assert.ok(Math.abs(normalUpDot) < 1e-6, 'up vector is not orthogonal to normal: ' + anchor.id);
       if (anchor.axis) {
         assert.ok(Math.abs(Math.hypot(...anchor.axis) - 1) < 1e-6, 'axis is not normalized: ' + anchor.id);
       }
