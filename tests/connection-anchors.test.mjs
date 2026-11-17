@@ -147,6 +147,21 @@ test('gear mesh compatibility checks tooth profile and module', () => {
   assert.equal(areAnchorsCompatible(gearA, bevel), false);
 });
 
+test('rack and spur-gear interfaces require perpendicular axes and matching pitch', () => {
+  const rack = byKind(anchorsFor('rack-gear'), 'rack-mesh')[0];
+  const gear = byKind(anchorsFor('gear-16t'), 'gear-mesh')[0];
+  assert.equal(areAnchorsCompatible(rack, gear), false);
+  const matchingGear = {
+    ...gear,
+    id: 'matching-gear:gear-mesh:001',
+    partId: 'matching-gear',
+    axis: [0, 0, 1],
+    size: { ...gear.size, moduleMm: rack.size.pitchMm / Math.PI }
+  };
+  assert.equal(areAnchorsCompatible(rack, matchingGear), true);
+  assert.equal(areAnchorsCompatible(rack, { ...matchingGear, axis: [1, 0, 0] }), false);
+});
+
 test('all published model assemblies produce unique finite anchor coordinates', () => {
   for (const model of MODELS) {
     const anchors = getAssemblyAnchors(model);
