@@ -75,7 +75,7 @@ export const MODELS = [
       part('bot-hand-right', 'Right hand', 'cylinder', [20, 7.8, 0], '#f4a62a', [3.2, 5], 3),
       part('bot-head', 'Head brick', 'brick', [0, 40, 0], '#f4f0e6', [2, 2], 4),
       part('bot-face', 'Face tile', 'tile', [0, 40, 8.2], '#303941', [2, 2], 4),
-      part('bot-antenna', 'Signal antenna', 'pin', [0, 49, 0], '#e45a46', [12], 4)
+      part('bot-antenna', 'Signal antenna', 'pin', [0, 49, 0], '#e45a46', [12], 4, { rotation: [Math.PI / 2, 0, 0] })
     ]
   },
   {
@@ -121,9 +121,9 @@ export const MODELS = [
       part('rover-wheel-rr', 'Rear right wheel', 'wheel', [28, 8, 30], '#252d34', [11, 7], 2),
       part('rover-deck', 'Central deck plate', 'plate', [0, 11, 0], '#ffcf00', [6, 5], 3),
       part('rover-cabin', 'Cabin body', 'brick', [0, 22, -4], '#e45a46', [3, 2], 3),
-      part('rover-windshield', 'Front windscreen', 'panel', [-12, 23, 4], '#8ed7df', [2, 22, 26], 3, { transparent: true }),
+      part('rover-windshield', 'Front windscreen', 'panel', [0, 23, 5], '#8ed7df', [26, 22, 2], 3, { transparent: true }),
       part('rover-roof', 'Cabin roof', 'plate', [0, 29, -4], '#f4f0e6', [3, 2], 4),
-      part('rover-sensor', 'Roof sensor mast', 'pin', [0, 37, -4], '#303941', [14], 4),
+      part('rover-sensor', 'Roof sensor mast', 'pin', [0, 37, -4], '#303941', [14], 4, { rotation: [Math.PI / 2, 0, 0] }),
       part('rover-sensor-head', 'Sensor head', 'cylinder', [0, 45, -4], '#2877c7', [5, 8], 4),
       part('rover-bumper', 'Front bumper', 'beam', [-40, 7, 0], '#d7dce0', [5], 4, { rotation: [0, Math.PI / 2, 0] })
     ]
@@ -141,8 +141,8 @@ export const MODELS = [
       part('cafe-back-wall', 'Rear wall panel', 'panel', [0, 31, -36], '#f0d7a8', [88, 48, 4], 2),
       part('cafe-left-wall', 'Left wall panel', 'panel', [-44, 31, 0], '#f0d7a8', [4, 48, 72], 2),
       part('cafe-right-wall', 'Right wall panel', 'panel', [44, 31, 0], '#f0d7a8', [4, 48, 72], 2),
-      part('cafe-front-pier-left', 'Front façade pier left', 'brick', [-34, 31, 36], '#f0d7a8', [1, 6], 2),
-      part('cafe-front-pier-right', 'Front façade pier right', 'brick', [34, 31, 36], '#f0d7a8', [1, 6], 2),
+      part('cafe-front-pier-left', 'Front façade pier left', 'panel', [-34, 31, 36], '#f0d7a8', [8, 48, 4], 2),
+      part('cafe-front-pier-right', 'Front façade pier right', 'panel', [8, 48, 4], 2),
       part('cafe-window', 'Large front window', 'window', [-13, 31, 38], '#f4f0e6', [30, 32, 4], 3),
       part('cafe-door', 'Entry door', 'door', [27, 29, 38], '#b76b3f', [18, 44, 4], 3),
       part('cafe-counter', 'Service counter', 'panel', [-5, 16, -10], '#b76b3f', [42, 18, 12], 3),
@@ -194,9 +194,9 @@ export const MODELS = [
       part('koi-rim', 'Pond rim ring', 'ring', [0, 7, 0], '#e5b84b', [34, 3], 1),
       part('koi-gear-left', 'Left clockwork gear', 'gear', [-39, 8, -22], '#e5b84b', [8, 16, 3.2], 2),
       part('koi-gear-right', 'Right clockwork gear', 'gear', [39, 8, 22], '#e5b84b', [8, 16, 3.2], 2),
-      part('koi-bridge-deck', 'Bridge deck', 'plate', [0, 13, 0], '#b76b3f', [2, 7], 2, { rotation: [0, 0, Math.PI / 2] }),
-      part('koi-bridge-rail-left', 'Bridge rail left', 'beam', [0, 21, -8], '#e6d2a8', [7], 2),
-      part('koi-bridge-rail-right', 'Bridge rail right', 'beam', [0, 21, 8], '#e6d2a8', [7], 2),
+      part('koi-bridge-deck', 'Bridge deck', 'plate', [0, 13, 0], '#b76b3f', [2, 7], 2),
+      part('koi-bridge-rail-left', 'Bridge rail left', 'beam', [0, 21, -8], '#e6d2a8', [7], 2, { rotation: [0, Math.PI / 2, 0] }),
+      part('koi-bridge-rail-right', 'Bridge rail right', 'beam', [0, 21, 8], '#e6d2a8', [7], 2, { rotation: [0, Math.PI / 2, 0] }),
       part('koi-fish-one-body', 'Koi one · body', 'sphere', [-12, 11, -10], '#f4f0e6', [13, 4, 5], 3, { rotation: [0, 0, 0.18] }),
       part('koi-fish-one-head', 'Koi one · head', 'sphere', [-22, 11, -10], '#e45a46', [5, 3.8, 4.8], 3),
       part('koi-fish-one-tail', 'Koi one · tail', 'slope', [1, 11, -10], '#e45a46', [1, 1], 3, { rotation: [0, 0, Math.PI / 2] }),
