@@ -1,6 +1,6 @@
 # Component system — 100-piece reference library
 
-Brick Worlds maintains a catalogue of **100 distinct component definitions** across ten families. A catalogue entry is not a colour swatch: it has a stable ID and part code, a procedural geometry type, nominal dimensions, a family, a connection-profile label and a plain-language purpose.
+Brick Worlds maintains a catalogue of **100 distinct component definitions** across ten families. See the complete [100-piece index](parts-index.md) for every code, name, geometry type, nominal size and interface profile. A catalogue entry is not a colour swatch: it has a stable ID and part code, a procedural geometry type, nominal dimensions, a family, a connection-profile label and a plain-language purpose.
 
 ## Shared reference grid
 
