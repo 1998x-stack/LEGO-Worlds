@@ -9,7 +9,9 @@
 - [x] Responsive, colour-themed GitHub Pages site and CI deployment workflow.
 
 ## V0.2 — Assembly depth
-- [ ] Add 30–50 more reusable component types with dimension metadata.
+- [x] Publish 100 coded, parameterized component definitions across ten families.
+- [x] Add 44 procedural geometry factory types and geometry regression coverage.
+- [ ] Add per-instance connection anchor coordinates and compatibility rules.
 - [ ] Add component connection anchors and compatibility rules.
 - [ ] Add animated assembly transitions and per-part isolation.
 - [ ] Add assembly BOM export (JSON/CSV).
