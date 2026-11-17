@@ -204,6 +204,9 @@ function createRing(group, spec) {
 function createCylinder(group, spec) {
   const [radius = 4, height = 10] = spec.size || [];
   addMesh(group, new THREE.CylinderGeometry(radius, radius, height, 24), spec.color, 'cylinder-element');
+  if (String(spec.id || '').startsWith('round-brick-')) {
+    addStuds(group, 1, 1, height / 2 + STUD_H / 2, spec.color);
+  }
 }
 
 function createSphere(group, spec) {
