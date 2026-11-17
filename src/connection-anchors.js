@@ -194,19 +194,17 @@ export function getPartAnchors(spec = {}) {
     case 'clip': {
       const [opening = 7, depth = 8, thickness = 3] = size;
       add(ANCHOR_KINDS.CLIP, 'female', [0, opening / 2, 0], {
-        normal: [0, 1, 0], axis: [0, 0, 1],
+        normal: [0, 1, 0], axis: [1, 0, 0],
         size: { openingMm: opening, depthMm: depth, wallThicknessMm: thickness }
       });
       break;
     }
     case 'bar': {
       const [length = 32, radius = 2] = size;
-      for (const sign of [-1, 1]) {
-        add(ANCHOR_KINDS.BAR, 'male', [sign * length / 2, 0, 0], {
-          normal: [sign, 0, 0], axis: [1, 0, 0],
-          size: { diameterMm: radius * 2, lengthMm: length }
-        });
-      }
+      add(ANCHOR_KINDS.BAR, 'male', [0, 0, 0], {
+        normal: [1, 0, 0], axis: [1, 0, 0],
+        size: { diameterMm: radius * 2, lengthMm: length }
+      });
       break;
     }
     case 'hinge': {
