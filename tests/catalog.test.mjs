@@ -2,13 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { SERIES, COMPONENTS, MODELS } from '../src/catalog.js';
-import { buildAssembly, SYSTEM_DIMENSIONS } from '../src/brick-system.js';
+import { buildAssembly, createPart, SYSTEM_DIMENSIONS } from '../src/brick-system.js';
 
-const supportedTypes = new Set([
-  'brick', 'plate', 'tile', 'jumper', 'slope', 'beam', 'pin', 'axle',
-  'gear', 'wheel', 'panel', 'window', 'door', 'leaf', 'dome', 'ring',
-  'cylinder', 'sphere'
-]);
+const supportedTypes = new Set(["brick","cylinder","plate","tile","jumper","slope","inverted-slope","curved-slope","curved-tile","arch","dome","cone","wedge","bracket","clip","bar","hinge","connector","corner","beam","angle-beam","frame","pin","axle","bushing","gear","worm-gear","rack-gear","bevel-gear","turntable","differential","wheel","track","panel","window","door","leaf","flower","tree-trunk","rock","spring","transparent-shell","light-brick","grille"]);
 
 test('publishes exactly three core series and an independent creative lab', () => {
   assert.equal(SERIES.length, 3);
@@ -40,11 +36,14 @@ test('all part manifests use supported geometry, finite transforms and valid ste
   }
 });
 
-test('component library entries map to supported geometry factories', () => {
-  assert.ok(COMPONENTS.length >= 16);
+test('component library contains exactly 100 coded reusable components', () => {
+  assert.equal(COMPONENTS.length, 100);
+  assert.equal(new Set(COMPONENTS.map(component => component.id)).size, 100);
+  assert.equal(new Set(COMPONENTS.map(component => component.code)).size, 100);
   for (const component of COMPONENTS) {
     assert.ok(supportedTypes.has(component.type), 'unsupported component ' + component.id);
-    assert.ok(component.name && component.description && component.dimensions);
+    assert.ok(component.name && component.description && component.dimensions && component.connectionProfile);
+    assert.ok(component.code.startsWith('BW-'));
   }
 });
 
@@ -74,4 +73,26 @@ test('nominal grid dimensions preserve the 3:1 brick-to-plate relationship', () 
   assert.equal(SYSTEM_DIMENSIONS.brickBodyHeightMm, 9.6);
   assert.equal(SYSTEM_DIMENSIONS.plateBodyHeightMm, 3.2);
   assert.ok(Math.abs(SYSTEM_DIMENSIONS.brickBodyHeightMm / SYSTEM_DIMENSIONS.plateBodyHeightMm - 3) < 1e-12);
+});
+
+
+test('all 100 component previews create finite, non-empty procedural geometry', () => {
+  for (const component of COMPONENTS) {
+    const object = createPart({
+      id: component.id, name: component.name, type: component.type,
+      size: component.size, color: component.color, transparent: component.transparent,
+      pos: [0,0,0], step: 1
+    });
+    object.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(object);
+    const size = bounds.getSize(new THREE.Vector3());
+    assert.ok(Number.isFinite(size.length()) && size.length() > 0, 'empty geometry for ' + component.id);
+    object.traverse(node => {
+      if (node.geometry?.attributes?.position) {
+        assert.ok([...node.geometry.attributes.position.array].every(Number.isFinite), 'non-finite vertex for ' + component.id);
+      }
+      node.geometry?.dispose();
+      if (node.material) (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => material.dispose());
+    });
+  }
 });
