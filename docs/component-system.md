@@ -31,7 +31,7 @@ These are simplified educational references. Real elements include geometry deta
 | Special | 4 | Spring, transparent shell, light brick and grille panel |
 | **Total** | **100** | **Ten reusable families** |
 
-Every component has a stable BW-XX-NNN catalogue code. The current geometry factory exposes 44 component types; many types have parameterized dimensions, so the 100 definitions share a small, testable geometry vocabulary rather than 100 unrelated one-off meshes.
+Every component has a stable BW-XX-NNN catalogue code. The current geometry factory exposes 46 component types; many types have parameterized dimensions, so the 100 definitions share a small, testable geometry vocabulary rather than 100 unrelated one-off meshes.
 
 ## Component data contract
 
