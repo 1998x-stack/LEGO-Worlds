@@ -73,5 +73,5 @@ test('nominal grid dimensions preserve the 3:1 brick-to-plate relationship', () 
   assert.equal(SYSTEM_DIMENSIONS.studPitchMm, 8);
   assert.equal(SYSTEM_DIMENSIONS.brickBodyHeightMm, 9.6);
   assert.equal(SYSTEM_DIMENSIONS.plateBodyHeightMm, 3.2);
-  assert.equal(SYSTEM_DIMENSIONS.brickBodyHeightMm / SYSTEM_DIMENSIONS.plateBodyHeightMm, 3);
+  assert.ok(Math.abs(SYSTEM_DIMENSIONS.brickBodyHeightMm / SYSTEM_DIMENSIONS.plateBodyHeightMm - 3) < 1e-12);
 });
