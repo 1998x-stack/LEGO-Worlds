@@ -11,8 +11,9 @@
 ## V0.2 — Assembly depth
 - [x] Publish 100 coded, parameterized component definitions across ten families.
 - [x] Add 44 procedural geometry factory types and geometry regression coverage.
-- [ ] Add per-instance connection anchor coordinates and compatibility rules.
-- [ ] Add component connection anchors and compatibility rules.
+- [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 100 catalogue components.
+- [x] Add optional 3D anchor overlays to the assembly inspector.
+- [ ] Add rigid-transform anchor alignment, snap candidates and collision checks.
 - [ ] Add animated assembly transitions and per-part isolation.
 - [ ] Add assembly BOM export (JSON/CSV).
 - [ ] Add model thumbnails generated from the same source manifests.
