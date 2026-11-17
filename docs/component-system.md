@@ -57,9 +57,11 @@ A component entry contains:
 - createPart(spec) returns a named THREE.Group and must not create a renderer or read UI state.
 - New component types must be deterministic, finite, non-empty and disposable.
 
-## Connection profiles are not yet snap rules
+## Connection anchors
 
-connectionProfile is catalogue metadata to group likely interfaces (stud grid, Technic hole, axle cross, clip/bar, hinge axis, panel edge or decorative anchor). It does not yet contain per-instance anchor coordinates, collision checks or verified physical compatibility. Those belong to the next connection-anchor milestone.
+Each catalogue component now generates typed, per-instance anchor coordinates through [the connection-anchor system](connection-anchors.md). Anchors include position, normal, up direction, optional axis, interface kind, nominal dimensions, accepted counterpart kinds and a confidence label. The detail viewer can display them with **Show anchors**.
+
+The catalogue's connectionProfile remains a broad family label; the anchor records are the actual geometric interface data. Compatibility checks screen interface type, orientation and selected nominal dimensions, but do not yet move parts, resolve collisions or guarantee physical fit.
 
 ## Compatibility and 3D printing
 
