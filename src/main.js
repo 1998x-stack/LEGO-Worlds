@@ -63,7 +63,7 @@ root.innerHTML = [
     '<section class="components-section" id="components">',
       '<div class="section components-inner">',
         '<div class="section-heading"><div><div class="section-kicker">03 — THE COMPONENT LIBRARY</div><h2>Know your <em>pieces.</em></h2></div><p>基础组件不是孤立的模型，而是可被多个作品重复使用的构造语言。点击任意零件查看三维形态。</p></div>',
-        '<div class="component-toolbar"><div><strong id="component-count">' + COMPONENT_COUNT + '</strong><span> COMPONENT TYPES</span></div><div class="family-filters" id="family-filters"></div></div>',
+        '<div class="component-toolbar"><div><strong id="component-count">' + COMPONENT_COUNT + '</strong><span> COMPONENT TYPES</span></div><label class="search-field component-search"><span>⌕</span><input id="component-search" type="search" placeholder="Search 100 components..." aria-label="Search components"/><kbd>⌕</kbd></label></div><div class="family-filters" id="family-filters"></div>',
         '<div class="component-grid" id="component-grid"></div>',
       '</div>',
     '</section>',
@@ -86,6 +86,7 @@ const componentGrid = document.querySelector('#component-grid');
 const modalRoot = document.querySelector('#modal-root');
 let activeSeries = 'all';
 let activeFamily = 'All';
+let componentSearchTerm = '';
 let searchTerm = '';
 let detailViewer = null;
 let heroViewer = null;
@@ -151,11 +152,17 @@ function componentVisual(component) {
 }
 
 function renderComponents() {
-  const filtered = COMPONENTS.filter(component => activeFamily === 'All' || component.family === activeFamily);
-  componentGrid.innerHTML = filtered.map(component => '<button class="component-card" data-component-id="' + safe(component.id) + '">' +
-    componentVisual(component) + '<div class="component-card-info"><span>' + safe(component.family.toUpperCase()) + '</span><strong>' + safe(component.name) + '</strong>' +
-    '<small>' + safe(component.zh) + ' · ' + safe(component.sizeLabel) + '</small><p>' + safe(component.description) + '</p><div class="component-card-foot"><span>' + safe(component.dimensions) + '</span><b>VIEW 3D ↗</b></div></div></button>').join('');
-  document.querySelector('#component-count').textContent = filtered.length;
+  const query = componentSearchTerm.trim().toLowerCase();
+  const filtered = COMPONENTS.filter(component => {
+    const familyMatch = activeFamily === 'All' || component.family === activeFamily;
+    const searchable = [component.code, component.id, component.name, component.zh, component.family, component.sizeLabel, component.dimensions, component.description, component.connectionProfile].join(' ').toLowerCase();
+    return familyMatch && (!query || searchable.includes(query));
+  });
+  componentGrid.innerHTML = filtered.length ? filtered.map(component => '<button class="component-card" data-component-id="' + safe(component.id) + '">' +
+    componentVisual(component) + '<div class="component-card-info"><span>' + safe(component.family.toUpperCase()) + ' / ' + safe(component.code) + '</span><strong>' + safe(component.name) + '</strong>' +
+    '<small>' + safe(component.zh) + ' · ' + safe(component.sizeLabel) + '</small><p>' + safe(component.description) + '</p><div class="component-card-foot"><span>' + safe(component.dimensions) + '</span><b>VIEW 3D ↗</b></div></div></button>').join('') :
+    '<div class="empty-state"><strong>No components found.</strong><span>Try another family or search term.</span></div>';
+  document.querySelector('#component-count').textContent = filtered.length + ' / ' + COMPONENTS.length;
   renderFamilyFilters();
 }
 
@@ -314,6 +321,10 @@ document.querySelector('#family-filters').addEventListener('click', event => {
 document.querySelector('#model-search').addEventListener('input', event => {
   searchTerm = event.target.value;
   renderModels();
+});
+document.querySelector('#component-search').addEventListener('input', event => {
+  componentSearchTerm = event.target.value;
+  renderComponents();
 });
 document.querySelector('#hero-open').addEventListener('click', () => openDetail(MODELS.find(item => item.id === 'clockwork-koi-garden')));
 document.querySelector('#lab-open').addEventListener('click', () => openDetail(MODELS.find(item => item.id === 'clockwork-koi-garden')));
