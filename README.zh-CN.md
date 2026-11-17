@@ -29,24 +29,24 @@
 
 环境要求：Node.js 20.19+。
 
-\`\`\`bash
+```bash
 git clone https://github.com/1998x-stack/LEGO-Worlds.git
 cd LEGO-Worlds
 npm install
 npm run dev
-\`\`\`
+```
 
 ## 测试与构建
 
-\`\`\`bash
+```bash
 npm test
 npm run build
 npm run preview
-\`\`\`
+```
 
 ## GitHub Pages
 
-仓库已经包含 GitHub Actions Pages 构建与部署工作流，Vite 使用 \`/LEGO-Worlds/\` 作为部署基础路径。
+仓库已经包含 GitHub Actions Pages 构建与部署工作流，Vite 使用 `/LEGO-Worlds/` 作为部署基础路径。
 
 预期地址：
 
@@ -77,7 +77,7 @@ https://1998x-stack.github.io/LEGO-Worlds/
 
 ## 仓库结构
 
-\`\`\`text
+```text
 src/
   catalog.js          # 系列、组件目录与装配清单
   brick-system.js     # 可复用程序化零件几何
@@ -92,16 +92,16 @@ tests/
   catalog.test.mjs
 .github/workflows/
   pages.yml
-\`\`\`
+```
 
 ## 如何新增模型
 
-1. 在 \`src/brick-system.js\` 中优先实现可复用零件类型。
-2. 如果零件适合跨模型复用，在 \`COMPONENTS\` 中登记组件元数据。
-3. 在 \`MODELS\` 中添加新模型，使用稳定的 kebab-case ID。
+1. 在 `src/brick-system.js` 中优先实现可复用零件类型。
+2. 如果零件适合跨模型复用，在 `COMPONENTS` 中登记组件元数据。
+3. 在 `MODELS` 中添加新模型，使用稳定的 kebab-case ID。
 4. 为每个零件定义唯一 ID、名称、类型、颜色、位置和装配步骤。
-5. 复杂结构可以为零件提供明确的 \`explode\` 偏移。
-6. 执行 \`npm test\` 和 \`npm run build\`，再检查桌面与移动端的实际三维效果。
+5. 复杂结构可以为零件提供明确的 `explode` 偏移。
+6. 执行 `npm test` 和 `npm run build`，再检查桌面与移动端的实际三维效果。
 
 **模型应当解释它如何被拼出来，而不只是展示拼好的外观。**
 
