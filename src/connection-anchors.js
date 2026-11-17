@@ -112,7 +112,7 @@ export function getPartAnchors(spec = {}) {
             x * (width / 2 - inset), y * (height / 2 - inset), sign * depth / 2
           ], {
             normal: [0, 0, sign],
-            size: { face: 'panel', widthMm: width, heightMm: height, depthMm: depth }
+            size: { face: 'panel', widthMm: width, heightMm: height, depthMm: depth }, confidence: 'schematic'
           });
         }
       }
@@ -228,11 +228,11 @@ export function getPartAnchors(spec = {}) {
       const [length = 14, radius = 2.8] = size;
       if (spec.id === 'ball-joint') {
         add(ANCHOR_KINDS.BALL, 'male', [0, 0, 0], {
-          normal: [0, 1, 0], size: { diameterMm: radius * 2 }
+          normal: [0, 1, 0], size: { diameterMm: radius * 2 }, confidence: 'schematic'
         });
       } else if (spec.id === 'socket-joint') {
         add(ANCHOR_KINDS.BALL_SOCKET, 'female', [0, 0, 0], {
-          normal: [0, -1, 0], size: { diameterMm: 6 }
+          normal: [0, -1, 0], size: { diameterMm: 6 }, confidence: 'schematic'
         });
       } else {
         const kind = spec.id === 'axle-connector' ? ANCHOR_KINDS.AXLE : ANCHOR_KINDS.PIN;
@@ -313,7 +313,7 @@ export function getPartAnchors(spec = {}) {
       });
       add(ANCHOR_KINDS.GEAR_MESH, 'neutral', [0, 0, 0], {
         normal: [0, 1, 0], axis: [0, 0, 1],
-        size: { pitchRadiusMm: radius, teeth, moduleMm: 2 * radius / teeth, profile: 'spur' }
+        size: { pitchRadiusMm: radius, teeth, moduleMm: 2 * radius / teeth, profile: 'spur' }, confidence: 'schematic'
       });
       break;
     }
@@ -326,7 +326,7 @@ export function getPartAnchors(spec = {}) {
       });
       add(ANCHOR_KINDS.GEAR_MESH, 'neutral', [0, 0, 0], {
         normal: [0, 1, 0], axis: [0, 0, 1],
-        size: { pitchRadiusMm: radius, profile: 'worm' }
+        size: { pitchRadiusMm: radius, profile: 'worm' }, confidence: 'schematic'
       });
       break;
     }
@@ -346,7 +346,7 @@ export function getPartAnchors(spec = {}) {
       });
       add(ANCHOR_KINDS.GEAR_MESH, 'neutral', [0, 0, 0], {
         normal: [0, 1, 0], axis: [0, 0, 1],
-        size: { pitchRadiusMm: radius, teeth, moduleMm: 2 * radius / teeth, profile: 'bevel' }
+        size: { pitchRadiusMm: radius, teeth, moduleMm: 2 * radius / teeth, profile: 'bevel' }, confidence: 'schematic'
       });
       break;
     }
@@ -369,7 +369,7 @@ export function getPartAnchors(spec = {}) {
       for (const sign of [-1, 1]) {
         add(ANCHOR_KINDS.AXLE, 'male', [0, 0, sign * width * 0.9], {
           normal: [0, 0, sign], axis: [0, 0, 1],
-          size: { diameterMm: 4, exposedLengthMm: width * 0.35 }
+          size: { diameterMm: 4, exposedLengthMm: width * 0.35 }, confidence: 'schematic'
         });
       }
       add(ANCHOR_KINDS.GEAR_AXIS, 'neutral', [0, 0, 0], {
@@ -392,7 +392,7 @@ export function getPartAnchors(spec = {}) {
         for (const sign of [-1, 1]) {
           add(ANCHOR_KINDS.TRACK_JOINT, 'neutral', [sign * spacing * 0.35, 0, 0], {
             normal: [sign, 0, 0], axis: [0, 0, 1],
-            size: { diameterMm: 2.8, pinSpacingMm: spacing * 0.7 }
+            size: { diameterMm: 2.8, pinSpacingMm: spacing * 0.7 }, confidence: 'schematic'
           });
         }
       } else {
@@ -423,14 +423,14 @@ export function getPartAnchors(spec = {}) {
     case 'leaf': {
       const length = Number(size[0]) || 18;
       add(ANCHOR_KINDS.DECORATIVE_MOUNT, 'neutral', [-length * 0.42, 0, 0], {
-        normal: [-1, 0, 0], size: { stemDiameterMm: 1.4 }
+        normal: [-1, 0, 0], size: { stemDiameterMm: 1.4 }, confidence: 'schematic'
       });
       break;
     }
     case 'flower': {
       const stemLength = Number(size[1]) || 18;
       add(ANCHOR_KINDS.DECORATIVE_MOUNT, 'neutral', [0, -stemLength, 0], {
-        normal: [0, -1, 0], size: { stemDiameterMm: 1.8 }
+        normal: [0, -1, 0], size: { stemDiameterMm: 1.8 }, confidence: 'schematic'
       });
       break;
     }
@@ -444,14 +444,14 @@ export function getPartAnchors(spec = {}) {
           (index - 1) * radius * 1.2,
           height * (0.55 + (index % 2) * 0.12) + height * 0.19,
           0
-        ], { normal: [index - 1, 1, 0], size: { branchRadiusMm: radius * 0.35 } });
+        ], { normal: [index - 1, 1, 0], size: { branchRadiusMm: radius * 0.35 }, confidence: 'schematic' });
       }
       break;
     }
     case 'rock': {
       const radius = Number(size[0]) || 10;
       add(ANCHOR_KINDS.DECORATIVE_MOUNT, 'neutral', [0, -radius * 0.68, 0], {
-        normal: [0, -1, 0], size: { approximateDiameterMm: radius * 2 }
+        normal: [0, -1, 0], size: { approximateDiameterMm: radius * 2 }, confidence: 'schematic'
       });
       break;
     }
