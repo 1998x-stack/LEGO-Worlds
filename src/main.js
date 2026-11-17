@@ -1,5 +1,6 @@
 import { SERIES, COMPONENTS, MODELS, MODEL_COUNT, COMPONENT_COUNT } from './catalog.js';
 import { mountViewer, downloadAssemblyGlb } from './viewer.js';
+import { getPartAnchors } from './connection-anchors.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -201,9 +202,10 @@ function openDetail(model) {
   const steps = model.steps || ['Inspect the component'];
   let currentStep = steps.length;
   let selectedPartId = null;
+  const anchorCount = model.parts.reduce((total, part) => total + getPartAnchors(part).length, 0);
   const partsMarkup = model.parts.map((part, index) =>
     '<button class="part-row" data-part-id="' + safe(part.id) + '"><span class="part-row-index">' + String(index + 1).padStart(2, '0') + '</span>' +
-    '<span class="part-row-main"><strong>' + safe(part.name) + '</strong><small>' + safe(part.type) + ' · STEP ' + safe(part.step || 1) + '</small></span>' +
+    '<span class="part-row-main"><strong>' + safe(part.name) + '</strong><small>' + safe(part.type) + ' · STEP ' + safe(part.step || 1) + ' · ' + getPartAnchors(part).length + ' ANCHORS</small></span>' +
     '<span class="part-swatch" style="--swatch:' + safe(part.color) + '"></span></button>'
   ).join('');
 
@@ -212,10 +214,10 @@ function openDetail(model) {
     '<button class="close-detail" id="close-detail" aria-label="Close detail">×</button></div>' +
     '<div class="detail-main"><div class="viewer-column"><div class="viewer-label"><span>LIVE 3D VIEW</span><span>DRAG TO ORBIT · SCROLL TO ZOOM</span></div>' +
     '<canvas id="detail-canvas" aria-label="Interactive model assembly viewer"></canvas>' +
-    '<div class="viewer-bottom"><button id="reset-view">↺ Reset view</button><span>THREE.JS / MM → M</span><button id="export-glb">↓ Export GLB</button></div></div>' +
+    '<div class="viewer-bottom"><button id="reset-view">↺ Reset view</button><button id="toggle-anchors" aria-pressed="false" title="Blue: male · amber: female · green: neutral">◎ Show anchors</button><span>THREE.JS / MM → M</span><button id="export-glb">↓ Export GLB</button></div></div>' +
     '<aside class="detail-sidebar"><div class="detail-series">' + safe(seriesName(model.series)) + ' / ' + safe(seriesZh(model.series)) + '</div>' +
     '<h2 id="detail-title">' + safe(model.title) + '</h2><div class="detail-title-zh">' + safe(model.titleZh) + '</div><p class="detail-description">' + safe(model.description) + '</p>' +
-    '<div class="detail-stats"><div><strong>' + String(model.parts.length).padStart(2, '0') + '</strong><span>PARTS</span></div><div><strong>' + String(steps.length).padStart(2, '0') + '</strong><span>STEPS</span></div><div><strong>3D</strong><span>INSPECT</span></div></div>' +
+    '<div class="detail-stats"><div><strong>' + String(model.parts.length).padStart(2, '0') + '</strong><span>PARTS</span></div><div><strong>' + String(steps.length).padStart(2, '0') + '</strong><span>STEPS</span></div><div><strong>' + String(anchorCount).padStart(2, '0') + '</strong><span>ANCHORS</span></div></div>' +
     '<div class="assembly-control"><div class="control-heading"><strong>Exploded view</strong><span id="explode-value">0%</span></div><input id="explode-range" type="range" min="0" max="100" value="0" aria-label="Exploded view amount"/><div class="range-labels"><span>ASSEMBLED</span><span>EXPLODED</span></div></div>' +
     '<div class="assembly-control step-control"><div class="control-heading"><strong>Build sequence</strong><span id="step-value">ALL / ' + String(steps.length).padStart(2, '0') + '</span></div><div class="step-progress" id="step-progress">' + steps.map((step, index) => '<i class=" ' + (index < currentStep ? 'done' : '') + '"></i>').join('') + '</div>' +
     '<div class="step-actions"><button id="step-prev" aria-label="Previous step">←</button><span id="step-name">Complete assembly</span><button id="step-next" aria-label="Next step">→</button></div><button class="show-all" id="show-all">Show complete model</button></div>' +
@@ -250,6 +252,13 @@ function openDetail(model) {
     if (event.target.id === 'detail-backdrop') closeDetail();
   });
   modalRoot.querySelector('#reset-view').addEventListener('click', () => detailViewer?.resetView());
+  let anchorsVisible = false;
+  modalRoot.querySelector('#toggle-anchors').addEventListener('click', event => {
+    anchorsVisible = !anchorsVisible;
+    detailViewer?.setAnchorsVisible(anchorsVisible);
+    event.currentTarget.setAttribute('aria-pressed', String(anchorsVisible));
+    event.currentTarget.textContent = anchorsVisible ? '◎ Hide anchors' : '◎ Show anchors';
+  });
   modalRoot.querySelector('#explode-range').addEventListener('input', event => {
     const amount = Number(event.target.value);
     detailViewer?.setExplode(amount / 100);
@@ -278,7 +287,12 @@ function openDetail(model) {
     detailViewer?.selectPart(selectedPartId);
     modalRoot.querySelectorAll('.part-row').forEach(item => item.classList.toggle('selected', item === row));
     const info = modalRoot.querySelector('#selected-part');
-    info.innerHTML = '<span>SELECTED COMPONENT</span><strong>' + safe(part.name) + '</strong><p>' + safe(part.type.toUpperCase()) + ' · STEP ' + safe(part.step || 1) + ' · ' + safe(part.color) + '</p>';
+    const partAnchors = getPartAnchors(part);
+    const anchorSummary = Object.entries(partAnchors.reduce((counts, anchor) => {
+      counts[anchor.kind] = (counts[anchor.kind] || 0) + 1;
+      return counts;
+    }, {})).map(([kind, count]) => kind + ' ×' + count).join(' · ');
+    info.innerHTML = '<span>SELECTED COMPONENT</span><strong>' + safe(part.name) + '</strong><p>' + safe(part.type.toUpperCase()) + ' · STEP ' + safe(part.step || 1) + ' · ' + safe(part.color) + ' · ' + partAnchors.length + ' ANCHORS</p><small>' + safe(anchorSummary) + '</small>';
   }));
   updateStep(currentStep);
 }
