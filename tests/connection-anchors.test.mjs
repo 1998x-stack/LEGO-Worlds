@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   ANCHOR_SCHEMA_VERSION,
+  ANCHOR_UNITS,
   getPartAnchors,
   getAssemblyAnchors,
   checkAnchorCompatibility,
@@ -20,6 +21,7 @@ const byKind = (anchors, kind) => anchors.filter(anchor => anchor.kind === kind)
 
 test('anchor schema is versioned and uses millimetres', () => {
   assert.equal(ANCHOR_SCHEMA_VERSION, 1);
+  assert.equal(ANCHOR_UNITS, 'mm');
 });
 
 test('all 100 catalogue components expose stable, finite, oriented anchors', () => {
@@ -122,6 +124,7 @@ test('compatibility checks enforce interface type, face direction, axis and fit'
   const bottomSocket = byKind(anchorsFor('brick-1x1'), 'stud-socket')[0];
   const secondStud = { ...topStud, id: 'second-brick:stud:001', partId: 'second-brick' };
   const secondSocket = { ...bottomSocket, id: 'second-brick:stud-socket:001', partId: 'second-brick' };
+  assert.equal(areAnchorsCompatible(topStud, bottomSocket), false, 'a part cannot connect to itself');
   assert.equal(areAnchorsCompatible(topStud, secondSocket), true);
   assert.equal(areAnchorsCompatible(bottomSocket, secondStud), true);
   assert.equal(checkAnchorCompatibility(topStud, { ...secondSocket, normal: [0, 1, 0] }).reason, 'face-normals-not-opposed');
