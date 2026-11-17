@@ -31,13 +31,16 @@ const BRICK_HEIGHT = 9.6;
 const PLATE_HEIGHT = 3.2;
 const STUD_DIAMETER = 4.8;
 const STUD_HEIGHT = 1.7;
-const DEFAULT_UP = [0, 0, 1];
-
 const normalize = vector => {
   const length = Math.hypot(...vector);
   return length > 1e-9 ? vector.map(value => value / length) : [0, 1, 0];
 };
 const dot = (a, b) => a.reduce((sum, value, index) => sum + value * b[index], 0);
+const defaultUpFor = normal => {
+  const reference = Math.abs(normal[1]) < 0.9 ? [0, 1, 0] : [0, 0, 1];
+  const projection = dot(reference, normal);
+  return normalize(reference.map((value, index) => value - projection * normal[index]));
+};
 const isRoundBrick = id => String(id || '').startsWith('round-brick-');
 
 function gridPositions(widthStuds, depthStuds, single = false) {
@@ -67,7 +70,7 @@ export function getPartAnchors(spec = {}) {
       partId, kind, role,
       position: position.map(Number),
       normal,
-      up: normalize(options.up || DEFAULT_UP),
+      up: normalize(options.up || defaultUpFor(normal)),
       axis,
       size: { ...(options.size || {}) },
       accepts: [...(options.accepts || ANCHOR_COMPATIBILITY[kind] || [])],
