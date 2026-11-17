@@ -2,7 +2,7 @@
 
 **拼起来 · 拆开看 · 理解它**
 
-一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，逐步拆解装配过程，并理解每个模型由哪些零件组成。
+一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
 [100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [架构文档](docs/architecture.md)
 
@@ -95,15 +95,18 @@ https://1998x-stack.github.io/LEGO-Worlds/
 src/
   catalog.js          # 系列、组件目录与装配清单
   brick-system.js     # 可复用程序化零件几何
+  connection-anchors.js # 锚点生成、坐标变换与接口兼容性
   viewer.js           # Three.js 场景、爆炸视图与装配步骤
   main.js             # 首页、筛选、组件浏览与交互
   styles.css          # 积木主题视觉系统与响应式布局
 docs/
   architecture.md
   component-system.md
+  connection-anchors.md
   roadmap.md
 tests/
   catalog.test.mjs
+  connection-anchors.test.mjs
 .github/workflows/
   pages.yml
 ```
