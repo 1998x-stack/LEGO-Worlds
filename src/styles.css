@@ -404,3 +404,29 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .component-search { width: 100%; margin-top: 12px; }
   .component-toolbar { display: block; }
 }
+
+
+/* Connection anchor inspection */
+.viewer-bottom button#toggle-anchors {
+  background: #f7f5ee;
+  color: #43534e;
+  border-color: #c9d4cb;
+  white-space: nowrap;
+}
+.viewer-bottom button#toggle-anchors[aria-pressed="true"] {
+  background: #e3f3eb;
+  border-color: #5c9d7b;
+  color: #216548;
+}
+.selected-part small {
+  display: block;
+  margin-top: 7px;
+  color: #8b948e;
+  font-size: 8px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .viewer-bottom { flex-wrap: wrap; gap: 8px; }
+  .viewer-bottom span { order: 3; width: 100%; text-align: center; }
+}
