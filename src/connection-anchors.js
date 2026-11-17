@@ -532,6 +532,9 @@ const FACE_OPPOSED_PAIRS = new Set([
   pairKey('stud', 'stud-socket'), pairKey('surface-mount', 'surface-mount'),
   pairKey('panel-mount', 'panel-mount'), pairKey('surface-mount', 'spring-end')
 ]);
+const AXIS_PERPENDICULAR_PAIRS = new Set([
+  pairKey('rack-mesh', 'gear-mesh')
+]);
 
 function compareDimensions(a, b, toleranceMm) {
   const aSize = a.size || {};
@@ -563,12 +566,23 @@ function compareDimensions(a, b, toleranceMm) {
     const compatible = sameProfile && delta <= 0.15;
     return { compatible, delta, reason: !sameProfile ? 'gear-profile-mismatch' : compatible ? 'gear-module-compatible' : 'gear-module-mismatch' };
   }
+  if (pair === pairKey('rack-mesh', 'gear-mesh')) {
+    const rack = a.kind === 'rack-mesh' ? aSize : bSize;
+    const gear = a.kind === 'gear-mesh' ? aSize : bSize;
+    const delta = Math.abs((rack.pitchMm || 0) - Math.PI * (gear.moduleMm || 0));
+    const compatible = delta <= toleranceMm;
+    return { compatible, delta, reason: compatible ? 'rack-and-gear-pitch-compatible' : 'rack-and-gear-pitch-mismatch' };
+  }
   return { compatible: true, delta: 0, reason: 'interface-size-not-constrained' };
 }
 
 export function checkAnchorCompatibility(a, b, options = {}) {
   if (!a || !b) return { compatible: false, reason: 'missing-anchor' };
   if (a.id && b.id && a.id === b.id) return { compatible: false, reason: 'same-anchor' };
+  if ((a.instanceId && a.instanceId === b.instanceId) ||
+      (!a.instanceId && !b.instanceId && a.partId && a.partId === b.partId)) {
+    return { compatible: false, reason: 'same-part-instance' };
+  }
   if (!(ANCHOR_COMPATIBILITY[a.kind] || []).includes(b.kind)) {
     return { compatible: false, reason: 'interface-type-mismatch' };
   }
@@ -583,6 +597,13 @@ export function checkAnchorCompatibility(a, b, options = {}) {
     const axisB = normalize(b.axis || b.normal || [0, 0, 1]);
     alignment = Math.abs(dot(axisA, axisB));
     if (alignment < cosine) return { compatible: false, reason: 'axis-misaligned', alignment };
+  } else if (AXIS_PERPENDICULAR_PAIRS.has(pair)) {
+    const axisA = normalize(a.axis || a.normal || [0, 0, 1]);
+    const axisB = normalize(b.axis || b.normal || [0, 0, 1]);
+    alignment = Math.abs(dot(axisA, axisB));
+    if (alignment > Math.sin(THREE.MathUtils.degToRad(angularToleranceDeg))) {
+      return { compatible: false, reason: 'axes-not-perpendicular', alignment };
+    }
   } else if (FACE_OPPOSED_PAIRS.has(pair)) {
     alignment = dot(normalize(a.normal || [0, 1, 0]), normalize(b.normal || [0, -1, 0]));
     if (alignment > -cosine) return { compatible: false, reason: 'face-normals-not-opposed', alignment };
