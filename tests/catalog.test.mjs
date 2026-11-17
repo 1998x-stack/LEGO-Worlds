@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { SERIES, COMPONENTS, MODELS } from '../src/catalog.js';
 import { buildAssembly, createPart, SYSTEM_DIMENSIONS } from '../src/brick-system.js';
 
-const supportedTypes = new Set(["brick","cylinder","plate","tile","jumper","slope","inverted-slope","curved-slope","curved-tile","arch","dome","cone","wedge","bracket","clip","bar","hinge","connector","corner","beam","angle-beam","frame","pin","axle","bushing","gear","worm-gear","rack-gear","bevel-gear","turntable","differential","wheel","track","panel","window","door","leaf","flower","tree-trunk","rock","spring","transparent-shell","light-brick","grille"]);
+const supportedTypes = new Set(["brick","sphere","cylinder","plate","tile","jumper","slope","inverted-slope","curved-slope","curved-tile","arch","dome","cone","wedge","bracket","clip","bar","hinge","connector","corner","beam","angle-beam","frame","pin","axle","bushing","gear","worm-gear","rack-gear","bevel-gear","turntable","differential","wheel","track","panel","window","door","leaf","flower","tree-trunk","rock","spring","transparent-shell","light-brick","grille"]);
 
 test('publishes exactly three core series and an independent creative lab', () => {
   assert.equal(SERIES.length, 3);
