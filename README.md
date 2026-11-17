@@ -2,6 +2,8 @@
 
 **Build it. Break it. Understand it.**
 
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [Roadmap](docs/roadmap.md)
+
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, explode builds into their constituent parts, and follow step-by-step construction sequences.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
