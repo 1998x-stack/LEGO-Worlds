@@ -41,9 +41,21 @@
 - [x] Generate parent-first part assembly dependencies and play reverse disassembly steps.
 - [x] Add an interactive 3D hierarchy inspector with joint sliders, motor demo, isolate and timeline.
 - [x] Ship three original presets with versioned joint recipe export/import.
-- [ ] Implement collision-aware assembly motion planning, multiple-parent joint loop closure and true dynamics.
+- [x] Introduce graph-based multiple connections and numerical simple closed-loop closure in V0.6.
+- [ ] Add mesh narrow-phase and continuous collision-aware assembly motion planning; true dynamics remain future work.
 
-## V0.6 — Asset pipeline
+## V0.6 — General constraint graphs and closed-loop motion
+- [x] Add editable rigid-body graph with fixed, hinge, shaft and prismatic slider joints.
+- [x] Use native connection anchor and virtual reference-port frames for arbitrary graph edges.
+- [x] Solve multi-connection closed loops using damped least-squares joint optimization.
+- [x] Reject invalid cycles, unsupported references, impossible loop closures and malformed imported graph files.
+- [x] Detect approximate collisions using oriented bounding boxes, excluding directly connected bodies.
+- [x] Add Four-Bar Linkage, Linear Carriage and Shaft Drive presets with live motor preview and diagnostics.
+- [x] Integrate graph editor, body/port selectors, import/export and undo/redo into GitHub Pages.
+- [ ] Add connector-specific physical fit, geometric mesh narrow-phase and CCD.
+- [ ] Add generalized loop-closure branch finding and dynamic torque/friction models.
+
+## V0.7 — Asset pipeline
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
