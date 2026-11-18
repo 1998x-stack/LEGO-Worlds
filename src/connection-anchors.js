@@ -309,7 +309,7 @@ export function getPartAnchors(spec = {}) {
       const [radius = 8, teeth = 16, thickness = 3.2] = size;
       add(ANCHOR_KINDS.GEAR_AXIS, 'neutral', [0, 0, 0], {
         normal: [0, 0, 1], axis: [0, 0, 1],
-        size: { diameterMm: radius * 0.26, depthMm: thickness + 1.1 }
+        size: { diameterMm: 3.8, depthMm: thickness + 0.8, keyed: true }
       });
       add(ANCHOR_KINDS.GEAR_MESH, 'neutral', [0, 0, 0], {
         normal: [0, 1, 0], axis: [0, 0, 1],
@@ -342,7 +342,7 @@ export function getPartAnchors(spec = {}) {
       const [radius = 8, teeth = 12, thickness = 4] = size;
       add(ANCHOR_KINDS.GEAR_AXIS, 'neutral', [0, 0, 0], {
         normal: [0, 0, 1], axis: [0, 0, 1],
-        size: { diameterMm: radius * 0.48, depthMm: thickness * 2 }
+        size: { diameterMm: 3.8, depthMm: thickness * 2, keyed: true }
       });
       add(ANCHOR_KINDS.GEAR_MESH, 'neutral', [0, 0, 0], {
         normal: [0, 1, 0], axis: [0, 0, 1],
@@ -381,7 +381,7 @@ export function getPartAnchors(spec = {}) {
       const [radius = 10, width = 7] = size;
       add(ANCHOR_KINDS.WHEEL_AXIS, 'neutral', [0, 0, 0], {
         normal: [0, 0, 1], axis: [0, 0, 1],
-        size: { diameterMm: radius * 0.44, wheelDiameterMm: radius * 2, widthMm: width },
+        size: { diameterMm: 3.8, wheelDiameterMm: radius * 2, widthMm: width, keyed: true },
         confidence: 'schematic'
       });
       break;
