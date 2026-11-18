@@ -128,8 +128,6 @@ export function mountBuilder(canvas, catalog, onChange = () => {}) {
     ghost = createPart(spec);
     ghost.traverse(node => {
       if (!node.isMesh) return;
-      if (Array.isArray(node.material)) node.material = node.material.map(mat => mat.clone());
-      else node.material = node.material.clone();
       const materials = Array.isArray(node.material) ? node.material : [node.material];
       materials.forEach(material => {
         material.transparent = true;
@@ -356,6 +354,7 @@ export function mountBuilder(canvas, catalog, onChange = () => {}) {
 
   function erase() {
     if (!selected || selected === 'foundation') return;
+    cancel();
     checkpoint();
     parts = parts.filter(part => part.instanceId !== selected);
     selected = null;
@@ -390,7 +389,10 @@ export function mountBuilder(canvas, catalog, onChange = () => {}) {
     checkpoint();
     parts = restored;
     selected = null;
-    seq = Math.max(seq, restored.length + 2);
+    seq = Math.max(seq, restored.length + 2, ...restored.map(part => {
+      const match = /^piece_(\d+)$/.exec(part.instanceId);
+      return match ? Number(match[1]) + 1 : 1;
+    }));
     status = '导入成功，所有连接关系已重新验证并计算。';
     redraw();
   }
@@ -415,9 +417,8 @@ export function mountBuilder(canvas, catalog, onChange = () => {}) {
   const onUp = event => onPointerUp(event);
   const onLostCapture = () => {
     if (dragging) {
-      if (dragging.kind === 'move' && pending) objects.get(pending.spec.instanceId).visible = true;
-      dragging = null;
-      controls.enabled = true;
+      status = '拖动已取消；未提交任何连接。';
+      cancel();
     }
   };
   canvas.addEventListener('pointerdown', onDown);
