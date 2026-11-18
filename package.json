@@ -8,9 +8,18 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs && node scripts/validate-skills.mjs",
+    "test:skills": "node scripts/validate-skills.mjs",
+    "agent:plan": "node scripts/agent-plan.mjs",
+    "agent:validate": "node scripts/agent-validate.mjs"
   },
-  "dependencies": { "three": "0.180.0" },
-  "devDependencies": { "vite": "7.1.10" },
-  "engines": { "node": ">=20.19.0" }
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "7.1.10"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
 }
