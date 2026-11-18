@@ -147,7 +147,7 @@ test('solver bounds untrusted closed-loop free DoFs to avoid expensive searches'
       id:'extra_'+i,
       kind:'hinge',
       a:{bodyId:'crank',portId:'technic-hole:'+(i%5)},
-      b:{bodyId:'coupler',portId:'technic-hole:'+Math.floor(i/5)},
+      b:{bodyId:'coupler',portId:'technic-hole:'+(Math.floor(i/5)+2)},
       value:0,limits:[-170,170],controlled:false
     });
   }
