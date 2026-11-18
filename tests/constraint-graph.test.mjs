@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { COMPONENTS } from '../src/catalog.js';
 import {
-  CONSTRAINT_GRAPH_VERSION, GRAPH_MAX_BODIES, GRAPH_MAX_JOINTS,
+  CONSTRAINT_GRAPH_VERSION, GRAPH_MAX_BODIES, GRAPH_MAX_JOINTS, GRAPH_MAX_FREE_JOINTS,
   GRAPH_PRESETS, GRAPH_CATALOG_IDS, graphPorts, portById,
   validateConstraintGraph, solveConstraintGraph, appendGraphBody,
   appendGraphJoint, removeGraphJoint, exportConstraintGraph,
@@ -138,6 +138,21 @@ test('input validation rejects missing refs, duplicate joints, bad limits and ex
     id:'extra'+overloaded.bodies.length,componentId:'beam-3',pos:[0,0,0],rotation:[0,0,0]
   });
   assert.throws(()=>validateConstraintGraph(overloaded,catalog),/capacity/);
+});
+
+test('solver bounds untrusted closed-loop free DoFs to avoid expensive searches', () => {
+  const graph=create('four-bar');
+  for (let i=0;i<GRAPH_MAX_FREE_JOINTS-2;i++) {
+    graph.joints.push({
+      id:'extra_'+i,
+      kind:'hinge',
+      a:{bodyId:'crank',portId:'technic-hole:'+(i%5)},
+      b:{bodyId:'coupler',portId:'technic-hole:'+Math.floor(i/5)},
+      value:0,limits:[-170,170],controlled:false
+    });
+  }
+  assert.equal(graph.joints.length,4+GRAPH_MAX_FREE_JOINTS-2);
+  assert.throws(()=>solveConstraintGraph(graph,catalog),/at most 12 free joint/);
 });
 
 test('versioned JSON import roundtrips graph while rejecting invalid and overconstrained data', () => {
