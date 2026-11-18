@@ -194,6 +194,11 @@ export function mountConstraintLab(canvas,catalog,onChange=()=>{}) {
     return transaction(()=>createConstraintPreset(id),
       '已载入：'+(GRAPH_PRESETS.find(p=>p.id===id)?.zh||id));
   }
+  function loadGraph(proposed) {
+    return transaction(() => importConstraintGraph({
+      schemaVersion:1,units:'mm',graph:proposed
+    },catalog),'已接收 Agent 生成的连接图；所有约束和端口已重新验证。');
+  }
   function addBody(componentId) {
     return transaction(()=>appendGraphBody(graph,componentId,catalog),
       '已创建独立零件；选择两个零件的接口以建立新的装配约束。');
@@ -337,7 +342,7 @@ export function mountConstraintLab(canvas,catalog,onChange=()=>{}) {
   }
   renderParts();emit();resize();frame=requestAnimationFrame(animate);
   return {
-    loadPreset,addBody,removeBody,addJoint,removeJoint,
+    loadPreset,loadGraph,addBody,removeBody,addJoint,removeJoint,
     toggleDriven,setJointValue,selectBody,toggleGizmos,toggleMotor,
     undo,redo,importJSON,resetCamera,
     getDocument:()=>exportConstraintGraph(graph,catalog),
