@@ -32,7 +32,8 @@ export function diagnoseGraph(graph,catalog=COMPONENTS,worldSpec=null) {
     });
     for(const collision of result.collisionPairs)diagnostics.push({
       code:'OBB_OVERLAP_WARNING',
-      message:collision.bodyA+' may overlap '+collision.bodyB+' (proxy only)'
+      message:collision.bodyA+' broad-phase OBB proxy overlap with '+collision.bodyB+
+        ' (coarse bounding-box proxy only; not a collision or fit result)'
     });
     return {valid:result.valid,diagnostics,solved:result};
   }catch(error){

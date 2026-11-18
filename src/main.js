@@ -980,7 +980,11 @@ document.querySelector('#agent-generate').addEventListener('click', () => {
       return;
     }
     const v = plan.verification;
-    const statusLabel = v.collisionPairs.length ? 'CONCEPT · REVIEW COLLISIONS' : 'KINEMATICS CHECKED';
+    const fitFail = v.nominalFit?.status === 'FAIL';
+    const proxyCount = v.collisionPairs.length;
+    const statusLabel = fitFail ? 'NEEDS REVISION · NOMINAL FIT'
+      : proxyCount ? 'KINEMATICS CHECKED · BROAD-PHASE PROXY WARN' : 'KINEMATICS CHECKED';
+    const fitNote = v.nominalFit?.evaluated ? ' Nominal coaxial fit: ' + v.nominalFit.status + '.' : '';
     agentResult.innerHTML =
       '<div class="agent-result-status"><span class="agent-result-tag">' + statusLabel +
       '</span><h3>' + safe(plan.planName) + '</h3><p>' +
@@ -988,7 +992,8 @@ document.querySelector('#agent-generate').addEventListener('click', () => {
       '<div class="agent-result-metrics"><div><strong>'+v.bodyCount+'</strong><span>PARTS</span></div>' +
       '<div><strong>'+v.jointCount+'</strong><span>JOINTS</span></div>' +
       '<div><strong>'+v.closureErrorMm.toFixed(3)+'</strong><span>ERROR MM</span></div>' +
-      '<div><strong>'+v.collisionPairs.length+'</strong><span>OBB WARNINGS</span></div></div>' +
+      '<div><strong>'+proxyCount+'</strong><span>OBB PROXY</span></div></div>' +
+      '<p class="agent-warning agent-proxy-note">OBB proxy = coarse broad-phase bounding-box overlap on non-adjacent parts; it is NOT a mesh-contact or fit result.' + fitNote + '</p>' +
       '<div class="agent-result-section"><strong>BOM · 组件清单</strong><div class="agent-bom">' +
       plan.bom.map(item=>'<div><b>'+safe(item.name)+'</b><small>'+safe(item.code||item.componentId)+'</small><span>×'+item.quantity+'</span></div>').join('')+
       '</div></div><div class="agent-result-section"><strong>JOINT GRAPH · 连接关系</strong><div class="agent-joints">' +
@@ -998,8 +1003,13 @@ document.querySelector('#agent-generate').addEventListener('click', () => {
       plan.assemblySteps.map(step=>'<div><span>'+String(step.step).padStart(2,'0')+'</span><b>' +
       safe(step.componentName||step.viaJointId)+'</b><small>'+safe(step.operation)+'</small></div>').join('')+
       '</div></div><div class="agent-result-section"><strong>VALIDATION GATES · 验证门槛</strong><div class="agent-checks">' +
-      v.checklist.map(check=>'<div><span class="'+(check.passed?'pass':'pending')+'">'+(check.passed?'✓':'!')+'</span>' +
-      '<b>'+safe(check.id)+'</b><small>'+safe(check.detail)+'</small></div>').join('')+
+      v.checklist.map(check=>{
+        const state=check.status||(check.passed?'PASS':'NOT_RUN');
+        const mark=state==='PASS'?'✓':state==='FAIL'?'✕':'○';
+        const cls=state==='PASS'?'pass':state==='FAIL'?'fail':'pending';
+        return '<div><span class="'+cls+'">'+mark+'</span>'+
+          '<b>'+safe(check.id)+'</b><small>'+safe(check.detail)+'</small></div>';
+      }).join('')+
       '</div></div><p class="agent-warning">'+v.warnings.map(safe).join(' · ')+'</p>';
   } catch(error) {
     latestAgentPlan = null;

@@ -1,0 +1,49 @@
+{
+  "capturedBy": "pi (playwright 1.65.1 driving local Google Chrome 158.0.8127.37, headless=new, SwiftShader)",
+  "target": "http://127.0.0.1:4317/LEGO-Worlds/ (vite preview of production build)",
+  "note": "Port 4173 was already occupied by an unrelated project on this machine; preview was run on 4317.",
+  "home": {
+    "title": "Brick Worlds — Build it. Break it. Understand it.",
+    "webgl": {
+      "ok": true,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0)), SwiftShader driver)"
+    },
+    "sections": ["top","series","builds","components","builder","mechanics","assembly","constraints","agent"],
+    "canvasCount": 5,
+    "viewerError": null
+  },
+  "afterFix": {
+    "familyChips": ["All","Bricks","Plates & Tiles","Slopes & Curves","Connectors & SNOT","Technic Structure","Gears & Transmission","Wheels & Motion","Architecture","Nature","Special"],
+    "consoleErrors": [],
+    "favicon": "data:image/svg+xml declared (no network icon request)"
+  },
+  "beforeFix": {
+    "familyChipsIncluded": "a stray 'Technic' chip (11 families + All)",
+    "consoleErrors": ["Failed to load resource: the server responded with a status of 404 (Not Found)  // favicon.ico"]
+  },
+  "agentFlow": {
+    "prompt": "搭建一辆六轮火星探测车",
+    "resultTag": "KINEMATICS CHECKED",
+    "parts": 10,
+    "joints": 9,
+    "closureErrorMm": 0.0,
+    "obbWarnings": 0,
+    "exportEnabled": true,
+    "openGraphEnabled": true
+  },
+  "bearingFlow": {
+    "prompt": "装配一个轴承衬套、转轴和轮组",
+    "parts": 4,
+    "joints": 3,
+    "closureErrorMm": 0.0,
+    "obbWarnings": 1,
+    "note": "single OBB warning is the documented simplified box-proxy false positive; mesh/path gates treat it separately"
+  },
+  "constraintPresetsLoaded": ["four-bar","linear-carriage","shaft-drive","bearing-wheel"],
+  "mobile": {
+    "viewport": "390x844",
+    "mobileMenuVisible": true,
+    "navToggles": true
+  },
+  "evidenceOnly": "DOM/console/network observations only; no screenshot is committed because this model cannot visually verify pixels."
+}

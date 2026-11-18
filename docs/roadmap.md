@@ -9,9 +9,9 @@
 - [x] Responsive, colour-themed GitHub Pages site and CI deployment workflow.
 
 ## V0.2 — Assembly depth
-- [x] Publish 100 coded, parameterized component definitions across ten families.
-- [x] Add 46 procedural geometry factory types and geometry regression coverage.
-- [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 100 catalogue components.
+- [x] Publish 101 coded, parameterized component definitions across ten families.
+- [x] Add 47 procedural geometry factory types and geometry regression coverage.
+- [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 101 catalogue components.
 - [x] Add optional 3D anchor overlays to the assembly inspector.
 - [x] Implement rigid stud/socket alignment, snap candidates and conservative brick-body collision checks.
 - [ ] Add animated assembly transitions and per-part isolation.
@@ -82,13 +82,13 @@
 - [ ] Full MCP protocol conformance suite, published cross-agent integration examples and optional externally hosted provider.
 - [ ] Building structural/FEM and aircraft aero/flight domain solver adapters.
 
-## V0.9 — Asset pipeline
+## V0.9a — Asset pipeline (planned)
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
 - [ ] Add an import contract for reviewed third-party assets with per-asset licensing evidence.
 
-## V0.9 — Nominal bearing and discrete insertion verification
+## V0.9b — Nominal bearing, discrete insertion and honest fit messaging (delivered)
 - [x] Add a separate hollow bearing sleeve component with native outer and bore anchor frames.
 - [x] Add reproducible beam/bearing/axle/wheel graph preset and Agent natural-language example.
 - [x] Independently calculate nominal radial clearance, axis alignment and actual shaft/through-bore engagement length.
@@ -96,9 +96,17 @@
 - [x] Add explicit installed-part-stage insertion checking with bounded discrete path samples and blocked-path diagnostics.
 - [x] Integrate opt-in mesh/path and nominal-fit evidence into trusted L2 validation, Agent CLI and MCP tools.
 - [x] Add working and deliberately blocked examples, regression tests and documented fidelity limits.
+- [x] Separate `nominal-axial-fit` (PASS/FAIL) from the coarse `broad-phase-proxy` (WARN) in Agent plans and the UI; grade unexecuted gates `NOT_RUN`; keep genuinely incompatible fits as `FAIL`.
+- [x] Classify a hole-to-hole hinge (no male/female shaft pair) as `NOT_APPLICABLE` instead of a misleading `FAIL`.
 - [ ] Replace discrete-sample paths with continuous swept-volume collision certification.
 - [ ] Mesh watertightness/CSG solidity, full geometric tolerances and physical press-fit verification.
 - [ ] Rocker-bogie and real multi-bearing drive train with torque, friction and mass properties.
+
+## V0.9c — Reproducible build and bounded LDraw import (delivered)
+- [x] Commit an npm lockfile and install in CI with `npm ci` for reproducible builds.
+- [x] Bounded LDraw `.ldr`/`.mpd` import path with self-authored fixtures, hard budgets and an RFC.
+- [ ] Studio / LDraw export and a measured round-trip diff against a licensed fixture (currently `NOT_RUN`).
+- [ ] Replace the six-part LDraw map with a provenance-audited element-ID mapping layer.
 
 ## V1 — Open construction platform
 - [ ] Searchable, versioned component database.

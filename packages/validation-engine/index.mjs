@@ -151,23 +151,25 @@ export function checkL2(worldSpec,geometry,assembly,catalog=COMPONENTS,options={
           iterations:solved.iterations,checkedConfigurations:1}),
       result('L2.collision-proxy',solved.collisionPairs.length?'WARN':'PASS',
         solved.collisionPairs.length?'OBB_OVERLAP_WARNING':'OBB_NO_OVERLAP_DETECTED',
-        'Oriented-box check: '+solved.collisionPairs.length+
-          ' nonadjacent overlap pairs; directly connected components excluded',
-        {pairs:solved.collisionPairs.length}),
+        'Broad-phase oriented-box proxy: '+solved.collisionPairs.length+
+          ' nonadjacent box overlap(s). This is a coarse shortlist proxy, not a mesh-contact, solid-interference or fit conclusion; directly connected components excluded',
+        {pairs:solved.collisionPairs.length,proxyKind:'broad-phase-obb',authoritative:false}),
       result('L2.motion-envelope','NOT_RUN','SWEPT_COLLISION_NOT_IMPLEMENTED',
         'Only initial configuration checked; no continuous collision/path clearance'),
       result('L2.physics','NOT_RUN','DYNAMICS_NOT_IMPLEMENTED',
         'No mass, force, motor torque, bearing friction, structural or aero validation')
     ];
     const fits=reviewNominalAxialInterfaces(a.graph,solved.poses,catalog);
-    if(fits.length) {
-      const blockers=fits.filter(f=>f.status==='FAIL');
+    const evaluatedFits=fits.filter(f=>f.status==='PASS'||f.status==='FAIL');
+    if(evaluatedFits.length) {
+      const blockers=evaluatedFits.filter(f=>f.status==='FAIL');
       checks.push(result('L2.axial-fit',blockers.length?'FAIL':'PASS',
         blockers.length?'NOMINAL_INTERFACE_INTERFERENCE':'NOMINAL_COAXIAL_FITS_CHECKED',
         blockers.length ?
           blockers.map(f=>f.jointId+' '+f.code).join('; ') :
-          fits.length+' nominal shaft/bearing/bore interfaces meet radial and axial bounds',
-        {interfaces:fits,checkedCount:fits.length,failedCount:blockers.length}));
+          evaluatedFits.length+' nominal shaft/bearing/bore interfaces meet radial and axial bounds',
+        {interfaces:fits,checkedCount:evaluatedFits.length,failedCount:blockers.length,
+         notApplicable:fits.length-evaluatedFits.length}));
       checks.push(result('L2.physical-fit','NOT_RUN','MEASURED_FIT_NOT_VERIFIED',
         'Nominal radial clearance does not establish measured tolerances, fit under load or manufacturing strength'));
     } else {

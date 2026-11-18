@@ -297,7 +297,11 @@ export function reviewNominalAxialInterfaces(graph,poses,catalog=COMPONENTS){
     const female=a.role==='female'?a:b.role==='female'?b:null;
     const male=a.role==='male'?a:b.role==='male'?b:null;
     if(!female||!male){
-      checks.push({jointId:joint.id,status:'FAIL',code:'INTERFACE_ROLE_MISMATCH'});continue;
+      // No declared male-shaft + female-bore pair (e.g. a hole-to-hole hinge or a
+      // shaft-to-shaft joint). There is no nominal diametric fit to evaluate, so
+      // this is NOT_APPLICABLE rather than a pass or an interference failure.
+      checks.push({jointId:joint.id,status:'NOT_APPLICABLE',code:'INTERFACE_ROLE_NOT_APPLICABLE',
+        detail:'no male-shaft/female-bore pair declared for this joint'});continue;
     }
     const femalePort=a.role==='female'?pa:pb;
     const malePort=a.role==='male'?pa:pb;

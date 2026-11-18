@@ -1,0 +1,43 @@
+{
+  "run": "2026-11-18 phase 5 product QA",
+  "environment": {
+    "os": "macOS Darwin 27.3.0 arm64",
+    "node": "v26.13.1",
+    "npm": "11.20.0",
+    "browser": "Google Chrome 158.0.8127.37 headless (SwiftShader)",
+    "preview": "vite preview http://127.0.0.1:4322/LEGO-Worlds/"
+  },
+  "cliAndAgent": [
+    { "scenario": "mars-rover", "command": "node scripts/agent-plan.mjs \"搭建一辆六轮火星探测车\"", "result": "status kinematic-validated-concept; 10 parts / 9 joints; nominal-axial-fit NOT_APPLICABLE" },
+    { "scenario": "bearing-wheel", "command": "node scripts/agent-plan.mjs \"装配一个轴承衬套、转轴和轮组\"", "result": "status kinematic-with-proxy-warnings; nominal-axial-fit PASS; 1 OBB proxy pair; authoritative=false" },
+    { "scenario": "four-bar", "command": "node scripts/agent-plan.mjs \"设计一个能运动的四连杆闭环机构\"", "result": "status kinematic-validated-concept; nominal-axial-fit NOT_APPLICABLE; 1 cycle" },
+    { "scenario": "building-l0-only", "command": "node adapters/cli/world.mjs pipeline --prompt \"设计一栋10层建筑\"", "result": "status unsupported; artifacts WorldSpec,ValidationReport" },
+    { "scenario": "blocked-insertion", "command": "node scripts/inspect-bearing-wheel.mjs --blocked", "result": "exit 2; status needs_revision; diagnostic ASSEMBLY_PATH_BLOCKED" },
+    { "scenario": "invalid-connector", "command": "validateConstraintGraph with portId=missing_port", "result": "rejected: Unknown port missing_port on support" }
+  ],
+  "browser": {
+    "buildCards": 13,
+    "labs": [
+      { "id": "builder", "canvasVisible": true },
+      { "id": "mechanics", "canvasVisible": true },
+      { "id": "assembly", "canvasVisible": true },
+      { "id": "constraints", "canvasVisible": true }
+    ],
+    "agentBearingTag": "KINEMATICS CHECKED · BROAD-PHASE PROXY WARN",
+    "agentBearingProxyNote": true,
+    "agentMetricLabel": "OBB PROXY",
+    "agentNominalFitLine": "Nominal coaxial fit: PASS.",
+    "agentGates": ["✓schema","✓kinematics","✓nominal-axial-fit","○broad-phase-proxy","○mesh-contact","○insertion-path","○manufacturing-fit","○dynamics"],
+    "agentExportDownload": "brick-worlds-agent-plan.json",
+    "constraintWorkspaceOpened": true,
+    "consoleErrors": []
+  },
+  "notRun": [
+    "Studio/LDraw round-trip export and diff (no export; no licensed fixture)",
+    "measured fit / tolerances / press-fit",
+    "continuous (CCD) swept collision",
+    "dynamics, torque, friction, mass properties",
+    "structural / energy / code solvers",
+    "remote GitHub Pages deploy verification (PR is not merged)"
+  ]
+}

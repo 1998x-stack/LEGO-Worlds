@@ -113,13 +113,59 @@ test('untrusted generated plan is revalidated with derived BOM and steps', () =>
   assert.throws(()=>validateGeneratedPlan(obsolete,COMPONENTS),/Invalid agent plan/);
 });
 
-test('verification has separate geometry, closure, proxy collision and physical-safety gates', () => {
+test('verification separates closure, nominal fit, broad-phase proxy and NOT_RUN gates', () => {
   const result=validateAgentGraph(createSixWheelRoverGraph(),COMPONENTS);
   assert.deepEqual(result.checklist.map(c=>c.id),[
-    'schema','kinematics','collision-proxy','manufacturing-fit','dynamics'
+    'schema','kinematics','nominal-axial-fit','broad-phase-proxy',
+    'mesh-contact','insertion-path','manufacturing-fit','dynamics'
   ]);
-  assert.ok(result.checklist.slice(0,3).every(c=>c.passed));
-  assert.ok(result.checklist.slice(3).every(c=>!c.passed));
+  const byId=id=>result.checklist.find(c=>c.id===id);
+  assert.equal(byId('schema').status,'PASS');
+  assert.equal(byId('kinematics').status,'PASS');
+  // the rover has no declared coaxial shaft/bore fits -> NOT_APPLICABLE, never a PASS claim
+  assert.equal(byId('nominal-axial-fit').status,'NOT_APPLICABLE');
+  assert.equal(byId('broad-phase-proxy').status,'PASS');
+  // unexecuted engineering gates must stay NOT_RUN
+  for(const id of ['mesh-contact','insertion-path','manufacturing-fit','dynamics'])
+    assert.equal(byId(id).status,'NOT_RUN',id);
+  assert.equal(result.collisionSemantics.authoritative,false);
+  assert.equal(result.collisionSemantics.kind,'broad-phase-obb-proxy');
+});
+
+test('valid bearing nominal fit is reported as PASS, and the OBB proxy is not a collision', () => {
+  const plan=createAssemblyPlan('装配一个轴承衬套、转轴和轮组',COMPONENTS);
+  const v=plan.verification;
+  assert.equal(v.nominalFit.status,'PASS');
+  assert.equal(v.nominalFit.failures.length,0);
+  assert.ok(v.nominalFit.interfaces.filter(f=>f.status==='PASS').length>=3);
+  // an OBB proxy pair exists, but it is explicitly non-authoritative and never called a collision
+  assert.ok(v.collisionPairs.length>=1);
+  assert.equal(v.collisionSemantics.authoritative,false);
+  assert.equal(plan.capability.collisionAuthoritative,false);
+  assert.equal(plan.status,'kinematic-with-proxy-warnings');
+  const proxy=v.checklist.find(c=>c.id==='broad-phase-proxy');
+  assert.equal(proxy.status,'WARN');
+  assert.match(proxy.detail,/broad-phase|coarse/i);
+  assert.doesNotMatch(proxy.detail,/interference\b/i);
+  assert.ok(v.warnings.some(w=>/broad-phase OBB proxy/i.test(w)));
+});
+
+test('an oversized sleeve produces a nominal-fit FAIL that is not hidden', () => {
+  const badCatalog=COMPONENTS.map(c=>c.id==='bearing-sleeve-8mm'?{...c,size:[5.1,3.9,7.6]}:c);
+  const plan=createAssemblyPlan('装配一个轴承衬套、转轴和轮组',badCatalog);
+  assert.equal(plan.verification.nominalFit.status,'FAIL');
+  assert.ok(plan.verification.nominalFit.failures.length>=1);
+  assert.equal(plan.status,'nominal-fit-interference');
+  assert.ok(plan.verification.warnings.some(w=>/Nominal coaxial fit interference/.test(w)));
+  assert.equal(plan.verification.checklist.find(c=>c.id==='nominal-axial-fit').status,'FAIL');
+});
+
+test('a hole-to-hole hinge linkage declares no shaft fit (NOT_APPLICABLE, never FAIL)', () => {
+  const plan=createAssemblyPlan('设计一个能运动的四连杆闭环机构',COMPONENTS);
+  const gate=plan.verification.checklist.find(c=>c.id==='nominal-axial-fit');
+  assert.equal(gate.status,'NOT_APPLICABLE');
+  assert.equal(plan.verification.nominalFit.failures.length,0);
+  assert.ok(!plan.status.includes('interference'));
 });
 
 test('future model proposal boundary ignores fabricated certification and revalidates graph', () => {
