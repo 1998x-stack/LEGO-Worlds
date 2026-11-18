@@ -11,7 +11,8 @@ const fileForKind = Object.freeze({
   WorldSpec:'world-spec.schema.json',
   GeometryManifest:'geometry-manifest.schema.json',
   AssemblyGraph:'assembly-graph.schema.json',
-  ValidationReport:'validation-report.schema.json'
+  ValidationReport:'validation-report.schema.json',
+  RepairTrace:'repair-trace.schema.json'
 });
 const ajv = new Ajv2020({ allErrors: true, strict: true, allowUnionTypes: true });
 const compiled = new Map();
