@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { COMPONENTS } from '../src/catalog.js';
+import { compileWorldSpec, buildGeometryAndGraph } from '../packages/world-builder/index.mjs';
+import { validateWorldArtifacts } from '../packages/validation-engine/index.mjs';
+import { runWorldTool } from '../packages/world-runner/index.mjs';
 import { createPart } from '../src/brick-system.js';
 import { getPartAnchors } from '../src/connection-anchors.js';
 import { createConstraintPreset, solveConstraintGraph } from '../src/constraint-graph.js';
@@ -106,4 +109,52 @@ test('path scanner rejects unbounded or invalid body references',()=>{
     assert.throws(()=>inspectInsertionPath(g,solved.poses,catalog,request),
       /CLEARANCE_INPUT_INVALID/);
   }
+});
+
+
+test('bearing-wheel L1/L2 pipeline records independent nominal-fit and opt-in mesh evidence',()=>{
+  const parsed=compileWorldSpec('装配一个轴承衬套、转轴和轮组');
+  assert.equal(parsed.request.intent,'bearing-wheel');
+  const built=buildGeometryAndGraph(parsed.artifact,parsed.proposal);
+  assert.equal(built.geometry.content.components.length,4);
+  assert.equal(built.assembly.content.graph.joints.length,3);
+  const report=validateWorldArtifacts({
+    worldSpec:parsed.artifact,geometry:built.geometry,assembly:built.assembly,
+    targetLevel:'L2',clearance:{mesh:true,path:{
+      movingBodyId:'axle',installedBodyIds:['support','sleeve'],
+      fromOffsetMm:[0,0,35],samples:8
+    }}
+  });
+  assert.equal(report.status,'ok',JSON.stringify(report.checks.filter(c=>c.status==='FAIL')));
+  assert.ok(report.checks.some(c=>c.code==='NOMINAL_COAXIAL_FITS_CHECKED'&&c.status==='PASS'));
+  assert.ok(report.checks.some(c=>c.code==='MESH_SURFACE_SAMPLE_CLEAR'&&c.status==='PASS'));
+  assert.ok(report.checks.some(c=>c.code==='SAMPLED_PATH_CLEAR'&&c.status==='WARN'));
+  assert.ok(report.checks.some(c=>c.code==='MEASURED_FIT_NOT_VERIFIED'&&c.status==='NOT_RUN'));
+  assert.ok(report.checks.some(c=>c.code==='DYNAMICS_NOT_IMPLEMENTED'&&c.status==='NOT_RUN'));
+  assert.ok(report.artifact.content.checks.every(c=>c.gate.startsWith('L')));
+});
+
+test('independent L2 gate rejects blocked insertion even when graph kinematics close',()=>{
+  const parsed=compileWorldSpec('装配一个轴承衬套、转轴和轮组');
+  const built=buildGeometryAndGraph(parsed.artifact,parsed.proposal);
+  const reviewed=validateWorldArtifacts({
+    worldSpec:parsed.artifact,geometry:built.geometry,assembly:built.assembly,
+    targetLevel:'L2',clearance:{path:{
+      movingBodyId:'axle',installedBodyIds:['support','sleeve'],
+      fromOffsetMm:[4.5,0,35],samples:12
+    }}
+  });
+  assert.equal(reviewed.status,'needs_revision');
+  assert.ok(reviewed.checks.some(c=>c.code==='ASSEMBLY_PATH_BLOCKED'&&c.status==='FAIL'));
+  const runner=runWorldTool({
+    protocolVersion:'world-tools/v1',operation:'validate',
+    capability:'world.kinematics.validate',
+    input:{worldSpec:parsed.artifact,geometry:built.geometry,assembly:built.assembly},
+    options:{targetLevel:'L2',clearance:{path:{
+      movingBodyId:'axle',installedBodyIds:['support','sleeve'],
+      fromOffsetMm:[4.5,0,35],samples:12
+    }}}
+  });
+  assert.equal(runner.status,'needs_revision');
+  assert.ok(runner.diagnostics.some(d=>d.code==='ASSEMBLY_PATH_BLOCKED'));
 });

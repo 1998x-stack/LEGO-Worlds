@@ -14,6 +14,7 @@ test('natural language intent routing handles Chinese/English rover and exact si
   assert.equal(interpretBuildRequest('设计一个四连杆机构').intent,'four-bar');
   assert.equal(interpretBuildRequest('移动滑轨平台').intent,'linear-carriage');
   assert.equal(interpretBuildRequest('轮轴转动装配').intent,'shaft-drive');
+  assert.equal(interpretBuildRequest('轴承衬套与轮组').intent,'bearing-wheel');
   assert.equal(interpretBuildRequest('设计一栋建筑').mode,'requirements-only');
   assert.equal(interpretBuildRequest('Build a passenger aircraft').mode,'requirements-only');
   assert.throws(()=>interpretBuildRequest(''),/1–600/);

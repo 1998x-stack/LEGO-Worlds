@@ -11,13 +11,14 @@ export const AGENT_GENERATOR = 'deterministic-local-planner';
 export const AGENT_MAX_PROMPT_LENGTH = 600;
 
 const numberWords = Object.freeze({ '六':6,'6':6,'四':4,'4':4,'八':8,'8':8,'两':2,'二':2,'2':2 });
-const intentIds = Object.freeze(['mars-rover','four-bar','linear-carriage','shaft-drive']);
+const intentIds = Object.freeze(['mars-rover','four-bar','linear-carriage','shaft-drive','bearing-wheel']);
 
 export const AGENT_EXAMPLES = Object.freeze([
   { prompt:'搭建一辆六轮火星探测车', intent:'mars-rover' },
   { prompt:'设计一个能运动的四连杆闭环机构', intent:'four-bar' },
   { prompt:'制作一个带滑轨的线性移动平台', intent:'linear-carriage' },
-  { prompt:'设计轮轴驱动的机械装配', intent:'shaft-drive' }
+  { prompt:'设计轮轴驱动的机械装配', intent:'shaft-drive' },
+  { prompt:'装配一个轴承衬套、转轴和轮组', intent:'bearing-wheel' }
 ]);
 
 function safePrompt(raw) {
@@ -50,6 +51,9 @@ export function interpretBuildRequest(raw) {
     return {intent:'four-bar',domain:'mechanisms',prompt,constraints:{loop:true},mode:'template-grounded'};
   if (/滑轨|滑块|直线移动|linear.slider|linear.carriage|sliding.platform|slide rail/i.test(normalized))
     return {intent:'linear-carriage',domain:'mechanisms',prompt,constraints:{joint:'prismatic'},mode:'template-grounded'};
+  if (/轴承|衬套|sleeve.bearing|bearing.wheel/i.test(normalized))
+    return {intent:'bearing-wheel',domain:'mechanisms',prompt,
+      constraints:{bearing:'nominal-sleeve',shaft:'coaxial'},mode:'template-grounded'};
   if (/转轴|轮轴|shaft.drive|rotating.axle|wheel.axle|轮组传动/i.test(normalized))
     return {intent:'shaft-drive',domain:'mechanisms',prompt,constraints:{joint:'revolute'},mode:'template-grounded'};
   if (/(飞机|客机|飞行器|aircraft|airplane|aeroplane|plane\b|flight)/i.test(normalized))
