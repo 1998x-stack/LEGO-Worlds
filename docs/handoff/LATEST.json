@@ -5,8 +5,8 @@
   "agent": "pi",
   "branch": "agent/local-validation-20261118",
   "baseSha": "08c1141c8712132e0a05520d5ca246430f09b581",
-  "headSha": "92345cf7a82f9062abccceddd5510fd677ddfd6b",
-  "remoteHeadSha": "e207ac57d33fadfb6ef2379a42089459fc7961d6",
+  "headSha": "3ee9d973b8d914c439a01348d78270883a03f33c",
+  "remoteHeadSha": "3ee9d973b8d914c439a01348d78270883a03f33c",
   "environment": {
     "os": "macOS Darwin 27.3.0 arm64",
     "node": "v26.13.1",
@@ -72,9 +72,9 @@
     "Expand the LDraw/element-ID mapping with provenance and publish a measured coverage number"
   ],
   "github": {
-    "commitUrl": "https://github.com/1998x-stack/LEGO-Worlds/commit/e207ac57d33fadfb6ef2379a42089459fc7961d6",
+    "commitUrl": "https://github.com/1998x-stack/LEGO-Worlds/commit/3ee9d973b8d914c439a01348d78270883a03f33c",
     "prUrl": "https://github.com/1998x-stack/LEGO-Worlds/pull/1",
-    "ciUrl": "https://github.com/1998x-stack/LEGO-Worlds/actions/runs/44253556117",
+    "ciUrl": "https://github.com/1998x-stack/LEGO-Worlds/actions/runs/44254498153",
     "pagesVerified": false
   }
 }

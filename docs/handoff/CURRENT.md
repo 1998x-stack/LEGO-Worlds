@@ -10,7 +10,7 @@
 | Project | `1998x-stack/LEGO-Worlds` (brand: **Brick Worlds**) |
 | Base SHA | `08c1141c8712132e0a05520d5ca246430f09b581` (== `origin/main`) |
 | Branch | `agent/local-validation-20261118` |
-| Work HEAD (last engineering commit) | `92345cf7a82f9062abccceddd5510fd677ddfd6b` |
+|  Work HEAD (verified, CI-green) | `3ee9d973b8d914c439a01348d78270883a03f33c` |
 | PR | **#1 OPEN** → <https://github.com/1998x-stack/LEGO-Worlds/pull/1> (mergeable) |
 | CI | `Verify and deploy GitHub Pages` → **verify success**; deploy skipped on PR |
 | Executed | 2026-11-18 |
