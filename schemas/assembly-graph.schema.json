@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/assembly-graph.schema.json",
+  "title": "AssemblyGraph/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "units",
+    "graph",
+    "sourceWorldSpecHash",
+    "sourceGeometryHash"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "assembly-graph/v1"
+    },
+    "kind": {
+      "const": "AssemblyGraph"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
+    "units": {
+      "const": "mm"
+    },
+    "sourceWorldSpecHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "sourceGeometryHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "graph": {
+      "type": "object",
+      "required": [
+        "id",
+        "bodies",
+        "joints"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "zh": {
+          "type": "string"
+        },
+        "bodies": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "componentId",
+              "pos",
+              "rotation"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "componentId": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "pos": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "rotation": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "grounded": {
+                "type": "boolean"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "joints": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "a",
+              "b",
+              "value",
+              "limits",
+              "controlled"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "kind": {
+                "enum": [
+                  "fixed",
+                  "hinge",
+                  "shaft",
+                  "slider"
+                ]
+              },
+              "a": {
+                "type": "object",
+                "required": [
+                  "bodyId",
+                  "portId"
+                ],
+                "properties": {
+                  "bodyId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "portId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "b": {
+                "type": "object",
+                "required": [
+                  "bodyId",
+                  "portId"
+                ],
+                "properties": {
+                  "bodyId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "portId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "value": {
+                "type": "number"
+              },
+              "limits": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "controlled": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

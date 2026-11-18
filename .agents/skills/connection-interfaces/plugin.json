@@ -1,0 +1,52 @@
+{
+  "manifestVersion": "world-plugin/v1",
+  "id": "connection-interfaces",
+  "version": "1.0.0",
+  "owner": "first-party",
+  "skillPath": ".agents/skills/connection-interfaces/SKILL.md",
+  "domain": "connection",
+  "stage": "L0",
+  "execution": {
+    "mode": "guidance-only",
+    "adapter": null
+  },
+  "capabilities": [
+    {
+      "id": "world.anchors.design",
+      "operation": "build",
+      "requiresLevel": "L1",
+      "producesKind": "GeometryManifest",
+      "readiness": "guidance-only",
+      "inputSchema": "schemas/tool-request.schema.json",
+      "outputSchema": "schemas/tool-result.schema.json"
+    }
+  ],
+  "dependsOn": [
+    "parametric-component-modeling"
+  ],
+  "permissions": {
+    "network": false,
+    "subprocess": false,
+    "filesystem": {
+      "read": [
+        "catalog",
+        "artifacts"
+      ],
+      "write": []
+    }
+  },
+  "validationGates": {
+    "L0": [
+      "requirements-schema"
+    ],
+    "L1": [
+      "catalog-geometry",
+      "anchor-integrity"
+    ],
+    "L2": [
+      "constraint-graph",
+      "kinematic-closure",
+      "obb-warning"
+    ]
+  }
+}

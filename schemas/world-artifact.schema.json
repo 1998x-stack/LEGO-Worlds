@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/world-artifact.schema.json",
+  "title": "WorldArtifact/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifactSchema",
+    "id",
+    "kind",
+    "level",
+    "contentHash",
+    "content",
+    "sourceArtifacts",
+    "provenance"
+  ],
+  "properties": {
+    "artifactSchema": {
+      "const": "world-artifact/v1"
+    },
+    "id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "WorldSpec",
+        "GeometryManifest",
+        "AssemblyGraph",
+        "ValidationReport",
+        "RepairTrace",
+        "ArtifactBundle"
+      ]
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2"
+      ]
+    },
+    "targetLevel": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2"
+      ]
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "content": {
+      "type": "object"
+    },
+    "sourceArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "capability",
+        "pluginVersion"
+      ],
+      "properties": {
+        "capability": {
+          "type": "string"
+        },
+        "pluginVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

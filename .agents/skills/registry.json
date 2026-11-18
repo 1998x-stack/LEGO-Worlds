@@ -1,6 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "source": ".agents/skills",
+  "contractVersion": "world-tools/v1",
   "skills": [
     {
       "id": "world-systems-architect",
@@ -12,6 +13,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/world-systems-architect/plugin.json",
+      "capabilities": [
+        "world.requirements.plan"
       ]
     },
     {
@@ -24,6 +30,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/parametric-component-modeling/plugin.json",
+      "capabilities": [
+        "world.geometry.build"
       ]
     },
     {
@@ -36,6 +47,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/connection-interfaces/plugin.json",
+      "capabilities": [
+        "world.anchors.design"
       ]
     },
     {
@@ -48,6 +64,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/mechanical-constraint-solving/plugin.json",
+      "capabilities": [
+        "world.kinematics.validate"
       ]
     },
     {
@@ -60,6 +81,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/physics-validation/plugin.json",
+      "capabilities": [
+        "world.physics.review"
       ]
     },
     {
@@ -72,6 +98,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/building-world-planning/plugin.json",
+      "capabilities": [
+        "building.requirements.plan"
       ]
     },
     {
@@ -84,6 +115,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/aerospace-world-planning/plugin.json",
+      "capabilities": [
+        "aircraft.requirements.plan"
       ]
     },
     {
@@ -96,6 +132,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/mobile-robotics-worlds/plugin.json",
+      "capabilities": [
+        "robotics.rover.plan"
       ]
     },
     {
@@ -108,6 +149,12 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/ai-assembly-planning/plugin.json",
+      "capabilities": [
+        "world.assembly.plan",
+        "world.assembly.repair"
       ]
     },
     {
@@ -120,6 +167,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/assembly-sequence-animation/plugin.json",
+      "capabilities": [
+        "world.assembly.animation"
       ]
     },
     {
@@ -132,6 +184,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/asset-quality-release/plugin.json",
+      "capabilities": [
+        "world.artifact.export"
       ]
     },
     {
@@ -144,6 +201,11 @@
         "references/domain.md",
         "scripts/check.mjs",
         "assets/example.json"
+      ],
+      "version": "1.0.0",
+      "manifest": ".agents/skills/skill-system-governance/plugin.json",
+      "capabilities": [
+        "world.skills.audit"
       ]
     }
   ]

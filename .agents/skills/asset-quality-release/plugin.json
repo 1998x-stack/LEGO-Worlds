@@ -1,0 +1,55 @@
+{
+  "manifestVersion": "world-plugin/v1",
+  "id": "asset-quality-release",
+  "version": "1.0.0",
+  "owner": "first-party",
+  "skillPath": ".agents/skills/asset-quality-release/SKILL.md",
+  "domain": "asset",
+  "stage": "L0",
+  "execution": {
+    "mode": "builtin",
+    "adapter": "world-runner-builtin-v1"
+  },
+  "capabilities": [
+    {
+      "id": "world.artifact.export",
+      "operation": "export",
+      "requiresLevel": "L0",
+      "producesKind": "ArtifactBundle",
+      "readiness": "available",
+      "inputSchema": "schemas/tool-request.schema.json",
+      "outputSchema": "schemas/tool-result.schema.json"
+    }
+  ],
+  "dependsOn": [
+    "parametric-component-modeling",
+    "mechanical-constraint-solving"
+  ],
+  "permissions": {
+    "network": false,
+    "subprocess": false,
+    "filesystem": {
+      "read": [
+        "catalog",
+        "artifacts"
+      ],
+      "write": [
+        "artifact-workspace"
+      ]
+    }
+  },
+  "validationGates": {
+    "L0": [
+      "requirements-schema"
+    ],
+    "L1": [
+      "catalog-geometry",
+      "anchor-integrity"
+    ],
+    "L2": [
+      "constraint-graph",
+      "kinematic-closure",
+      "obb-warning"
+    ]
+  }
+}

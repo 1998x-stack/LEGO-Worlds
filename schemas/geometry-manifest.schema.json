@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/geometry-manifest.schema.json",
+  "title": "GeometryManifest/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "units",
+    "coordinateFrame",
+    "components",
+    "sourceWorldSpecHash",
+    "fidelity"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "geometry-manifest/v1"
+    },
+    "kind": {
+      "const": "GeometryManifest"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
+    "units": {
+      "const": "mm"
+    },
+    "coordinateFrame": {
+      "const": "right-handed-y-up"
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 96,
+      "items": {
+        "type": "object",
+        "required": [
+          "instanceId",
+          "catalogId",
+          "geometryRef",
+          "pose",
+          "boundsMm",
+          "anchorIds"
+        ],
+        "properties": {
+          "instanceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "catalogId": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "geometryRef": {
+            "type": "string",
+            "pattern": "^catalog://"
+          },
+          "pose": {
+            "type": "object",
+            "required": [
+              "pos",
+              "rotation"
+            ],
+            "properties": {
+              "pos": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "rotation": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "boundsMm": {
+            "type": "object",
+            "required": [
+              "min",
+              "max"
+            ],
+            "properties": {
+              "min": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "max": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "anchorIds": {
+            "type": "array",
+            "maxItems": 128,
+            "items": {
+              "type": "string"
+            }
+          },
+          "fidelity": {
+            "const": "procedural-reference"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sourceWorldSpecHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "fidelity": {
+      "const": "procedural-reference"
+    }
+  }
+}

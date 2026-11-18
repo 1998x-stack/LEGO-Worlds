@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/tool-result.schema.json",
+  "title": "ToolResult/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "status",
+    "capability",
+    "artifacts",
+    "diagnostics"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "world-tools/v1"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "needs_revision",
+        "unsupported",
+        "failed"
+      ]
+    },
+    "capability": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "data": {
+      "type": "object"
+    }
+  }
+}

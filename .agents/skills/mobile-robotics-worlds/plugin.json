@@ -1,0 +1,53 @@
+{
+  "manifestVersion": "world-plugin/v1",
+  "id": "mobile-robotics-worlds",
+  "version": "1.0.0",
+  "owner": "first-party",
+  "skillPath": ".agents/skills/mobile-robotics-worlds/SKILL.md",
+  "domain": "mobile",
+  "stage": "L0",
+  "execution": {
+    "mode": "builtin",
+    "adapter": "world-runner-builtin-v1"
+  },
+  "capabilities": [
+    {
+      "id": "robotics.rover.plan",
+      "operation": "plan",
+      "requiresLevel": "L0",
+      "producesKind": "WorldSpec",
+      "readiness": "available",
+      "inputSchema": "schemas/tool-request.schema.json",
+      "outputSchema": "schemas/tool-result.schema.json"
+    }
+  ],
+  "dependsOn": [
+    "parametric-component-modeling",
+    "connection-interfaces"
+  ],
+  "permissions": {
+    "network": false,
+    "subprocess": false,
+    "filesystem": {
+      "read": [
+        "catalog",
+        "artifacts"
+      ],
+      "write": []
+    }
+  },
+  "validationGates": {
+    "L0": [
+      "requirements-schema"
+    ],
+    "L1": [
+      "catalog-geometry",
+      "anchor-integrity"
+    ],
+    "L2": [
+      "constraint-graph",
+      "kinematic-closure",
+      "obb-warning"
+    ]
+  }
+}

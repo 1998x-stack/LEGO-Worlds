@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/validation-report.schema.json",
+  "title": "ValidationReport/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "targetLevel",
+    "subjectHashes",
+    "checks",
+    "classification",
+    "validator"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "validation-report/v1"
+    },
+    "kind": {
+      "const": "ValidationReport"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
+    "targetLevel": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2"
+      ]
+    },
+    "subjectHashes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "required": [
+          "gate",
+          "status",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "gate": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL",
+              "NOT_RUN",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "measurements": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "classification": {
+      "enum": [
+        "requirements-only",
+        "geometry-preview",
+        "kinematic-concept",
+        "needs-revision"
+      ]
+    },
+    "validator": {
+      "type": "string"
+    }
+  }
+}

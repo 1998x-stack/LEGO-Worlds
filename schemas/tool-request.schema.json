@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/tool-request.schema.json",
+  "title": "ToolRequest/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "operation",
+    "capability",
+    "input"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "world-tools/v1"
+    },
+    "runId": {
+      "type": "string",
+      "maxLength": 96
+    },
+    "operation": {
+      "enum": [
+        "plan",
+        "build",
+        "validate",
+        "repair",
+        "export",
+        "pipeline"
+      ]
+    },
+    "capability": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "input": {
+      "type": "object"
+    },
+    "options": {
+      "type": "object"
+    }
+  }
+}
