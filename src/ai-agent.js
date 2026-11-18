@@ -5,6 +5,7 @@ import {
   solveConstraintGraph,
   validateConstraintGraph
 } from './constraint-graph.js';
+import { reviewNominalAxialInterfaces } from '../packages/clearance-engine/index.mjs';
 
 export const AGENT_PLAN_SCHEMA_VERSION = 1;
 export const AGENT_GENERATOR = 'deterministic-local-planner';
@@ -180,26 +181,64 @@ function orderedAssemblySteps(graph,catalog) {
 export function validateAgentGraph(graph,catalog,options={}) {
   validateConstraintGraph(graph,catalog);
   const solved=solveConstraintGraph(graph,catalog,{maxIterations:options.maxIterations??75});
+  const fits=reviewNominalAxialInterfaces(graph,solved.poses,catalog);
+  const evaluatedFits=fits.filter(fit=>fit.status==='PASS'||fit.status==='FAIL');
+  const failedFits=evaluatedFits.filter(fit=>fit.status==='FAIL');
+  const fitStatus=evaluatedFits.length===0?'NOT_APPLICABLE':(failedFits.length?'FAIL':'PASS');
+  const proxyPairs=solved.collisionPairs;
   const checklist=[
-    {id:'schema',passed:true,detail:'Catalog IDs, joint/port references and limits validated'},
-    {id:'kinematics',passed:solved.valid,detail:'Closure residual '+solved.closureErrorMm.toFixed(4)+' mm'},
-    {id:'collision-proxy',passed:solved.collisionPairs.length===0,
-      detail:solved.collisionPairs.length+' nonadjacent oriented-box overlaps'},
-    {id:'manufacturing-fit',passed:false,detail:'Not verified; missing physical tolerances, materials and joints'},
-    {id:'dynamics',passed:false,detail:'Not simulated; no forces, gravity, torque or suspension'}
+    {id:'schema',status:'PASS',passed:true,
+      detail:'Catalog IDs, joint/port references and limits validated'},
+    {id:'kinematics',status:solved.valid?'PASS':'FAIL',passed:solved.valid,
+      detail:'Closed-loop residual '+solved.closureErrorMm.toFixed(4)+' mm-equivalent'},
+    {id:'nominal-axial-fit',status:fitStatus,passed:fitStatus==='PASS',
+      detail:evaluatedFits.length===0
+        ?'No typed coaxial shaft/bearing/bore interfaces in this graph'
+        :failedFits.length
+          ?'Nominal interference: '+failedFits.map(f=>f.jointId+' '+f.code).join('; ')
+          :evaluatedFits.length+' nominal coaxial interface(s) inside radial/axial bounds (nominal geometry only)'},
+    {id:'broad-phase-proxy',status:proxyPairs.length?'WARN':'PASS',passed:proxyPairs.length===0,
+      detail:proxyPairs.length
+        ?proxyPairs.length+' nonadjacent oriented-box (OBB) proxy overlap(s) \u2014 coarse broad-phase shortlist, NOT a mesh/contact or fit conclusion'
+        :'No nonadjacent oriented-box (OBB) broad-phase overlaps'},
+    {id:'mesh-contact',status:'NOT_RUN',passed:false,
+      detail:'Opt-in bounded triangle-surface scan not requested at plan time'},
+    {id:'insertion-path',status:'NOT_RUN',passed:false,
+      detail:'No assembly-stage insertion path requested at plan time'},
+    {id:'manufacturing-fit',status:'NOT_RUN',passed:false,
+      detail:'No measured tolerances, materials, load or press-fit evidence'},
+    {id:'dynamics',status:'NOT_RUN',passed:false,
+      detail:'No forces, gravity, torque, friction or suspension simulation'}
   ];
   return {
     graphSchemaVersion:CONSTRAINT_GRAPH_VERSION,
     solverValid:solved.valid,
     closureErrorMm:solved.closureErrorMm,
-    collisionPairs:solved.collisionPairs,
+    collisionPairs:proxyPairs,
+    collisionSemantics:{
+      kind:'broad-phase-obb-proxy',
+      authoritative:false,
+      method:'oriented-box-proxy',
+      detail:'Axis-oriented bounding-box overlap used only to shortlist candidate pairs. It is not a triangle-surface, solid-interference or nominal-fit result; directly connected joints are excluded.'
+    },
+    nominalFit:{
+      evaluated:fits.length>0,
+      status:fitStatus,
+      interfaces:fits,
+      failures:failedFits
+    },
     cycleCount:solved.cycleCount,
     connectedComponents:solved.connectedGroups.length,
     jointCount:graph.joints.length,
     bodyCount:graph.bodies.length,
     checklist,
     warnings:[
-      ...(solved.collisionPairs.length?['Proxy collision warnings: review affected parts'] : []),
+      ...(proxyPairs.length
+        ?[proxyPairs.length+' broad-phase OBB proxy overlap(s) on nonadjacent parts. This is a coarse bounding-box proxy, not proof of collision or a failed fit; confirm with the opt-in mesh/insertion gates.']
+        :[]),
+      ...(failedFits.length
+        ?['Nominal coaxial fit interference on: '+failedFits.map(f=>f.jointId).join(', ')]
+        :[]),
       'Visual and kinematic validation is not physical fit or manufacturability certification.',
       'Building structures and aircraft require separate discipline-specific engineering review.'
     ]
@@ -234,13 +273,14 @@ export function createAssemblyPlan(raw,catalog) {
   }));
   return {
     schemaVersion:AGENT_PLAN_SCHEMA_VERSION,generator:AGENT_GENERATOR,
-    status:verification.collisionPairs.length?'kinematic-with-warnings':'kinematic-validated-concept',
+    status:verification.nominalFit.failures.length?'nominal-fit-interference':verification.collisionPairs.length?'kinematic-with-proxy-warnings':'kinematic-validated-concept',
     request,planName:graph.zh||graph.name||graph.id,
     graph,bom,assemblySteps:orderedAssemblySteps(graph,catalog),
     verification,capability:{
       geometry:'procedural-placeholder',
       constraints:'checked-by-constraint-graph',
-      collision:'nonadjacent-OBB-proxy',
+      collision:'nonadjacent-OBB-broad-phase-proxy',
+      collisionAuthoritative:false,
       dynamics:'not-run',
       structural:'not-run',
       manufacturing:'not-certified'
@@ -264,7 +304,7 @@ export function validateGeneratedPlan(document,catalog) {
   return {
     schemaVersion:AGENT_PLAN_SCHEMA_VERSION,
     generator:'imported-graph-revalidated',
-    status:checked.collisionPairs.length?'kinematic-with-warnings':'kinematic-validated-concept',
+    status:checked.nominalFit.failures.length?'nominal-fit-interference':checked.collisionPairs.length?'kinematic-with-proxy-warnings':'kinematic-validated-concept',
     request:document.request && typeof document.request.prompt==='string'
       ? {prompt:document.request.prompt.slice(0,AGENT_MAX_PROMPT_LENGTH),
         intent:'imported-assembly',mode:'revalidated-import'}
@@ -280,8 +320,8 @@ export function validateGeneratedPlan(document,catalog) {
     verification:checked,
     capability:{
       geometry:'procedural-placeholder',constraints:'checked-by-constraint-graph',
-      collision:'nonadjacent-OBB-proxy',dynamics:'not-run',
-      structural:'not-run',manufacturing:'not-certified'
+      collision:'nonadjacent-OBB-broad-phase-proxy',collisionAuthoritative:false,
+      dynamics:'not-run',structural:'not-run',manufacturing:'not-certified'
     },
     explanation:'Imported assembly revalidated locally; original generator provenance and safety claims are not trusted.'
   };

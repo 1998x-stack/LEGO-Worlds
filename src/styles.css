@@ -736,9 +736,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .agent-joints>div>span {min-width:43px;padding:3px 6px;background:#d8e9df;border-radius:4px;color:#307b68;font-weight:800;}
 .agent-steps>div>span {color:#1d826b;font-weight:850;}
 .agent-checks span.pass {color:#15996d;font-weight:900;}
+.agent-checks span.fail {color:#c0392b;font-weight:900;}
 .agent-checks span.pending {color:#c18f30;font-weight:900;}
 .agent-checks small {max-width:55%;line-height:1.5;}
 .agent-warning {font-size:10px;color:#9a793c;background:#fbf5e6;border-left:3px solid #d5ae5a;border-radius:3px;padding:10px;line-height:1.65;}
+.agent-proxy-note {margin-top:8px;}
 .agent-actions {display:flex;flex-wrap:wrap;gap:9px;padding:15px 20px;border-top:1px solid #e0e8e2;margin-top:auto;}
 .agent-actions button {flex:1 0 38%;padding:12px;border:1px solid #b4d0c1;border-radius:6px;background:#e2f1e8;color:#266954;font-size:11px;font-weight:850;}
 .agent-actions button:disabled {opacity:.45;cursor:not-allowed;}
