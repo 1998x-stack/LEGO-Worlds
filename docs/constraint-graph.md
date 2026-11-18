@@ -100,7 +100,7 @@ A damped least-squares / Levenberg-style iteration computes a finite-difference 
 
 When a graph cannot close, the solver returns closure-incompatible and a residual. Editing actions that introduce such a graph are rejected instead of silently distorting parts.
 
-The algorithm handles simple and moderate constrained motion, including the supplied planar four-bar mechanism. It is **not guaranteed** to find every valid 3D mechanism configuration, particularly singular mechanisms, highly nonlinear loops or branch changes. It does not solve force equilibrium.
+The algorithm handles simple and moderate constrained motion, including the supplied planar four-bar mechanism. To bound worst-case execution costs for imported graphs, closed-loop searches are restricted to **at most 12 free joint variables** and a maximum of 90 numerical iterations. It is **not guaranteed** to find every valid 3D mechanism configuration, particularly singular mechanisms, highly nonlinear loops or branch changes. It does not solve force equilibrium.
 
 ## Collision checks
 
