@@ -1,6 +1,8 @@
 import { SERIES, COMPONENTS, MODELS, MODEL_COUNT, COMPONENT_COUNT } from './catalog.js';
 import { mountViewer, downloadAssemblyGlb } from './viewer.js';
 import { getPartAnchors } from './connection-anchors.js';
+import { mountBuilder } from './builder-lab.js';
+import { isBuilderComponent } from './snap-engine.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -18,7 +20,7 @@ root.innerHTML = [
       '<span class="brand-caption">OPEN BUILD SYSTEM</span>',
     '</a>',
     '<nav class="main-nav" aria-label="Main navigation">',
-      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a>',
+      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a>',
       '<a class="nav-github" href="https://github.com/1998x-stack/LEGO-Worlds" target="_blank" rel="noopener noreferrer">GitHub ↗</a>',
     '</nav>',
     '<a class="header-cta" href="#builds">Explore builds <span>↗</span></a>',
@@ -68,6 +70,26 @@ root.innerHTML = [
         '<div class="component-grid" id="component-grid"></div>',
       '</div>',
     '</section>',
+
+    '<section class="section builder-section" id="builder">',
+      '<div class="section-heading"><div><div class="section-kicker">04 — SNAP BUILDER LAB</div><h2>Snap it. <em>Build it.</em></h2></div><p>真实操作凸点/底部接口的连接关系：拖动零件靠近可用凸点，绿色预览表示可拼搭，红色表示碰撞。</p></div>',
+      '<div class="builder-intro" id="builder-intro"><div><span>EARLY BUILDER / V0.3</span><h3>从一块底板，开始搭建你的作品。</h3><p>首批支持标准砖块、薄板、光滑板与 Jumper。可旋转、拆解、撤销、导入导出装配 JSON，也能导出 GLB。</p></div><button id="launch-builder" class="button button-yellow">Launch snap builder ↗</button></div>',
+      '<div class="builder-workspace" id="builder-workspace" hidden>',
+        '<div class="builder-stage"><div class="builder-stage-header"><span>LIVE / THREE.JS SNAP SOLVER</span><span>DRAG PIECES · ORBIT EMPTY SPACE</span></div><canvas id="builder-canvas" aria-label="Interactive drag and snap brick builder"></canvas><div class="builder-legend"><span><i class="ready"></i>可连接</span><span><i class="blocked"></i>碰撞</span><span><i class="near"></i>待对齐</span></div></div>',
+        '<aside class="builder-sidebar">',
+          '<div class="builder-metrics"><div><strong id="builder-piece-count">1</strong><span>PARTS</span></div><div><strong id="builder-link-count">0</strong><span>ANCHOR EDGES</span></div></div>',
+          '<label class="builder-label" for="builder-part-picker">Choose a component / 选择零件</label>',
+          '<select id="builder-part-picker" class="builder-part-picker" aria-label="Choose a component to add">' + COMPONENTS.filter(isBuilderComponent).map(c => '<option value="' + safe(c.id) + '">' + safe(c.zh) + ' · ' + safe(c.sizeLabel) + '</option>').join('') + '</select>',
+          '<button class="builder-primary" id="builder-add">＋ Add selected part</button>',
+          '<div class="builder-actions"><button id="builder-turn">↻ Rotate 90°</button><button id="builder-up">↑ Up 3.2mm</button><button id="builder-down">↓ Down 3.2mm</button><button id="builder-delete">× Delete selected</button></div>',
+          '<div class="builder-actions"><button id="builder-undo">← Undo</button><button id="builder-redo">→ Redo</button><button id="builder-reset-camera">◎ Reset camera</button></div>',
+          '<p class="builder-status" id="builder-status" role="status" aria-live="polite">点击添加零件，移动鼠标到已有积木上，然后点击确认。</p>',
+          '<div class="builder-part-heading">ASSEMBLY / 零件列表</div><div class="builder-part-list" id="builder-parts"></div>',
+          '<div class="builder-exports"><button id="builder-export-json">↓ Export JSON</button><button id="builder-import-json">↑ Import JSON</button><button id="builder-export-glb">↓ Export GLB</button><input type="file" accept=".json,application/json" id="builder-import-input" hidden/></div>',
+          '<small class="builder-disclaimer">仅开放 stud ↔ socket 自动吸附；Technic、齿轮和球关节仍需专用配合检查。示意几何不代表真实零件公差。</small>',
+        '</aside>',
+      '</div>',
+    '</section>',
     '<section class="dimensions-section">',
       '<div class="section dimensions-inner"><div><div class="section-kicker">04 — THE SHARED GRID</div><h2>One system.<br/><em>Consistent dimensions.</em></h2><p>用统一的名义尺寸组织零件，才能让组件跨作品复用。这里的尺寸用于教育与视觉建模参考，并非真实零件互换或打印配合保证。</p></div>',
         '<div class="dimension-cards">',
@@ -92,6 +114,7 @@ let searchTerm = '';
 let detailViewer = null;
 let heroViewer = null;
 let activeModal = null;
+let builderInstance = null;
 
 function artMarkup(model) {
   return '<div class="model-art" style="--accent:' + safe(model.accent) + '">' +
@@ -343,6 +366,96 @@ document.querySelector('#component-search').addEventListener('input', event => {
 document.querySelector('#hero-open').addEventListener('click', () => openDetail(MODELS.find(item => item.id === 'clockwork-koi-garden')));
 document.querySelector('#lab-open').addEventListener('click', () => openDetail(MODELS.find(item => item.id === 'clockwork-koi-garden')));
 
+document.querySelector('#launch-builder').addEventListener('click', () => {
+  if (builderInstance) {
+    document.querySelector('#builder-workspace').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  const workspace = document.querySelector('#builder-workspace');
+  workspace.hidden = false;
+  const status = document.querySelector('#builder-status');
+  const count = document.querySelector('#builder-piece-count');
+  const links = document.querySelector('#builder-link-count');
+  const partList = document.querySelector('#builder-parts');
+  try {
+    builderInstance = mountBuilder(document.querySelector('#builder-canvas'), COMPONENTS, state => {
+      status.textContent = state.status;
+      count.textContent = String(state.parts.length);
+      links.textContent = String(state.connections.length);
+      document.querySelector('#builder-undo').disabled = !state.canUndo;
+      document.querySelector('#builder-redo').disabled = !state.canRedo;
+      document.querySelector('#builder-delete').disabled = !state.selected || state.selected === 'foundation';
+      partList.innerHTML = state.parts.map(part =>
+        '<div class="builder-part-entry ' + (part.instanceId === state.selected ? 'selected' : '') + '">' +
+        '<span class="builder-swatch" style="background:' + safe(part.color) + '"></span>' +
+        '<strong>' + safe(part.name) + '</strong><small>' + safe(part.instanceId) + '</small></div>'
+      ).join('');
+    });
+    document.querySelector('#builder-intro').hidden = true;
+    const actionMap = {
+      '#builder-add': () => builderInstance.add(document.querySelector('#builder-part-picker').value),
+      '#builder-turn': () => builderInstance.turn(),
+      '#builder-up': () => builderInstance.lift(1),
+      '#builder-down': () => builderInstance.lift(-1),
+      '#builder-delete': () => builderInstance.erase(),
+      '#builder-undo': () => builderInstance.undo(),
+      '#builder-redo': () => builderInstance.redo(),
+      '#builder-reset-camera': () => builderInstance.resetCamera()
+    };
+    for (const [selector, callback] of Object.entries(actionMap)) {
+      document.querySelector(selector).addEventListener('click', callback);
+    }
+    document.querySelector('#builder-export-json').addEventListener('click', () => {
+      const documentData = builderInstance.getDocument();
+      const blob = new Blob([JSON.stringify(documentData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'brick-worlds-assembly.json';
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    });
+    document.querySelector('#builder-export-glb').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = 'Exporting…';
+      try {
+        await downloadAssemblyGlb({
+          title: 'My Brick Worlds Assembly', slug: 'brick-worlds-custom-build',
+          parts: builderInstance.getParts().map((part, index) => ({
+            ...part, id: part.instanceId, step: index + 1
+          }))
+        });
+        status.textContent = 'GLB 已导出。注意：连接边关系保存在 JSON 中。';
+      } catch (error) {
+        console.error(error);
+        status.textContent = 'GLB 导出失败，请检查浏览器控制台。';
+      } finally {
+        button.disabled = false;
+        button.textContent = '↓ Export GLB';
+      }
+    });
+    document.querySelector('#builder-import-json').addEventListener('click', () =>
+      document.querySelector('#builder-import-input').click());
+    document.querySelector('#builder-import-input').addEventListener('change', async event => {
+      const input = event.currentTarget;
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        if (file.size > 100000) throw new Error('File is too large (100 KB max)');
+        builderInstance.importJSON(await file.text());
+      } catch (error) {
+        status.textContent = '导入失败：' + error.message;
+      } finally {
+        input.value = '';
+      }
+    });
+  } catch (error) {
+    status.textContent = 'WebGL Builder 无法启动：' + error.message;
+    console.error(error);
+  }
+});
+
 const mobileMenu = document.querySelector('#mobile-menu');
 mobileMenu.addEventListener('click', () => {
   const nav = document.querySelector('.main-nav');
@@ -374,4 +487,5 @@ try {
 window.addEventListener('beforeunload', () => {
   heroViewer?.dispose();
   detailViewer?.dispose();
+  builderInstance?.dispose();
 });
