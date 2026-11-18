@@ -4,9 +4,23 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [Agent 插件运行规范](docs/agent-plugin-runtime.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [Agent 插件运行规范](docs/agent-plugin-runtime.md) · [V0.9 名义配合与插入检测](docs/clearance-v09.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
+
+## V0.9 · 空心轴承、名义配合与装配路径检查
+
+新增第 **101 个目录组件「8mm 机械轴承衬套」**，包含真正的贯穿孔几何、轴承外径／内孔接口。Constraint Lab 新增 **Sleeve Bearing & Wheel** 四零件案例，AI Agent 也可识别「装配一个轴承衬套、转轴和轮组」。
+
+L2 验证现在能独立计算**同轴偏移、名义径向间隙、轴端实际啮合长度**；可选启动基于程序化网格三角面的接触候选筛查，以及对**明确已安装零件**执行离散插入轨迹检测。该能力可消除“轴位于梁孔内部而 OBB 报碰撞”的典型误报，但不能保证未采样区间、实体制造配合、完整三维碰撞或真实机械承载。
+
+```bash
+npm run world:pipeline -- --prompt "装配一个轴承衬套、转轴和轮组" --mesh
+node scripts/inspect-bearing-wheel.mjs
+node scripts/inspect-bearing-wheel.mjs --blocked
+```
+
+请阅读[完整验证规范与边界](docs/clearance-v09.md)。
 
 ## Agent-Native Skills 插件运行体系 · V0.8
 

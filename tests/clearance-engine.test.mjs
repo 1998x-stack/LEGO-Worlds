@@ -1,4 +1,6 @@
 import test from 'node:test';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { COMPONENTS } from '../src/catalog.js';
@@ -168,4 +170,24 @@ test('axle-seat is an offset locator, but engagement uses actual physical shaft 
   const wheel=fits.find(f=>f.jointId==='wheel_key');
   assert.equal(wheel.status,'FAIL',JSON.stringify(wheel));
   assert.equal(wheel.axialOverlapMm,0);
+});
+
+
+test('example script exercises a complete successful and deliberately blocked inserted-shaft L2 run',()=>{
+  const executable=fileURLToPath(new URL('../scripts/inspect-bearing-wheel.mjs',import.meta.url));
+  const success=spawnSync(process.execPath,[executable],{
+    cwd:process.cwd(),encoding:'utf8',timeout:30000,maxBuffer:2e6
+  });
+  assert.equal(success.status,0,success.stderr);
+  const good=JSON.parse(success.stdout);
+  assert.equal(good.status,'ok');
+  assert.ok(good.checks.some(x=>x.code==='SAMPLED_PATH_CLEAR'));
+  assert.ok(good.checks.some(x=>x.code==='MESH_SURFACE_SAMPLE_CLEAR'));
+  const blocked=spawnSync(process.execPath,[executable,'--blocked'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:30000,maxBuffer:2e6
+  });
+  assert.equal(blocked.status,2,blocked.stderr);
+  const bad=JSON.parse(blocked.stdout);
+  assert.equal(bad.status,'needs_revision');
+  assert.ok(bad.checks.some(x=>x.code==='ASSEMBLY_PATH_BLOCKED'));
 });

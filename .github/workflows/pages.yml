@@ -37,6 +37,10 @@ jobs:
           node adapters/cli/world.mjs pipeline --prompt "搭建一辆六轮火星探测车" > /tmp/lego-world-pipeline.json
           node -e 'const p=require("/tmp/lego-world-pipeline.json"); if(p.status!=="ok" || !p.artifacts.some(a=>a.kind==="ValidationReport")) process.exit(1)'
 
+      - name: Verify V0.9 nominal bearing fit and sampled insertion
+        run: |
+          node scripts/inspect-bearing-wheel.mjs > /tmp/bearing-clearance.json
+          node -e 'const r=require("/tmp/bearing-clearance.json"); if(r.status!=="ok" || !r.checks.some(c=>c.code==="SAMPLED_PATH_CLEAR")) process.exit(1)'
       - name: Build static site
         run: npm run build
       - name: Verify Pages output and base path

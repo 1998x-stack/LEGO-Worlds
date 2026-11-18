@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "world-clearance-options/v1",
+  "targetLevel": "L2",
+  "clearance": {
+    "mesh": true,
+    "path": {
+      "movingBodyId": "axle",
+      "installedBodyIds": [
+        "support",
+        "sleeve"
+      ],
+      "fromOffsetMm": [
+        0,
+        0,
+        35
+      ],
+      "samples": 12
+    }
+  },
+  "note": "Options for a world.kinematics.validate ToolRequest. Supply real WorldSpec/GeometryManifest/AssemblyGraph artifacts separately."
+}

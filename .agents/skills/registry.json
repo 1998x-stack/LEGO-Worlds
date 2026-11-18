@@ -65,7 +65,7 @@
         "scripts/check.mjs",
         "assets/example.json"
       ],
-      "version": "1.0.0",
+      "version": "1.1.0",
       "manifest": ".agents/skills/mechanical-constraint-solving/plugin.json",
       "capabilities": [
         "world.kinematics.validate"

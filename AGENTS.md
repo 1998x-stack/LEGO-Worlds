@@ -53,3 +53,7 @@ For new buildings, aircraft, cities or large physical environments, consult docs
 - **P2:** Codex, Claude and Pi can use the local CLI, approved Skill scripts or minimal MCP stdio adapter. Never add a model API key or unrestricted shell/HTTP execution to the client. Building and aircraft adapters currently produce **L0 subsystem requirements only**.
 - Distinguish `ok`, `needs_revision`, `unsupported` and `failed`. Preserve PASS/WARN/FAIL/NOT_RUN/NOT_APPLICABLE separately in reports. No real structural, flight, manufacturing, motion-path or dynamics certification is implied.
 - Required verification: `npm run test:skills`, `npm test`, `npm run build`, plus CLI/MCP smoke tests when changing adapters. See `docs/agent-plugin-runtime.md` for exact contracts and security boundaries.
+
+## V0.9 nominal mating & discrete path evidence
+
+For axle, bearing, wheel, hole and insertion-path changes, read `docs/clearance-v09.md`. `world.kinematics.validate` supports explicit `options.clearance.mesh` (static real mesh triangle contact candidates) and `options.clearance.path` (discrete installed-stage insertion samples). Use `node scripts/inspect-bearing-wheel.mjs` and its `--blocked` regression. Always preserve `NOT_RUN` for measured fit, full CCD, swept joint envelopes, dynamics and strength. A surface-candidate check cannot independently certify collision-free engineering.

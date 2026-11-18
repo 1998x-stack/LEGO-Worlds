@@ -248,7 +248,7 @@ export function validateWorldArtifacts({worldSpec,geometry,assembly,targetLevel=
     checks,classification,validator:'independent-world-validation-engine-v1'
   };
   const artifact=createArtifact('ValidationReport',targetLevel,report,{
-    sources:subjects,capability:'world.kinematics.validate',pluginVersion:'1.0.0'
+    sources:subjects,capability:'world.kinematics.validate',pluginVersion:'1.1.0'
   });
   return {
     status:failed?'needs_revision':'ok',artifact,checks,

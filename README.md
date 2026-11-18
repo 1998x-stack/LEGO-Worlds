@@ -2,11 +2,23 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Plugin Runtime](docs/agent-plugin-runtime.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Plugin Runtime](docs/agent-plugin-runtime.md) · [Clearance V0.9](docs/clearance-v09.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## V0.9 — Nominal Bearing Fit and Insertion Verification
+
+The [Assembly Agent](https://1998x-stack.github.io/LEGO-Worlds/#agent) now recognizes **"装配一个轴承衬套、转轴和轮组"**, and the [Constraint Lab](https://1998x-stack.github.io/LEGO-Worlds/#constraints) offers a new **Sleeve Bearing & Wheel** preset. This adds a modeled hollow sleeve (101st catalog component), native coaxial connector semantics and a reproducible four-body shaft/wheel assembly. Independent L2 validation can now check nominal fit, actual procedural mesh contact candidates and an explicitly staged **sampled** insertion path.
+
+```bash
+npm run world:pipeline -- --prompt "装配一个轴承衬套、转轴和轮组" --mesh
+node scripts/inspect-bearing-wheel.mjs
+node scripts/inspect-bearing-wheel.mjs --blocked
+```
+
+The mesh-based static check resolves a known false-positive OBB overlap between an axle and the beam through-hole. **This is not exact CSG, continuous collision detection, measured manufacturing tolerance, structural strength or dynamics validation.** Read the [V0.9 geometric inspection specification](docs/clearance-v09.md).
 
 ## Agent-Native World Plugin Runtime (V0.8)
 

@@ -52,3 +52,7 @@ For buildings, aircraft, robotics, multiscale units and independently validated 
 This repository now includes [Agent-Native Plugin Runtime](agent-plugin-runtime.md) with a versioned plugin.json in all 12 canonical skills, pinned sources in registry.lock.json and strongly typed L0/L1/L2 artifacts under schemas/. Unlike SKILL.md instructions, these machine-readable extensions define exact capabilities, dependency DAG, execution readiness, permissions and validator contracts. Eight first-party skills currently have executable entrypoints routed through an allowlisted Node runner; guidance-only skills cannot invoke arbitrary tools.
 
 For native Agent use, run `npm run world:run -- registry` to inspect capabilities; `npm run world:pipeline -- --prompt "搭建一辆六轮火星探测车"` to compile and independently validate; or `npm run world:mcp` to expose the restricted local MCP tool set. No second LLM backend is required.
+
+## Nominal clearance Skill capability — V0.9
+
+`mechanical-constraint-solving` has an executable `world.kinematics.validate` capability extended with optional bounded mesh and insertion-path inspections. The canonical Skill contains [clearance reference](../.agents/skills/mechanical-constraint-solving/references/clearance-v09.md), [sample options](../.agents/skills/mechanical-constraint-solving/assets/clearance-demo.json) and a dedicated executable entrypoint. The independent validator computes the result, not the calling Agent. See [V0.9 clearance contract](clearance-v09.md).

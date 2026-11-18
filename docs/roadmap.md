@@ -88,6 +88,18 @@
 - [ ] Add optional LOD and mesh optimization.
 - [ ] Add an import contract for reviewed third-party assets with per-asset licensing evidence.
 
+## V0.9 — Nominal bearing and discrete insertion verification
+- [x] Add a separate hollow bearing sleeve component with native outer and bore anchor frames.
+- [x] Add reproducible beam/bearing/axle/wheel graph preset and Agent natural-language example.
+- [x] Independently calculate nominal radial clearance, axis alignment and actual shaft/through-bore engagement length.
+- [x] Add bounded procedural-mesh triangle contact candidates and detect the false-positive OBB axle-in-hole case.
+- [x] Add explicit installed-part-stage insertion checking with bounded discrete path samples and blocked-path diagnostics.
+- [x] Integrate opt-in mesh/path and nominal-fit evidence into trusted L2 validation, Agent CLI and MCP tools.
+- [x] Add working and deliberately blocked examples, regression tests and documented fidelity limits.
+- [ ] Replace discrete-sample paths with continuous swept-volume collision certification.
+- [ ] Mesh watertightness/CSG solidity, full geometric tolerances and physical press-fit verification.
+- [ ] Rocker-bogie and real multi-bearing drive train with torque, friction and mass properties.
+
 ## V1 — Open construction platform
 - [ ] Searchable, versioned component database.
 - [x] Versioned JSON Schemas for L0/L1/L2 and published constraint graph documentation.

@@ -117,7 +117,7 @@ export function buildGeometryAndGraph(worldSpecArtifact,proposal,{catalog=COMPON
   };
   const assembly=createArtifact('AssemblyGraph','L2',assemblyGraph,{
     sources:[worldSpecArtifact.contentHash,geometry.contentHash],
-    capability:'world.kinematics.validate',pluginVersion:'1.0.0'
+    capability:'world.kinematics.validate',pluginVersion:'1.1.0'
   });
   return {geometry,assembly,solverPreview:{
     closureErrorMm:solved.closureErrorMm,
