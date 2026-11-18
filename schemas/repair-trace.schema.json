@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://1998x-stack.github.io/LEGO-Worlds/schemas/repair-trace.schema.json",
+  "title": "RepairTrace/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "initialGraphHash",
+    "finalGraphHash",
+    "outcome",
+    "attempts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "repair-trace/v1"
+    },
+    "kind": {
+      "const": "RepairTrace"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
+    "initialGraphHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "finalGraphHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "outcome": {
+      "enum": [
+        "validated",
+        "needs_revision",
+        "unsupported"
+      ]
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attempt",
+          "inputHash",
+          "status",
+          "diagnostics"
+        ],
+        "properties": {
+          "attempt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "inputHash": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "valid",
+              "invalid",
+              "proposal"
+            ]
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code",
+                "message"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "repair": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
