@@ -246,23 +246,39 @@ export function createAssemblyPlan(raw,catalog) {
 }
 
 export function validateGeneratedPlan(document,catalog) {
-  if(!document||document.schemaVersion!==AGENT_PLAN_SCHEMA_VERSION||
-     document.generator!==AGENT_GENERATOR||!document.graph)
+  if(!document || document.schemaVersion!==AGENT_PLAN_SCHEMA_VERSION ||
+     document.generator!==AGENT_GENERATOR || !document.graph)
     throw new Error('Invalid agent plan version, generator or graph');
-  const checked=validateAgentGraph(document.graph,catalog);
+  // Imports are untrusted data. Discard all supplied BOM, sequence, verification,
+  // capability claims and explanatory text, and rebuild them from validated geometry.
+  const graph=structuredClone(document.graph);
+  const checked=validateAgentGraph(graph,catalog);
   if(!checked.solverValid)throw new Error('Imported plan cannot satisfy constraints');
-  const rebuilt=orderedAssemblySteps(document.graph,catalog);
   const lookup=new Map(catalog.map(c=>[c.id,c]));
   const count=new Map();
-  document.graph.bodies.forEach(b=>count.set(b.componentId,(count.get(b.componentId)||0)+1));
+  graph.bodies.forEach(b=>count.set(b.componentId,(count.get(b.componentId)||0)+1));
   return {
-    ...document,assemblySteps:rebuilt,
+    schemaVersion:AGENT_PLAN_SCHEMA_VERSION,
+    generator:'imported-graph-revalidated',
+    status:checked.collisionPairs.length?'kinematic-with-warnings':'kinematic-validated-concept',
+    request:document.request && typeof document.request.prompt==='string'
+      ? {prompt:document.request.prompt.slice(0,AGENT_MAX_PROMPT_LENGTH),
+        intent:'imported-assembly',mode:'revalidated-import'}
+      : {prompt:'Imported plan',intent:'imported-assembly',mode:'revalidated-import'},
+    planName:typeof graph.zh==='string'?graph.zh.slice(0,120):
+      typeof graph.name==='string'?graph.name.slice(0,120):graph.id,
+    graph,
+    assemblySteps:orderedAssemblySteps(graph,catalog),
     bom:[...count].map(([componentId,quantity])=>({
       componentId,quantity,name:lookup.get(componentId)?.zh||componentId,
-      code:lookup.get(componentId)?.code||null,
-      purpose:'conceptual-procedural-geometry'
+      code:lookup.get(componentId)?.code||null,purpose:'conceptual-procedural-geometry'
     })),
     verification:checked,
-    status:checked.collisionPairs.length?'kinematic-with-warnings':'kinematic-validated-concept'
+    capability:{
+      geometry:'procedural-placeholder',constraints:'checked-by-constraint-graph',
+      collision:'nonadjacent-OBB-proxy',dynamics:'not-run',
+      structural:'not-run',manufacturing:'not-certified'
+    },
+    explanation:'Imported assembly revalidated locally; original generator provenance and safety claims are not trusted.'
   };
 }
