@@ -4,7 +4,7 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [Agent 插件运行规范](docs/agent-plugin-runtime.md) · [V0.9 名义配合与插入检测](docs/clearance-v09.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
+[101 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [Agent 插件运行规范](docs/agent-plugin-runtime.md) · [V0.9 名义配合与插入检测](docs/clearance-v09.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
 
@@ -62,13 +62,13 @@ npm run build
 
 技术说明：[AI 拼搭 Agent](docs/ai-assembly-agent.md) · [Skills 体系](docs/skills-system.md) · [正式技能源](.agents/skills/README.md)。
 
-## 100 种基础组件
+## 101 种基础组件
 
-首期组件库包含 100 种有独立编号的组件定义，覆盖标准砖块、薄板与光滑板、斜坡与曲面、SNOT 连接件、Technic 机械结构、齿轮传动、轮组运动、建筑模块、自然装饰和特殊功能件。每个组件均有独立 ID、BW 编号、尺寸、几何类型、用途说明与连接接口分类。
+当前组件库包含 101 种有独立编号的组件定义，覆盖标准砖块、薄板与光滑板、斜坡与曲面、SNOT 连接件、Technic 机械结构、齿轮传动、轮组运动、建筑模块、自然装饰和特殊功能件。每个组件均有独立 ID、BW 编号、尺寸、几何类型、用途说明与连接接口分类。
 
 ## 连接锚点系统
 
-100 种组件现在都具备程序化生成的连接锚点，包括凸点、底部接口、Technic 孔、连接销、轴、齿轮轴线、夹扣、横杆、球头、铰链轴和面板安装基准。锚点记录统一使用毫米坐标，并包含方向、尺寸、接口类型和兼容对象。
+101 种组件现在都具备程序化生成的连接锚点，包括凸点、底部接口、Technic 孔、连接销、轴、齿轮轴线、夹扣、横杆、球头、铰链轴和面板安装基准。锚点记录统一使用毫米坐标，并包含方向、尺寸、接口类型和兼容对象。
 
 在模型详情窗口点击 **Show anchors**，可以显示三维锚点：蓝色代表公接口，橙色代表母接口，绿色代表中性定位基准。锚点会跟随零件旋转、爆炸视图和装配步骤变化。
 

@@ -2,7 +2,7 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Plugin Runtime](docs/agent-plugin-runtime.md) · [Clearance V0.9](docs/clearance-v09.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [101-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Plugin Runtime](docs/agent-plugin-runtime.md) · [Clearance V0.9](docs/clearance-v09.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
@@ -94,13 +94,13 @@ Snapping is intentionally limited to the stud/socket interfaces of grid componen
 
 ## First release
 
-- **100-piece Component Library** — ten families covering bricks, plates, curves, SNOT connectors, Technic, gears, motion, architecture, nature and special elements.
+- **101-piece Component Library** — ten families covering bricks, plates, curves, SNOT connectors, Technic, gears, motion, architecture, nature and special elements.
 - **Brick System** — foundational bricks, plates, tiles, slopes, jumpers and connection pieces.
 - **Technic Mechanics** — beams, pins, axles, gears, wheels and mechanical assemblies.
 - **Modular City** — reusable architectural modules and small urban scenes.
 - **Creative Lab** — original showcase builds, beginning with *Clockwork Koi Garden*.
 
-The component library contains exactly 100 coded, parameterized component definitions across ten families. Every featured build is assembled from named, reusable parts. The 3D viewer supports orbit, zoom, exploded-view inspection, part selection and guided assembly steps.
+The component library contains 101 coded, parameterized component definitions across ten families. Every featured build is assembled from named, reusable parts. The 3D viewer supports orbit, zoom, exploded-view inspection, part selection and guided assembly steps.
 
 ## Run locally
 

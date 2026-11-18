@@ -1,6 +1,6 @@
-# Component system — 100-piece reference library
+# Component system — 101-piece reference library
 
-Brick Worlds maintains a catalogue of **100 distinct component definitions** across ten families. See the complete [100-piece index](parts-index.md) for every code, name, geometry type, nominal size and interface profile. A catalogue entry is not a colour swatch: it has a stable ID and part code, a procedural geometry type, nominal dimensions, a family, a connection-profile label and a plain-language purpose.
+Brick Worlds maintains a catalogue of **101 distinct component definitions** across ten families. See the complete [101-piece index](parts-index.md) for every code, name, geometry type, nominal size and interface profile. A catalogue entry is not a colour swatch: it has a stable ID and part code, a procedural geometry type, nominal dimensions, a family, a connection-profile label and a plain-language purpose.
 
 ## Shared reference grid
 
@@ -15,7 +15,7 @@ Brick Worlds maintains a catalogue of **100 distinct component definitions** acr
 
 These are simplified educational references. Real elements include geometry details and tolerances not represented by this procedural system.
 
-## The 100 component definitions
+## The 101 component definitions
 
 | Family | Count | Coverage |
 | --- | ---: | --- |
@@ -23,15 +23,15 @@ These are simplified educational references. Real elements include geometry deta
 | Plates & Tiles | 12 | Plates, smooth tiles and offset jumpers |
 | Slopes & Curves | 12 | Slopes, inverted slopes, curved profiles, arches, domes and wedges |
 | Connectors & SNOT | 12 | Side-stud brackets, clips, bars, hinges, joints and corner plates |
-| Technic Structure | 15 | 3–13 hole beams, liftarms, angle beams, frames, pins, axles and bushings |
+| Technic Structure | 16 | 3–13 hole beams, liftarms, angle beams, frames, pins, axles and bushings |
 | Gears & Transmission | 10 | Spur gears, worm, rack, bevel gear, turntable and differential case |
 | Wheels & Motion | 8 | Wheel sizes, tyre styles, hub, track link and track unit |
 | Architecture | 8 | Wall, window, door, arch window, roof tile, column, railing and balcony |
 | Nature | 4 | Leaf sprig, flower, tree trunk and rock |
 | Special | 4 | Spring, transparent shell, light brick and grille panel |
-| **Total** | **100** | **Ten reusable families** |
+| **Total** | **101** | **Ten reusable families** |
 
-Every component has a stable BW-XX-NNN catalogue code. The current geometry factory exposes 46 component types; many types have parameterized dimensions, so the 100 definitions share a small, testable geometry vocabulary rather than 100 unrelated one-off meshes.
+Every component has a stable BW-XX-NNN catalogue code. The current geometry factory exposes 47 component types; many types have parameterized dimensions, so the 101 definitions share a small, testable geometry vocabulary rather than 101 unrelated one-off meshes.
 
 ## Component data contract
 

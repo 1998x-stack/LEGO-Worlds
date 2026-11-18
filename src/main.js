@@ -73,7 +73,7 @@ root.innerHTML = [
     '<section class="components-section" id="components">',
       '<div class="section components-inner">',
         '<div class="section-heading"><div><div class="section-kicker">03 — THE COMPONENT LIBRARY</div><h2>Know your <em>pieces.</em></h2></div><p>基础组件不是孤立的模型，而是可被多个作品重复使用的构造语言。点击任意零件查看三维形态。</p></div>',
-        '<div class="component-toolbar"><div><strong id="component-count">' + COMPONENT_COUNT + '</strong><span> COMPONENT TYPES</span></div><label class="search-field component-search"><span>⌕</span><input id="component-search" type="search" placeholder="Search 100 components..." aria-label="Search components"/><kbd>⌕</kbd></label></div><div class="family-filters" id="family-filters"></div>',
+        '<div class="component-toolbar"><div><strong id="component-count">' + COMPONENT_COUNT + '</strong><span> COMPONENT TYPES</span></div><label class="search-field component-search"><span>⌕</span><input id="component-search" type="search" placeholder="Search ' + COMPONENTS.length + ' components..." aria-label="Search components"/><kbd>⌕</kbd></label></div><div class="family-filters" id="family-filters"></div>',
         '<div class="component-grid" id="component-grid"></div>',
       '</div>',
     '</section>',

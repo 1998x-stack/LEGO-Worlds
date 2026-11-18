@@ -1,4 +1,4 @@
-# Component index — 100 reusable parts
+# Component index — 101 reusable parts
 
 Complete searchable source index for the Brick Worlds component catalogue. Geometry is generated procedurally from the type and size parameters in src/catalog.js.
 
@@ -75,6 +75,7 @@ Complete searchable source index for the Brick Worlds component catalogue. Geome
 | BW-TC-013 | Cross Axle 3 | 三模块十字轴 | Technic Structure | axle | 24 mm nominal | technic-hole-8mm-axle-cross |
 | BW-TC-014 | Cross Axle 5 | 五模块十字轴 | Technic Structure | axle | 40 mm nominal | technic-hole-8mm-axle-cross |
 | BW-TC-015 | Half Bushing | 半宽轴套 | Technic Structure | bushing | Ø 8 × 2 mm | technic-hole-8mm-axle-cross |
+| BW-TC-021 | Technic Sleeve Bearing · 8 mm | 8mm 机械轴承衬套 | Technic Structure | bearing | Outer Ø4.68 × bore Ø3.9 × 7.6 mm | nominal-axial-bearing |
 | **Gears & Transmission** |  |  |  |  |  |  |
 | BW-GR-001 | 8-tooth Gear | 8齿齿轮 | Gears & Transmission | gear | Ø 9 × 3.2 mm | axle-cross-gear-mesh |
 | BW-GR-002 | 12-tooth Gear | 12齿齿轮 | Gears & Transmission | gear | Ø 12 × 3.2 mm | axle-cross-gear-mesh |
