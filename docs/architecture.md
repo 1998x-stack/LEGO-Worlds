@@ -59,6 +59,18 @@ src/hierarchy-lab.js
   └── preset/pose JSON and static GLB export
                             |
                             v
+src/constraint-graph.js
+  ├── editable body graph with 4 joint types
+  ├── graph spanning forest + loop optimization
+  └── OBB collisions and versioned JSON
+                            |
+                            v
+src/constraint-lab.js
+  ├── interactive body/port connection editor
+  ├── motor targets and live solver diagnostics
+  └── static GLB + editable graph export
+                            |
+                            v
 src/viewer.js
   ├── Scene + lights + camera
   ├── OrbitControls
@@ -112,3 +124,7 @@ Technic-style mechanical assemblies are handled by `src/technic-engine.js` (inde
 ## V0.5 Hierarchical joint and animation layer
 
 The hierarchy engine defines parent-child rigid subassemblies, connected through typed hinge-axis anchors on existing component instances. Joint angles propagate through the tree, while separate directed coupling edges implement mirrored motion subject to validated follower limits and cycle checks. The assembly sequence is generated as a parent-first dependency DAG; its reverse drives schematic disassembly. The browser viewer operates lazily, supports selection/isolation and does not contain the solver. Exported JSON references trusted canonical presets and revalidates motion. See [Hierarchy and Joints](hierarchy-assembly.md) for detailed formulas and physical limitations.
+
+## V0.6 General constraint graph
+
+The multi-connection rigid-body solver does not assume a single parent. Each joint references two independently addressable body-local frames (either native connection anchors or labeled virtual datums). The spanning-forest evaluation propagates poses across any direction of a joint; each extra edge produces a six-dimensional closure residual. A damped finite-difference least-squares search adjusts dependent joint values while preserving controlled targets and limits. Oriented box proxies report overlaps between nonadjacent bodies. The independent `constraint-lab.js` renders the editable 3D workbench; `constraint-graph.js` contains the DOM-free engine and tested versioned JSON schema. See [constraint graph specification](constraint-graph.md). This is not verified physical collision or certified mechanical fitting.
