@@ -685,3 +685,10 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .constraint-stats strong {font-size:20px;}
   .constraint-bar button {min-width:75px;flex-basis:28%;}
 }
+
+/* Keep extended desktop navigation readable at intermediate widths. */
+@media (min-width: 761px) and (max-width: 1340px) {
+  .site-header { padding-left: clamp(20px, 2.6vw, 36px); padding-right: clamp(20px, 2.6vw, 36px); }
+  .main-nav { gap: clamp(8px, 1.1vw, 15px); font-size: 10px; white-space: nowrap; }
+  .header-cta { display: none; }
+}
