@@ -2,11 +2,17 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Roadmap](docs/roadmap.md)
 
-An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, and follow step-by-step construction sequences.
+An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## Snap Builder Lab (V0.3)
+
+The homepage includes an interactive **Snap Builder** that launches on demand. Choose a brick, plate, tile or jumper, drag it near studs, rotate in 90° increments, preview valid and blocked positions, undo/redo changes, and save or import a versioned assembly JSON file. Geometry can also be exported as GLB. The demo includes a fixed 2×6 foundation plate.
+
+Snapping is intentionally limited to the stud/socket interfaces of grid components. More complex Technic, gear and hinged connections still require specialized constraints and collision checks. See [Snap Builder documentation](docs/snap-builder.md).
 
 ## First release
 
@@ -63,6 +69,8 @@ src/
   catalog.js          # Series, component library and assembly manifests
   brick-system.js     # Reusable procedural part geometry
   connection-anchors.js # Typed anchors, coordinate transforms and compatibility
+  snap-engine.js       # Rigid stud/socket solver, overlap checks and JSON schema
+  builder-lab.js       # Drag/rotate/preview interactive Three.js builder
   viewer.js           # Three.js scene, assembly and exploded-view controls
   main.js             # Gallery, filters, detail panel and interactions
   styles.css          # Responsive Brick Worlds design system
@@ -70,10 +78,12 @@ docs/
   architecture.md
   component-system.md
   connection-anchors.md
+  snap-builder.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
+  snap-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
