@@ -139,7 +139,7 @@ function createGear(group, spec) {
   const boreRadius = 1.9;
   addExtruded(group, annulusShape(radius * 0.82, boreRadius), thickness,
     spec.color, 'gear-body-with-through-bore');
-  addExtruded(group, annulusShape(radius * 0.35, boreRadius), thickness + 0.8,
+  addExtruded(group, annulusShape(Math.max(radius * 0.46, 2.65), boreRadius), thickness + 0.8,
     '#d8dce0', 'gear-hub-with-through-bore');
   for (let i = 0; i < teeth; i++) {
     const angle = (i / teeth) * Math.PI * 2;
