@@ -29,14 +29,14 @@ function argsToOptions(argv) {
   for(let i=0;i<argv.length;i++){
     if(argv[i].startsWith('--')){
       const key=argv[i].slice(2);
-      if(key==='allow-write'){args[key]=true;continue;}
+      if(key==='allow-write'||key==='mesh'){args[key]=true;continue;}
       const value=argv[++i];
       if(value===undefined)throw new Error('Missing value for --'+key);
       if(args[key]!==undefined)throw new Error('Duplicate CLI flag --'+key);
       args[key]=value;
     }else args._.push(argv[i]);
   }
-  const allowed=['prompt','request','target','workspace','allow-write','output','capability','iterations','attempts'];
+  const allowed=['prompt','request','target','workspace','allow-write','output','capability','iterations','attempts','mesh'];
   for(const key of Object.keys(args))if(key!=='_'&&!allowed.includes(key))
     throw new Error('Unknown CLI flag --'+key);
   return args;
@@ -66,7 +66,8 @@ function main() {
   if(command==='pipeline'){
     const prompt=flags.prompt||flags._.join(' ');
     if(!prompt)throw new Error('pipeline requires --prompt');
-    const output=runWorldPipeline(prompt,{targetLevel:flags.target||'L2'});
+    const output=runWorldPipeline(prompt,{targetLevel:flags.target||'L2',
+      ...(flags.mesh?{clearance:{mesh:true}}:{})});
     process.stdout.write(JSON.stringify(output,null,2)+'\n');
     return output.status==='ok'?0:output.status==='unsupported'?3:2;
   }
@@ -85,6 +86,8 @@ function main() {
   if(flags.output){
     request.options={...request.options,outputPath:flags.output};
   }
+  if(flags.mesh)request.options={...request.options,
+    clearance:{...(request.options?.clearance||{}),mesh:true}};
   if(flags.iterations)request.options={...request.options,maxIterations:Number(flags.iterations)};
   if(flags.attempts)request.options={...request.options,maxAttempts:Number(flags.attempts)};
   const result=runWorldTool(request,{

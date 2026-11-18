@@ -3,6 +3,7 @@ import { COMPONENTS } from '../../src/catalog.js';
 import { createPart } from '../../src/brick-system.js';
 import { graphPorts, solveConstraintGraph, validateConstraintGraph } from '../../src/constraint-graph.js';
 import { assertArtifact, createArtifact, sha256 } from '../world-contracts/index.mjs';
+import { reviewNominalAxialInterfaces, inspectGraphMeshContacts, inspectInsertionPath } from '../clearance-engine/index.mjs';
 
 export const GATE_STATUSES=Object.freeze(['PASS','WARN','FAIL','NOT_RUN','NOT_APPLICABLE']);
 const result=(gate,status,code,message,measurements)=>({
@@ -158,6 +159,57 @@ export function checkL2(worldSpec,geometry,assembly,catalog=COMPONENTS,options={
       result('L2.physics','NOT_RUN','DYNAMICS_NOT_IMPLEMENTED',
         'No mass, force, motor torque, bearing friction, structural or aero validation')
     ];
+    const fits=reviewNominalAxialInterfaces(a.graph,solved.poses,catalog);
+    if(fits.length) {
+      const blockers=fits.filter(f=>f.status==='FAIL');
+      checks.push(result('L2.axial-fit',blockers.length?'FAIL':'PASS',
+        blockers.length?'NOMINAL_INTERFACE_INTERFERENCE':'NOMINAL_COAXIAL_FITS_CHECKED',
+        blockers.length ?
+          blockers.map(f=>f.jointId+' '+f.code).join('; ') :
+          fits.length+' nominal shaft/bearing/bore interfaces meet radial and axial bounds',
+        {interfaces:fits,checkedCount:fits.length,failedCount:blockers.length}));
+      checks.push(result('L2.physical-fit','NOT_RUN','MEASURED_FIT_NOT_VERIFIED',
+        'Nominal radial clearance does not establish measured tolerances, fit under load or manufacturing strength'));
+    } else {
+      checks.push(result('L2.axial-fit','NOT_RUN','NO_TYPED_AXIAL_FITS',
+        'No physically typed coaxial fitting pairs available in this graph'));
+    }
+    const clearance=options.clearance;
+    if(clearance!==undefined) {
+      if(!clearance||typeof clearance!=='object'||Array.isArray(clearance)||
+         Object.keys(clearance).some(key=>!['mesh','path'].includes(key))||
+         (clearance.mesh!==undefined&&clearance.mesh!==true&&clearance.mesh!==false))
+        throw new Error('CLEARANCE_INPUT_INVALID: clearance accepts mesh boolean and path only');
+    }
+    if(clearance?.mesh===true) {
+      const mesh=inspectGraphMeshContacts(a.graph,solved.poses,catalog);
+      checks.push(result('L2.mesh-surface',mesh.incomplete?'NOT_RUN':
+        mesh.contacts.length?'WARN':'PASS',
+        mesh.incomplete?'MESH_BUDGET_INCOMPLETE':
+          mesh.contacts.length?'MESH_CONTACT_CANDIDATE':'MESH_SURFACE_SAMPLE_CLEAR',
+        'Bounded mesh triangle checks: '+mesh.contacts.length+
+          ' contact candidates, '+mesh.clearedCandidates+' OBB candidates cleared; '+
+          (mesh.incomplete?'resource limit reached':'static configuration only'),
+        {contacts:mesh.contacts,clearedCandidates:mesh.clearedCandidates,
+          broadPhaseCandidates:mesh.broadPhaseCandidates,incomplete:mesh.incomplete}));
+    } else {
+      checks.push(result('L2.mesh-surface','NOT_RUN','MESH_NARROW_PHASE_NOT_RUN',
+        'Opt in via options.clearance.mesh=true for a bounded static mesh candidate scan'));
+    }
+    if(clearance?.path) {
+      const path=inspectInsertionPath(a.graph,solved.poses,catalog,clearance.path);
+      checks.push(result('L2.insertion-path',path.status==='blocked'?'FAIL':
+        path.status==='incomplete'?'NOT_RUN':'WARN',
+        path.status==='blocked'?'ASSEMBLY_PATH_BLOCKED':
+          path.status==='incomplete'?'ASSEMBLY_PATH_INCOMPLETE':'SAMPLED_PATH_CLEAR',
+        path.status==='blocked'?
+          'A triangle contact/containment candidate blocks the requested insertion':
+          'Sampled assembly path checked; clearance between samples is not proven',
+        {path}));
+    }else {
+      checks.push(result('L2.insertion-path','NOT_RUN','INSERTION_PATH_NOT_RUN',
+        'No explicit moving body, installed-body stage or approach vector supplied'));
+    }
     return checks;
   }catch(error){
     return [failure('L2.kinematics','SOLVER_REJECTED_GRAPH',error.message)];
@@ -165,7 +217,7 @@ export function checkL2(worldSpec,geometry,assembly,catalog=COMPONENTS,options={
 }
 
 export function validateWorldArtifacts({worldSpec,geometry,assembly,targetLevel='L2',
- catalog=COMPONENTS,maxIterations=55}={}) {
+ catalog=COMPONENTS,maxIterations=55,clearance}={}) {
   if(!['L0','L1','L2'].includes(targetLevel))
     throw new Error('INVALID_VALIDATION_LEVEL');
   const subjects=[worldSpec,geometry,assembly].filter(Boolean).map(a=>a.contentHash);
@@ -178,7 +230,7 @@ export function validateWorldArtifacts({worldSpec,geometry,assembly,targetLevel=
   if(targetLevel==='L2'){
     if(!geometry || !assembly)
       checks.push(failure('L2.schema','ASSEMBLY_MISSING','L2 geometry and graph are required'));
-    else checks.push(...checkL2(worldSpec,geometry,assembly,catalog,{maxIterations}));
+    else checks.push(...checkL2(worldSpec,geometry,assembly,catalog,{maxIterations,clearance}));
   }
   const failed=checks.some(c=>c.status==='FAIL');
   // NOT_RUN is never counted as passing; pending L3+/physics readiness is explicit.

@@ -17,9 +17,9 @@ const allow={
 const optionsAllowed={
   plan:['targetLevel'],
   build:[],
-  validate:['targetLevel','maxIterations'],
+  validate:['targetLevel','maxIterations','clearance'],
   repair:['maxAttempts'],
-  export:['targetLevel','outputPath']
+  export:['targetLevel','outputPath','clearance']
 };
 const handlers={
   'world.assembly.plan':'plan',
@@ -113,7 +113,8 @@ export function runWorldTool(request,{workspace=null,writeAllowed=false,catalog=
       const level=parsedLevel(options.targetLevel,worldSpec.content.targetLevel);
       const reviewed=validateWorldArtifacts({
         worldSpec,geometry:input.geometry,assembly:input.assembly,
-        targetLevel:level,catalog,maxIterations:options.maxIterations
+        targetLevel:level,catalog,maxIterations:options.maxIterations,
+        clearance:options.clearance
       });
       return result(cap,reviewed.status,[reviewed.artifact],{
         summary:reviewed.summary
@@ -141,7 +142,7 @@ export function runWorldTool(request,{workspace=null,writeAllowed=false,catalog=
       // Ignore all user-supplied 'report' claims, recompute the report.
       const verified=validateWorldArtifacts({
         worldSpec,geometry:input.geometry,assembly:input.assembly,
-        targetLevel:level,catalog
+        targetLevel:level,catalog,clearance:options.clearance
       });
       if(verified.status!=='ok')
         return result(cap,'needs_revision',[verified.artifact],{
@@ -219,7 +220,7 @@ export function writeWorkspaceBundle(workspace,outputPath,bundle) {
   return path.relative(canonicalRoot,destination);
 }
 
-export function runWorldPipeline(prompt,{catalog=COMPONENTS,targetLevel='L2'}={}) {
+export function runWorldPipeline(prompt,{catalog=COMPONENTS,targetLevel='L2',clearance}={}) {
   const plan=runWorldTool({
     protocolVersion:CONTRACT_VERSION,operation:'plan',capability:'world.assembly.plan',
     input:{prompt},options:{targetLevel}
@@ -245,7 +246,7 @@ export function runWorldPipeline(prompt,{catalog=COMPONENTS,targetLevel='L2'}={}
   const assembly=build.artifacts.find(a=>a.kind==='AssemblyGraph');
   const validation=runWorldTool({
     protocolVersion:CONTRACT_VERSION,operation:'validate',capability:'world.kinematics.validate',
-    input:{worldSpec,geometry,assembly},options:{targetLevel}
+    input:{worldSpec,geometry,assembly},options:{targetLevel,...(clearance?{clearance}:{})}
   },{catalog});
   return {
     status:validation.status,steps:{plan,build,validation},
