@@ -11,7 +11,7 @@ intended to *assist and verify* existing design tools, not to replace BrickLink 
 
 ## 1. What can be demonstrated today (provable, from this repo)
 
-Three capabilities that a reviewer can run locally right now:
+Four capabilities that a reviewer can run locally right now:
 
 1. **Agent-native validation pipeline (L0→L1→L2).** A natural-language request becomes a typed
    `WorldSpec`, a rebuilt procedural `GeometryManifest`, an `AssemblyGraph`, and an
@@ -21,14 +21,22 @@ Three capabilities that a reviewer can run locally right now:
    the independent verifier (e.g. wheel count). Evidence:
    `tests/world-platform.test.mjs` "Agent proposal callback cannot smuggle a reduction of hard
    wheel count"; L0 mismatch "cannot be overridden by graph claims".
-3. **Nominal mating + bounded clearance evidence.** Coaxial beam/bearing/axle/wheel fits with
-   nominal radial clearance, engagement length, a bounded static mesh candidate scan that avoids
-   the OBB axle-in-hole false positive, and a **discrete** installed-stage insertion check.
-   Evidence: `node scripts/inspect-bearing-wheel.mjs` and its `--blocked` counter-example.
+3. **Nominal mating + bounded clearance evidence, with honest labelling.** Coaxial
+   beam/bearing/axle/wheel fits report nominal radial clearance and engagement as a distinct
+   `nominal-axial-fit` gate; a coarse oriented-box overlap is labelled a **broad-phase OBB proxy**
+   (`authoritative:false`) and never presented as a collision or a failed fit; mesh/CCD/manufacturing
+   gates stay `NOT_RUN`.
+   Evidence: `node scripts/inspect-bearing-wheel.mjs`, its `--blocked` counter-example, and
+   `tests/ai-agent.test.mjs`.
+4. **Bounded LDraw `.ldr`/`.mpd` import.** A minimal, safe importer maps standard LDraw part
+   references to catalog components with LDU→mm and Y-down→Y-up conversion, bounded nesting and
+   hard budgets. It does **not** copy third-party geometry and does **not** claim Studio round-trip.
+   Evidence: `packages/ldraw-interop/index.mjs`, `tests/ldraw-interop.test.mjs`,
+   `docs/rfc/ldraw-interop.md`.
 
-Three demoable end-to-end cases (all in-repo): the six-wheel Mars rover plan, the
-bearing/shaft/wheel nominal-fit example, and a four-bar / shaft-drive / linear-carriage constraint
-preset in the browser Constraint Lab.
+Four demoable end-to-end cases (all in-repo): the six-wheel Mars rover plan, the
+bearing/shaft/wheel nominal-fit example, a four-bar / shaft-drive / linear-carriage constraint
+preset in the browser Constraint Lab, and an LDraw import of a self-authored fixture.
 
 **Complementary space with BrickLink Studio / the LDraw ecosystem (hypothesis, not a claim):**
 Studio/LDraw are strong at part libraries, instruction authoring and rendering. Brick Worlds
@@ -36,12 +44,26 @@ focuses on **typed interface metadata + an independent kinematic/clearance valid
 agent-native artifact contract**. The plausible complement is "verify and reason about a design",
 not "author or replace it".
 
+## 1A. Capability tiers (implemented / verified / demoable / enterprise gaps / quantifiable gaps)
+
+| Tier | Meaning | Contents |
+| --- | --- | --- |
+| **Implemented** | Code exists in-repo | L0–L2 pipeline; graph solver; nominal-fit + bounded mesh + discrete path gates; Agent plan; CLI; MCP stdio; plugin registry; bounded LDraw import; 116 tests |
+| **Verified** | Proven by an executed check in this repo | `npm test` 116/116; `npm run test:skills`; `npm run build`; CLI registry/pipeline; `inspect-bearing-wheel` (+`--blocked`→exit 2); Playwright browser pass (0 console errors); GitHub Actions `verify` job green on the pushed SHA |
+| **Demoable** | A reviewer can run it live | Mars rover plan; bearing-wheel nominal fit (PASS) vs broad-phase proxy (WARN); four-bar closure; building request → `unsupported`/L0; blocked insertion → `needs_revision`; LDraw import of a self-authored fixture |
+| **Enterprise gaps** | Needed for a paid evaluation, absent today | Full real-part/element-ID dataset; measured tolerances & press-fit; continuous CCD; dynamics/torque/friction/mass; structural/energy/code solvers; multi-agent/on-prem model gateway; SSO/audit; sustained performance on large systems |
+| **Quantifiable gaps** | A number we can measure next | see §3 (all currently **unmeasured** — reported as `NOT_RUN`, never as an estimate) |
+
+**Element-ID / LDraw coverage gap (headline):** the LDraw catalogue has thousands of parts; this
+repo maps **6** part numbers and ships **0** third-party part files. Any "X% of a real design
+imports" figure must be *measured against a licensed fixture*; it is `NOT_RUN` today.
+
 ## 2. Five risks blocking a paid evaluation
 
 | # | Risk | Why it blocks | Current evidence |
 | --- | --- | --- | --- |
 | R1 | **Real-part compatibility** | The catalog is 101 *procedural* parts, not the full real brick inventory; IDs do not map to official element IDs. | `src/catalog.js`; no external element-ID dataset (licensing unresolved) |
-| R2 | **Studio / LDraw interoperability** | No `.ldr`/`.mpd` import/export exists; no round-trip diff has been measured. | not implemented (see §4) |
+| R2 | **Studio / LDraw interoperability** | A bounded **import** exists, but there is **no export**, no measured round-trip diff and only 6 mapped part numbers. | `packages/ldraw-interop/index.mjs`; `docs/rfc/ldraw-interop.md`; round-trip `NOT_RUN` |
 | R3 | **Mechanical-validation strength** | Only nominal fits + bounded static mesh + discrete path. No measured tolerance, CCD, dynamics or strength. | `L2.physical-fit = NOT_RUN`, `L2.motion-envelope = NOT_RUN` |
 | R4 | **Copyright / trademark / MIT scope** | Part naming, "LEGO"-adjacent wording and third-party asset provenance need review; brand disclaimer must stay. | `LICENSE` (MIT), unofficial fan-project disclaimer; no third-party part data committed |
 | R5 | **Data security / deployment** | Evaluation teams may require self-hosting and no external model calls; the client must never hold model API keys or unrestricted shell/HTTP. | `docs/agent-plugin-runtime.md`; runner rejects arbitrary keys; MCP exposes bounded tools only |
@@ -53,7 +75,8 @@ not "author or replace it".
 | Design-task time | time to reach a validated concept + BOM + steps | not yet measured | paired task timing vs. baseline |
 | Hard-constraint retention | % hard requirements preserved end-to-end | not yet measured | validator report diff |
 | Connection correctness | % graph edges that pass independent re-validation | not yet measured | `ValidationReport` counts |
-| Round-trip correctness | Studio/LDraw import→edit→export fidelity | **blocked** (R2) | diff after R2 lands |
+| Round-trip correctness | LDraw import→edit→export fidelity | **import verified; round-trip `NOT_RUN`** (no export, no licensed fixture) | fixture + diff after R2 lands |
+| LDraw import coverage | % of a real design's part references resolved | **`NOT_RUN`** (6 parts mapped; no licensed fixture) | count resolved references |
 | Build reproducibility | % of steps a human reproduces without ambiguity | not yet measured (human study) | observed re-build |
 | Diagnostic understandability | % of failures a user resolves from the message alone | not yet measured | user study |
 
