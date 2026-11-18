@@ -200,8 +200,8 @@ export function writeWorkspaceBundle(workspace,outputPath,bundle) {
   }
   if(cursor!==canonicalRoot){
     const stat=fs.lstatSync(cursor);
-    if(stat.isSymbolicLink()||!stat.isDirectory())
-      throw new Error('EXPORT_PARENT_UNSAFE');
+    if(stat.isSymbolicLink())throw new Error('EXPORT_PARENT_SYMLINK');
+    if(!stat.isDirectory())throw new Error('EXPORT_PARENT_UNSAFE');
   }
   for(const dir of pending.reverse())fs.mkdirSync(dir,{mode:0o700});
   cursor=path.dirname(destination);
