@@ -1,0 +1,22 @@
+{
+  "captured": "local node run on 2026-11-18",
+  "node": "v26.13.1",
+  "npm": "11.20.0",
+  "commands": [
+    { "command": "npm run test:skills", "exitCode": 0, "result": "Validated 12 canonical skills + Claude/Codex adapters + Pi router" },
+    { "command": "npm test", "exitCode": 0, "result": "tests 104 / pass 104 / fail 0" },
+    { "command": "npm run build", "exitCode": 0, "result": "vite build ok; dist/index.html + index-*.css + index-*.js (803.89 kB, gzip 215.66 kB)" },
+    { "command": "npm run world:run -- registry", "exitCode": 0, "result": "world-tools/v1 capability list emitted; world.anchors.design mode=guidance-only preserved" },
+    { "command": "node adapters/cli/world.mjs pipeline --prompt \"搭建一辆六轮火星探测车\"", "exitCode": 0, "result": "status ok; artifacts WorldSpec,GeometryManifest,AssemblyGraph,ValidationReport" },
+    { "command": "node adapters/cli/world.mjs pipeline --prompt \"装配一个轴承衬套、转轴和轮组\" --mesh", "exitCode": 0, "result": "status ok; kinematic-concept classification" },
+    { "command": "node adapters/cli/world.mjs pipeline --prompt \"设计一栋10层建筑\"", "exitCode": 0, "result": "status unsupported; artifacts WorldSpec,ValidationReport only (L0 requirements-only)" },
+    { "command": "node scripts/inspect-bearing-wheel.mjs", "exitCode": 0, "result": "summary pass7 warn3 fail0 notRun5 classification=kinematic-concept" },
+    { "command": "node scripts/inspect-bearing-wheel.mjs --blocked", "exitCode": 2, "result": "EXPECTED: fail1, diagnostic ASSEMBLY_PATH_BLOCKED (intentional counter-example)" },
+    { "command": "git diff --check", "exitCode": 0, "result": "no whitespace errors" }
+  ],
+  "regressionGuard": {
+    "newTests": ["component families follow the canonical ten-family taxonomy", "public documentation component counts match the catalog", "public documentation contains no stale 100-component or 46-factory claims", "documented family taxonomy matches the catalog", "index.html ships a favicon"],
+    "testCountBefore": 99,
+    "testCountAfter": 104
+  }
+}
