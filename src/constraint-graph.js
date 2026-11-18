@@ -9,7 +9,7 @@ export const GRAPH_MAX_FREE_JOINTS = 12;
 export const CONSTRAINT_KINDS = Object.freeze(['fixed', 'hinge', 'shaft', 'slider']);
 export const GRAPH_CATALOG_IDS = Object.freeze([
   'beam-3', 'beam-5', 'beam-7', 'beam-13',
-  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t', 'axle-3'
+  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t', 'axle-3', 'dome-2x2'
 ]);
 export const GRAPH_PRESETS = Object.freeze([
   { id: 'four-bar', name: 'Four-Bar Linkage', zh: '四连杆闭环机构' },
@@ -45,6 +45,7 @@ function componentSize(entry) {
     case 'wheel': return [(Number(s[0]) || 10) * 2, (Number(s[0]) || 10) * 2, Number(s[1]) || 7];
     case 'gear': return [(Number(s[0]) || 8) * 2, (Number(s[0]) || 8) * 2, Number(s[2]) || 3.2];
     case 'axle': return [3.5, 3.5, Number(s[0]) || 24];
+    case 'dome': return [(Number(s[0]) || 8) * 2, Number(s[0]) || 8, (Number(s[0]) || 8) * 2];
     default: return [16, 8, 8];
   }
 }
