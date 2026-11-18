@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { COMPONENTS } from '../src/catalog.js';
 import { createSixWheelRoverGraph } from '../src/ai-agent.js';
 import { createConstraintPreset } from '../src/constraint-graph.js';
@@ -25,6 +26,7 @@ import {
   runWorldTool, runWorldPipeline, writeWorkspaceBundle
 } from '../packages/world-runner/index.mjs';
 import { handleMcpMessage, MCP_TOOLS } from '../adapters/mcp/server.mjs';
+import { listDomainAdapters } from '../packages/world-domains/index.mjs';
 
 const tool=(operation,capability,input={},options={})=>({
   protocolVersion:'world-tools/v1',operation,capability,input,options
@@ -257,4 +259,94 @@ test('MCP pipeline returns validated concepts and L0-only building requests with
   const structure=handleMcpMessage({jsonrpc:'2.0',id:8,method:'tools/call',
     params:{name:'world_pipeline',arguments:{prompt:'设计一栋12层建筑'}}});
   assert.equal(structure.result.structuredContent.status,'unsupported');
+});
+
+
+test('Building and aerospace domain adapters each generate six L0 subsystem specifications',()=>{
+  const adapters=listDomainAdapters();
+  assert.equal(adapters.length,2);
+  for(const adapter of adapters){
+    assert.equal(adapter.level,'L0');
+    assert.equal(adapter.canGenerateGeometry,false);
+    assert.equal(adapter.canSolveKinematics,false);
+    assert.equal(adapter.physicalCertification,false);
+    assert.equal(adapter.subsystemCount,6);
+  }
+  const building=runWorldTool(tool('plan','building.requirements.plan',{
+    prompt:'设计一栋10层建筑'
+  }));
+  assert.equal(building.status,'unsupported');
+  const spec=building.artifacts[0].content;
+  assert.equal(spec.targetLevel,'L0');
+  assert.equal(spec.subsystems.length,6);
+  assert.ok(spec.subsystems.some(s=>s.id==='structure'));
+  assert.ok(spec.requirements.some(r=>r.property==='floorCount'&&r.value===10));
+  const aircraft=runWorldTool(tool('plan','aircraft.requirements.plan',{
+    prompt:'Design a passenger airplane'
+  }));
+  assert.equal(aircraft.status,'unsupported');
+  assert.equal(aircraft.artifacts[0].content.targetLevel,'L0');
+  assert.ok(aircraft.artifacts[0].content.subsystems.some(s=>s.id==='aerodynamics'));
+  const report=validateWorldArtifacts({worldSpec:aircraft.artifacts[0],targetLevel:'L0'});
+  assert.ok(report.checks.some(c=>c.code==='SUBSYSTEMS_REQUIRE_PHYSICS'&&c.status==='WARN'));
+});
+
+test('Dedicated Skill CLI and general CLI execute identical allowlisted plan capability',()=>{
+  const root=REPO_ROOT;
+  const direct=spawnSync(process.execPath,[path.join(root,'adapters/cli/world.mjs'),
+    'plan','--prompt','搭建一辆六轮火星探测车'],{
+    encoding:'utf8',cwd:root,timeout:20000,maxBuffer:3e6
+  });
+  assert.equal(direct.status,0,direct.stderr);
+  const plain=JSON.parse(direct.stdout);
+  assert.equal(plain.status,'ok');
+  const dedicated=spawnSync(process.execPath,[path.join(root,
+    '.agents/skills/ai-assembly-planning/scripts/plan.mjs'),
+    '--prompt','搭建一辆六轮火星探测车'],{
+    encoding:'utf8',cwd:root,timeout:20000,maxBuffer:3e6
+  });
+  assert.equal(dedicated.status,0,dedicated.stderr);
+  const skill=JSON.parse(dedicated.stdout);
+  assert.equal(skill.status,'ok');
+  assert.deepEqual(skill.artifacts,plain.artifacts);
+  assert.equal(skill.data.proposal.graph.joints.length,9);
+});
+
+test('Actual MCP stdio process exchanges JSON-RPC messages without non-JSON output',()=>{
+  const messages=[
+    {jsonrpc:'2.0',id:1,method:'initialize',params:{
+      protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'test',version:'1'}
+    }},
+    {jsonrpc:'2.0',method:'notifications/initialized'},
+    {jsonrpc:'2.0',id:2,method:'tools/list',params:{}},
+    {jsonrpc:'2.0',id:3,method:'tools/call',params:{
+      name:'world_pipeline',arguments:{prompt:'设计一辆六轮火星探测车'}
+    }}
+  ];
+  const run=spawnSync(process.execPath,[path.join(REPO_ROOT,'adapters/mcp/server.mjs')],{
+    input:messages.map(x=>JSON.stringify(x)).join('\n')+'\n',
+    encoding:'utf8',cwd:REPO_ROOT,timeout:25000,maxBuffer:4e6
+  });
+  assert.equal(run.status,0,run.stderr);
+  const result=run.stdout.trim().split(/\n/).map(s=>JSON.parse(s));
+  assert.deepEqual(result.map(x=>x.id),[1,2,3]);
+  assert.equal(result[2].result.structuredContent.status,'ok');
+  assert.equal(result[1].result.tools.length,7);
+});
+
+test('Agent proposal callback cannot smuggle a reduction of hard wheel count',()=>{
+  const worldSpec=compileWorldSpec('搭建一辆六轮火星探测车').artifact;
+  const bad=createSixWheelRoverGraph();
+  bad.joints[0].a.portId='invalid-port';
+  const attempted=repairGraphWithEvidence(bad,{worldSpec,maxAttempts:2,
+    propose:()=>{
+      const modified=createSixWheelRoverGraph();
+      modified.bodies=modified.bodies.filter(b=>b.id!=='wheel_port_3');
+      modified.joints=modified.joints.filter(j=>j.b.bodyId!=='wheel_port_3');
+      return modified;
+    }
+  });
+  assert.equal(attempted.status,'needs_revision');
+  assert.ok(attempted.diagnostics.some(d=>d.code==='HARD_REQUIREMENT_VIOLATED'));
+  assert.ok(attempted.trace.content.attempts.length<=3);
 });
