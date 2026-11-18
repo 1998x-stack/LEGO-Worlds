@@ -46,7 +46,7 @@ function result(capability,status,artifacts=[],data={},diagnostics=[],runId) {
 
 function fail(capability,error,runId) {
   const message=String(error?.message||error).slice(0,300);
-  const code=/^([A-Z][A-Z0-9_]+):/.exec(message)?.[1]||'RUNNER_EXECUTION_FAILED';
+  const code=/^([A-Z][A-Z0-9_]+)(?::|$)/.exec(message)?.[1]||'RUNNER_EXECUTION_FAILED';
   const status=code==='CAPABILITY_NOT_EXECUTABLE'?'unsupported':
     code==='RUNNER_EXECUTION_FAILED'?'failed':'needs_revision';
   return result(capability,status,[],{},[{
