@@ -2,11 +2,17 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## General Constraint Graph Lab (V0.6)
+
+**[Launch the General Constraint Lab](https://1998x-stack.github.io/LEGO-Worlds/#constraints)**. This release moves beyond strict parent/child assemblies and supports an editable **multi-connection rigid-body graph**. Add bodies from the component catalog, choose two connection datums and create **fixed, hinge, coaxial shaft or linear slider** joints. A damped numerical solver handles simple closed loops and reports incompatible constraints instead of silently violating them.
+
+The lab ships three runnable examples — **Four-Bar Linkage**, **Linear Carriage**, and **Shaft Drive** — with motor controls, joint sliders, visible connection markers, oriented-box collision warnings, live residuals, undo/redo and JSON/GLB export. Only the JSON retains the editable constraints; GLB is a static pose snapshot. Virtual connection datums are schematic and are not proof of physical fit. Read [General Constraint Graph specification](docs/constraint-graph.md).
 
 ## Hierarchical Joint & Assembly Lab (V0.5)
 
@@ -84,6 +90,8 @@ src/
   snap-engine.js       # Rigid stud/socket solver, overlap checks and JSON schema
   technic-engine.js    # Beam pin/axle joints, keyed mounts and gear ratios
   hierarchy-engine.js # Joint tree, angle propagation and assembly steps
+  constraint-graph.js # Multi-connection graph, closure solver and OBB checks
+  constraint-lab.js   # Editable kinematic graph, motors and diagnostics
   hierarchy-lab.js    # Interactive hierarchy/hinge animation inspector
   mechanics-lab.js     # Interactive mechanical assembly and drive animation
   builder-lab.js       # Drag/rotate/preview interactive Three.js builder
@@ -97,6 +105,7 @@ docs/
   snap-builder.md
   technic-mechanics.md
   hierarchy-assembly.md
+  constraint-graph.md
   roadmap.md
 tests/
   catalog.test.mjs
@@ -104,6 +113,7 @@ tests/
   snap-engine.test.mjs
   technic-engine.test.mjs
   hierarchy-engine.test.mjs
+  constraint-graph.test.mjs
 .github/workflows/
   pages.yml
 ```
