@@ -42,3 +42,7 @@ When adding a house or high-rise, split by floors/zones/services and manage **m-
 ## Interfaces for future model-driven agents
 
 The current `src/ai-agent.js` is an offline, deterministic and template-grounded baseline. A future LLM adapter may **propose** a JSON graph but never gets to bypass catalog-ID resolution, the graph solver, BOM/step derivation or domain safety gates. Keep model/API credentials server-side and never place them into the GitHub Pages client.
+
+## Future large-world design
+
+For buildings, aircraft, robotics, multiscale units and independently validated physics evidence, read [Physical World Architecture](physical-world-architecture.md). This is a staged design document, not a claim that full physics solvers already exist.
