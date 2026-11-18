@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "registryBlobSha1": "30e30dac86117d7cee28a28d6934c2cb6245fa74",
+  "registryBlobSha1": "020280886481996617144c65b4cdb6a87e7d16f7",
   "plugins": [
     {
       "id": "world-systems-architect",
@@ -22,9 +22,9 @@
     },
     {
       "id": "mechanical-constraint-solving",
-      "version": "1.0.0",
-      "manifestBlobSha1": "e17ff78962693415e48cf02ee89ba0a8189657e2",
-      "skillBlobSha1": "bcaf887b351573d8efb774706f78bbe2a2747194"
+      "version": "1.1.0",
+      "manifestBlobSha1": "078a015d9a6f524d0f4c212c43f1928046e10379",
+      "skillBlobSha1": "4120498e5e297f9d4eae65abd733a8f6d00cfd91"
     },
     {
       "id": "physics-validation",
