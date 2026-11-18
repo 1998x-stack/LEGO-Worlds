@@ -4,7 +4,7 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
 
@@ -18,7 +18,13 @@
 
 在模型详情窗口点击 **Show anchors**，可以显示三维锚点：蓝色代表公接口，橙色代表母接口，绿色代表中性定位基准。锚点会跟随零件旋转、爆炸视图和装配步骤变化。
 
-当前阶段已经实现锚点生成、坐标变换、接口兼容性筛选和可视化；尚未实现拖动吸附、碰撞检测和自动装配求解。部分装饰件、轮组和传动接口仍为示意基准，不能视为真实打印配合保证。详见[连接锚点规范](docs/connection-anchors.md)。
+当前阶段已经实现锚点生成、坐标变换、接口兼容性筛选及可视化，并新增面向标准凸点与底部接口的拖动吸附和基础实体碰撞检查；Technic、齿轮及铰链等复杂接口仍未开放通用自动吸附。部分装饰件、轮组和传动接口仍为示意基准，不能视为真实打印配合保证。详见[连接锚点规范](docs/connection-anchors.md)。
+
+## Snap Builder Lab · 自动吸附拼搭工作台
+
+首页新增 **Builder** 工作区：选择标准砖块、薄板、光滑板或 Jumper，点击添加后拖到已有零件附近。绿色半透明预览表示可以吸附，红色表示实体重叠，黄色表示没有找到合适的连接点。支持 90° 旋转、±3.2 mm 高度调节、撤销/重做、删除零件、JSON 装配关系保存与导入，以及 GLB 模型导出。
+
+初期以固定的 2×6 薄板作为底座，仅对 stud/socket 凸点网格开放自动吸附，不能视为精确制造配合或机械强度保证。详见[自动吸附拼搭技术文档](docs/snap-builder.md)。
 
 ## 首期三个核心系列
 
@@ -96,6 +102,8 @@ src/
   catalog.js          # 系列、组件目录与装配清单
   brick-system.js     # 可复用程序化零件几何
   connection-anchors.js # 锚点生成、坐标变换与接口兼容性
+  snap-engine.js       # 吸附求解、碰撞校验、装配 JSON
+  builder-lab.js       # Three.js 拖动拼搭工作台
   viewer.js           # Three.js 场景、爆炸视图与装配步骤
   main.js             # 首页、筛选、组件浏览与交互
   styles.css          # 积木主题视觉系统与响应式布局
@@ -103,10 +111,12 @@ docs/
   architecture.md
   component-system.md
   connection-anchors.md
+  snap-builder.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
+  snap-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
