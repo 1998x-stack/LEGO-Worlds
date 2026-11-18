@@ -47,6 +47,21 @@ test('component library contains 101 coded reusable components', () => {
   }
 });
 
+const CANONICAL_FAMILIES = [
+  'Bricks', 'Plates & Tiles', 'Slopes & Curves', 'Connectors & SNOT',
+  'Technic Structure', 'Gears & Transmission', 'Wheels & Motion',
+  'Architecture', 'Nature', 'Special'
+];
+
+test('component families follow the canonical ten-family taxonomy', () => {
+  const families = [...new Set(COMPONENTS.map(component => component.family))].sort();
+  assert.deepEqual(families, [...CANONICAL_FAMILIES].sort());
+  const technic = COMPONENTS.filter(component => component.code.startsWith('BW-TC-'));
+  assert.ok(technic.length > 0, 'expected Technic-coded components');
+  assert.ok(technic.every(component => component.family === 'Technic Structure'),
+    'every BW-TC-* component must share the single "Technic Structure" family');
+});
+
 test('every published assembly produces finite, non-empty Three.js bounds', () => {
   for (const model of MODELS) {
     const { root, parts } = buildAssembly(model);
