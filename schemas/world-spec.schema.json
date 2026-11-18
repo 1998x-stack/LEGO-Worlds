@@ -139,6 +139,44 @@
         }
       },
       "additionalProperties": false
+    },
+    "subsystems": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "requirements",
+          "readiness"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "requirements": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 140
+            }
+          },
+          "readiness": {
+            "const": "requirements-only"
+          }
+        }
+      }
     }
   }
 }

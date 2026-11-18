@@ -4,6 +4,7 @@ import { createPart } from '../../src/brick-system.js';
 import { graphPorts, solveConstraintGraph, validateConstraintGraph } from '../../src/constraint-graph.js';
 import { interpretBuildRequest, createAssemblyPlan } from '../../src/ai-agent.js';
 import { createArtifact, assertArtifact, sha256 } from '../world-contracts/index.mjs';
+import { domainL0Systems } from '../world-domains/index.mjs';
 
 function diagnosticPrompt(prompt) {
   if(typeof prompt!=='string'||!prompt.trim()||prompt.length>600)
@@ -39,10 +40,13 @@ export function compileWorldSpec(raw,{targetLevel='L2'}={}) {
   const assumptions=request.intent==='mars-rover'
     ? ['Wheel joints are virtual bearing datums, not functional axles or suspension']
     : [];
+  const domain=domainL0Systems(request.domain);
+  for(const required of domain.unresolved)if(!unresolved.includes(required))unresolved.push(required);
+  const effectiveLevel=request.mode==='template-grounded'?targetLevel:'L0';
   const worldSpec={
     schemaVersion:'world-spec/v1',kind:'WorldSpec',id:'spec_'+sha256(prompt).slice(7,19),
-    domain:request.domain,prompt,targetLevel,
-    requirements,assumptions,unresolved,
+    domain:request.domain,prompt,targetLevel:effectiveLevel,
+    requirements,assumptions,unresolved,subsystems:domain.subsystems,
     provenance:{generator:'deterministic-local-planner',source:'user'}
   };
   const artifact=createArtifact('WorldSpec','L0',worldSpec,{

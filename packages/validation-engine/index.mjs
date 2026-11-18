@@ -50,6 +50,15 @@ export function checkL0(worldSpec,assembly=null,catalog=COMPONENTS) {
     }else checks.push(result('L0.requirements','WARN','HARD_REQUIREMENT_UNSUPPORTED',
       'No independent verifier for hard property '+req.property));
   }
+  if(spec.subsystems?.length) {
+    const ids=spec.subsystems.map(system=>system.id);
+    if(new Set(ids).size!==ids.length)
+      checks.push(failure('L0.subsystems','DUPLICATE_SUBSYSTEM_ID',
+        'All building/aircraft systems require distinct IDs'));
+    else checks.push(result('L0.subsystems','WARN','SUBSYSTEMS_REQUIRE_PHYSICS',
+      spec.subsystems.length+' domain subsystems captured at L0 only; no L1/L2 engineering solver',
+      {subsystems:spec.subsystems.length}));
+  }
   if(spec.unresolved.length)checks.push(result('L0.requirements','WARN','REQUIREMENTS_UNRESOLVED',
     spec.unresolved.length+' open engineering assumptions or missing checks',
     {unresolvedCount:spec.unresolved.length}));
