@@ -29,3 +29,19 @@ Use only when the request matches the frontmatter description. For unfamiliar so
 ## Stop conditions
 
 Do not claim verified manufacture, certified building safety, flightworthiness or general physics behavior from nominal geometry, OBB previews or template planning. Report unsupported constraints explicitly.
+
+## Registry V2 capability contract
+
+- Machine-readable plugin manifest: [plugin.json](plugin.json); authoritative skill: this `SKILL.md`.
+- Registered capability IDs: `world.requirements.plan`.
+- Runtime execution is strictly allowlisted by `packages/world-runner/index.mjs`; the manifest cannot execute arbitrary commands.
+- Shared typed requests and results: `schemas/tool-request.schema.json` and `schemas/tool-result.schema.json`.
+- L0/L1/L2 evidence is verified by `packages/validation-engine/index.mjs`, **never by plugin self-report**.
+
+Run the dedicated plugin entrypoint with the indicated arguments:
+
+```bash
+node .agents/skills/world-systems-architect/scripts/plan.mjs --prompt "Design a building"
+```
+
+Executable scripts accept bounded JSON requests and return machine-readable `world-tools/v1` results. Never silently weaken hard requirements, tolerance limits or physics-readiness claims.

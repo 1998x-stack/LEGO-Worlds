@@ -29,3 +29,13 @@ Use only when the request matches the frontmatter description. For unfamiliar so
 ## Stop conditions
 
 Do not claim verified manufacture, certified building safety, flightworthiness or general physics behavior from nominal geometry, OBB previews or template planning. Report unsupported constraints explicitly.
+
+## Registry V2 capability contract
+
+- Machine-readable plugin manifest: [plugin.json](plugin.json); authoritative skill: this `SKILL.md`.
+- Registered capability IDs: `world.anchors.design`.
+- Runtime execution is strictly allowlisted by `packages/world-runner/index.mjs`; the manifest cannot execute arbitrary commands.
+- Shared typed requests and results: `schemas/tool-request.schema.json` and `schemas/tool-result.schema.json`.
+- L0/L1/L2 evidence is verified by `packages/validation-engine/index.mjs`, **never by plugin self-report**.
+
+**Guidance-only capability:** the registry intentionally marks this workflow non-executable. Its domain references and examples support Agent reasoning, but must not be mistaken for an implemented physical solver. No arbitrary script execution fallback is permitted.
