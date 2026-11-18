@@ -663,8 +663,8 @@ document.querySelector('#hierarchy-launch').addEventListener('click', () => {
           safe(c.driven) + ' follows ' + safe(c.driver) + ' × ' + c.ratio + '</div>').join('');
         steps.innerHTML = snapshot.steps.map(s =>
           '<button class="hierarchy-step" data-hierarchy-step="' + s.step + '">' +
-            '<span>' + String(s.step).padStart(2,'0') + '</span><strong>' +
-            safe(s.partId) + '</strong><small>' + safe(s.nodeId) + '</small></button>').join('');
+            '<span>' + String(s.step).padStart(2,'0') + '</span><strong title="' + safe(s.partId) + '">' +
+            safe(s.componentZh || s.componentName || s.partId) + '</strong><small>' + safe(s.operationZh || s.nodeId) + '</small></button>').join('');
       }
       if (snapshot.selected !== selectedNode) selectedNode = snapshot.selected;
       tree.querySelectorAll('[data-hierarchy-node]').forEach(button => {
