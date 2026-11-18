@@ -4,9 +4,30 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [Agent 插件运行规范](docs/agent-plugin-runtime.md) · [复杂物理世界架构](docs/physical-world-architecture.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
+
+## Agent-Native Skills 插件运行体系 · V0.8
+
+已从静态 Skill 说明升级为 **可发现、可执行、可独立验证的 Agent 插件系统**。仓库 12 个正式 Skill 均拥有 `plugin.json`，Registry V2 维护能力 ID、依赖图、版本锁、执行就绪状态与最小权限。首批 8 个 Skill 通过固定的 Runner 提供真实业务入口，其余标为 **guidance-only**，不冒充物理求解器。
+
+- **L0 需求：** `WorldSpec` 保留原始需求、轮数等硬约束，建筑和飞机输出子系统需求（六类），不伪造真实工程结论。
+- **L1 几何：** 直接调用原有 Three.js 程序化模型生成真实几何，独立复核包围盒、组件 ID 与连接锚点。
+- **L2 装配：** 调用现有固定、铰链、转轴、滑轨与闭环求解器，记录误差、限位、简化 OBB 碰撞提示与未运行的物理检查。
+- **Agent 纠错：** 有限次尝试、记录可验证的差异与诊断；不自动删减用户六轮要求、提高容差或谎报动力学通过。
+- **CLI / MCP：** 无需额外 LLM 后端，Codex、Pi、Claude 能调用同一核心工具。MCP 为本地受限 stdio 适配器，非完整认证的通用 MCP 服务。
+
+```bash
+npm install
+npm run world:run -- registry
+npm run world:pipeline -- --prompt "搭建一辆六轮火星探测车"
+npm run world:pipeline -- --prompt "设计一栋10层建筑"
+npm run world:mcp
+npm run test:skills && npm test && npm run build
+```
+
+详细设计：[Agent 插件协议](docs/agent-plugin-runtime.md) · [Registry V2](.agents/skills/registry.json) · [L0/L1/L2 Schema](schemas/) · [Skills 系统](docs/skills-system.md)。
 
 ## AI 拼搭 Agent 与跨平台物理世界 Skills · V0.7
 

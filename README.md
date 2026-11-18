@@ -2,11 +2,40 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Plugin Runtime](docs/agent-plugin-runtime.md) · [Physical World Architecture](docs/physical-world-architecture.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## Agent-Native World Plugin Runtime (V0.8)
+
+This repository now has a **real first-party Agent Skills execution layer**, not just portable prompt instructions. All **12 canonical Skills** have versioned `plugin.json` capability manifests. Registry V2 resolves plugin dependencies, declares execution readiness and least-privilege permissions, and locks canonical sources. See the [full runtime specification](docs/agent-plugin-runtime.md).
+
+L0 `WorldSpec` captures traceable requirements; L1 `GeometryManifest` records **rebuilt Three.js component geometry bounds and connector datums**; L2 `AssemblyGraph` is checked by the real constraint solver. A separate validator produces content-addressed reports, and a bounded repair loop can normalize safe identifiers without removing hard requirements or relaxing solver limits.
+
+```bash
+npm install
+npm run test:skills
+npm test
+npm run build
+
+# Discover all 12 Skills and runnable capabilities
+npm run world:run -- registry
+
+# Native Agent workflow: NL request → L0 → L1 → L2
+npm run world:pipeline -- --prompt "搭建一辆六轮火星探测车"
+
+# Building/aircraft plans stop at L0 subsystem requirements
+npm run world:pipeline -- --prompt "设计一栋10层建筑"
+
+# Optional local MCP stdio adapter (no new LLM backend required)
+npm run world:mcp
+```
+
+Codex, Claude and Pi can call the same [CLI](adapters/cli/world.mjs), [MCP tools](adapters/mcp/server.mjs), or executable skill scripts. The runtime **never executes a command from an untrusted plugin manifest**, does not permit arbitrary network/subprocess actions, and writes exported JSON only with explicit workspace authorization. Eight first-party Skills currently provide runnable capability entrypoints; the remaining domain workflows are deliberately marked **guidance-only**. The MCP stdio adapter supports a limited set of local tools and has not undergone full interoperability certification.
+
+[Registry V2](.agents/skills/registry.json) · [L0/L1/L2 contracts](schemas/) · [Runner](packages/world-runner/index.mjs) · [Independent validator](packages/validation-engine/index.mjs) · [Bounded repair](packages/agent-repair/index.mjs)
 
 ## AI Assembly Agent & cross-platform Skills (V0.7)
 

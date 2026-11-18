@@ -136,3 +136,24 @@ The browser's deterministic `src/ai-agent.js` parses supported requests, compile
 The engineering instruction layer is intentionally separate from the runtime: root `AGENTS.md`, twelve canonical bundles under `.agents/skills/`, Claude discovery adapters under `.claude/skills/`, Codex mirrors under `.codex/skills/` (Codex officially discovers the canonical .agents path), and a unique Pi-specific router under `.pi/skills/` to avoid duplicate Pi skill names. A Node registry checker and wrapper generator are CI gates. See [skills system](skills-system.md) and [Agent planner](ai-assembly-agent.md).
 
 Future buildings and aircraft require subsystem-level scene partitioning, physics validation, measured material parameters and specialized safety/flight engineering reviews. The current 20-body graph limit must not be treated as a world-scale scene capacity specification.
+
+## V0.8 Agent-Native Plugin Runtime
+
+~~~text
+Codex / Claude / Pi agents
+        ↓ read SKILL.md and plugin.json
+Registry V2: capabilities + dependency DAG + pinned manifest
+        ↓ fixed first-party capability dispatch
+Tool Runner: plan / build / validate / repair / export
+        ├── L0 WorldSpec → traceable requirements and domain subsystems
+        ├── L1 GeometryManifest → actual procedural mesh/anchor checks
+        ├── L2 AssemblyGraph → constraint solver and OBB diagnostics
+        ├── independent ValidationReport, SHA-256 evidence and RepairTrace
+        └── authorized JSON bundle export
+        ↓
+Node CLI / minimal stdio MCP adapter → same trusted engine
+~~~
+
+Module boundaries: packages/world-contracts for JSON Schemas and hash lineage; packages/plugin-registry for dependency resolution and lock validation; packages/world-builder for L0/L1 assets; packages/world-domains for building/aircraft requirements-only plans; packages/validation-engine for independent gates; packages/agent-repair for bounded canonical fixes; and packages/world-runner for allowlisted execution. Exports revalidate source artifacts and never trust imported report claims. See [full plugin specification](agent-plugin-runtime.md).
+
+No actual full-world physical engine was added; the building/aircraft adapter currently produces named L0 subsystem requirements without L1/L2 geometry or engineering validation. The local stdio MCP implementation is intentionally restricted and not conformance-certified.

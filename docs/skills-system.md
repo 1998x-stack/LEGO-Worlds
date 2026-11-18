@@ -46,3 +46,9 @@ The current `src/ai-agent.js` is an offline, deterministic and template-grounded
 ## Future large-world design
 
 For buildings, aircraft, robotics, multiscale units and independently validated physics evidence, read [Physical World Architecture](physical-world-architecture.md). This is a staged design document, not a claim that full physics solvers already exist.
+
+## Registry V2 and executable tool contract
+
+This repository now includes [Agent-Native Plugin Runtime](agent-plugin-runtime.md) with a versioned plugin.json in all 12 canonical skills, pinned sources in registry.lock.json and strongly typed L0/L1/L2 artifacts under schemas/. Unlike SKILL.md instructions, these machine-readable extensions define exact capabilities, dependency DAG, execution readiness, permissions and validator contracts. Eight first-party skills currently have executable entrypoints routed through an allowlisted Node runner; guidance-only skills cannot invoke arbitrary tools.
+
+For native Agent use, run `npm run world:run -- registry` to inspect capabilities; `npm run world:pipeline -- --prompt "搭建一辆六轮火星探测车"` to compile and independently validate; or `npm run world:mcp` to expose the restricted local MCP tool set. No second LLM backend is required.

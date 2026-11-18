@@ -27,8 +27,16 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Run catalog and geometry contract tests
+      - name: Validate pinned Skill plugins and Registry V2
+        run: npm run test:skills
+      - name: Run catalog, graph, Agent and runtime regression tests
         run: npm test
+      - name: Smoke-test Agent-native CLI registry and L0-L2 pipeline
+        run: |
+          npm run world:run -- registry > /dev/null
+          node adapters/cli/world.mjs pipeline --prompt "搭建一辆六轮火星探测车" > /tmp/lego-world-pipeline.json
+          node -e 'const p=require("/tmp/lego-world-pipeline.json"); if(p.status!=="ok" || !p.artifacts.some(a=>a.kind==="ValidationReport")) process.exit(1)'
+
       - name: Build static site
         run: npm run build
       - name: Verify Pages output and base path

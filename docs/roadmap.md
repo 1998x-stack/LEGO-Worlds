@@ -67,7 +67,22 @@
 - [ ] Add model-backed plan proposals behind a server-side permission/validation boundary.
 - [ ] Add rover suspension, actual wheel axle geometries, motors and terrain-dynamics checks.
 
-## V0.8 — Asset pipeline
+## V0.8 — Agent-native Plugin Runtime and L0/L1/L2 execution
+- [x] Registry V2 and 12 versioned Skill plugin manifests with capability IDs, readiness, DAG dependencies and least-privilege declarations.
+- [x] Pin canonical SKILL.md / plugin.json via content-addressed registry.lock.json and enforce drift checks in CI.
+- [x] Define JSON Schemas and stable SHA-256 artifact lineage for WorldSpec, GeometryManifest, AssemblyGraph, ValidationReport and RepairTrace.
+- [x] Implement Node Runner for plan/build/validate/repair/export and a complete L0–L2 pipeline.
+- [x] Rebuild actual procedural Three.js component geometry at L1 and independently recheck bounds/anchors.
+- [x] Verify hard wheel-count requirements, graph closure and nonadjacent OBB warnings at L0/L2 with explicit pending physics checks.
+- [x] Add bounded conservative repair loop, trace audit and hostile proposal tests.
+- [x] Expose capability-specific executable Skill scripts and local CLI/MCP stdio adapters.
+- [x] Provide building and aircraft L0-only subsystem manifests, with no unsupported L1/L2/structural/flight claims.
+- [x] Run CI unit/adversarial tests and browser production build.
+- [ ] Mesh narrow-phase, continuous swept collision and actual mechanical bearing/suspension models.
+- [ ] Full MCP protocol conformance suite, published cross-agent integration examples and optional externally hosted provider.
+- [ ] Building structural/FEM and aircraft aero/flight domain solver adapters.
+
+## V0.9 — Asset pipeline
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
@@ -75,6 +90,6 @@
 
 ## V1 — Open construction platform
 - [ ] Searchable, versioned component database.
-- [ ] Public assembly schema and documented connection graph.
-- [x] Versioned, template-grounded agent recipes and independent validation; unconstrained LLM generation is still planned.
+- [x] Versioned JSON Schemas for L0/L1/L2 and published constraint graph documentation.
+- [x] Template-grounded Agent plans and independent validation through reusable Skill tools; optional future LLM proposals are an adapter, not a required second backend.
 - [ ] Optional print-oriented export with explicit fit and safety disclaimers.
