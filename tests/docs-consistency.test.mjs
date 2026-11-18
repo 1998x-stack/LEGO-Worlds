@@ -44,3 +44,13 @@ test('index.html ships a favicon so the page issues no empty icon request', () =
   const html = read('index.html');
   assert.match(html, /rel="icon"/, 'index.html must declare a favicon');
 });
+
+test('installation is reproducible: a lockfile exists and CI uses npm ci', () => {
+  const lock = JSON.parse(read('package-lock.json'));
+  assert.ok(lock.lockfileVersion >= 3, 'expected npm lockfileVersion >= 3');
+  assert.equal(lock.name, 'lego-worlds');
+  assert.ok(Object.keys(lock.packages).length > 1, 'lockfile must pin the dependency tree');
+  const workflow = read('.github/workflows/pages.yml');
+  assert.match(workflow, /run: npm ci\b/, 'CI must install with npm ci');
+  assert.doesNotMatch(workflow, /run: npm install\b/, 'CI must not use npm install');
+});
