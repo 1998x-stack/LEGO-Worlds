@@ -100,3 +100,9 @@ Export includes computed parts and connections. Import reconstructs those arrays
 ## Suggested next step
 
 Add independent subassemblies, true pin/axle insertion constraints, explicit revolute-joint state, gear phase/contact checks and collision narrow phase. Then feed the joint graph into step-by-step animation and a controlled AI model-building agent.
+
+## V0.9 next-generation clearance bridge
+
+The separate **Sleeve Bearing & Wheel** preset in the general [Constraint Lab](../README.md) and the natural-language Agent is now a four-body assembly with a real modeled hollow sleeve, beam through-hole, cross axle and wheel hub bore. Its L2 validation includes nominal radial/axial engagement checks; opt-in mesh triangle surface tests can reject a known false-positive axle/beam OBB warning; explicit straight insertion paths are sampled against the declared already-installed parts.
+
+The V0.4 Mechanics Lab itself remains a guided kinematic demonstrator and has not been replaced by a physics engine. See [Clearance V0.9](clearance-v09.md) for budgets, API, test evidence and limitations.

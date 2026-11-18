@@ -47,7 +47,7 @@ These margins come from prototype geometry constants; they are not guaranteed pr
 1. **Broad phase:** world-space AABBs reject clearly separated parts; directly connected pairs are omitted from general contact screening because intended engagement requires the separate nominal-fit checker.
 2. **Bounded narrow phase:** real procedural mesh triangles are transformed to world coordinates, filtered by per-triangle AABBs and tested using 3D separating-axis projections. A capped set of vertex parity rays can flag fully contained candidates.
 
-The output records contact candidates, incomplete resource budgets, candidates resolved as false alarms, and the exact inspection method. It tests at most **6,000 triangles per part** and **60 candidate body pairs**.
+The output records contact candidates, incomplete resource budgets, candidates resolved as false alarms, and the exact inspection method. It tests at most **6,000 triangles per part**, **500,000 triangle-pair comparisons per candidate** and **60 candidate body pairs**.
 
 An important regression: the legacy OBB check flags `support` versus `axle` as overlapping because the shaft lies inside the beam's broad bounding box. Real geometry inspection finds no intersecting triangle surfaces for their coaxial **through-hole** arrangement, so it can clear this particular OBB false alarm.
 

@@ -6,7 +6,7 @@ The connection-anchor layer gives each reusable component a versioned set of loc
 
 This milestone implements:
 
-- Deterministic anchor generation for all 100 catalogue components.
+- Deterministic anchor generation for all 101 catalogue components.
 - Local and assembly-space coordinates in millimetres.
 - Position, normal, up direction and optional rotational axis.
 - Typed interfaces, nominal dimensions, role and accepted counterpart kinds.
@@ -136,3 +136,11 @@ Next milestones:
 3. Add collision and clearance checks before committing a snap.
 4. Add persisted connection edges to assembly manifests.
 5. Validate critical interfaces against measured physical samples before print-oriented use.
+
+## V0.9 bearing sleeve and nominal axial engagements
+
+The 101st component `bearing-sleeve-8mm` introduces two native, separately addressable anchors: `bearing-outer` (male Ø4.68 mm, nominal width 7.6 mm) and `bearing-bore` (female Ø3.9 mm, nominal bore depth 7.6 mm). The shaft `axle-5` remains a modeled 3.5 mm maximum-arm cross section, and the wheel has a modeled Ø3.8 mm through-bore.
+
+The graph's derived `axle-seat-front/back` datums position the wheel near a real shaft, but do not represent manufactured end stops. Nominal concentric clearance, shaft-axis offset, axle-end engagement and bore dimensions are checked through the independent L2 validator. Read [V0.9 nominal fit and collision/path checks](clearance-v09.md).
+
+This new capability is an educational, modeled coaxial interface. The current 3D source does not include measured shrinkage, friction, wear, bearings tolerances or load testing; no measured fit certification is implied.
