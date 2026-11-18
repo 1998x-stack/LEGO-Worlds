@@ -2,11 +2,17 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## Technic Mechanics Lab (V0.4)
+
+**[Open the Mechanics Lab on GitHub Pages](https://1998x-stack.github.io/LEGO-Worlds/#mechanics)**. Assemble pins and cross axles into 8 mm spaced Technic beam holes, mount wheels and spur gears on the axes, inspect a joint/gear-mesh graph, and animate assembly and counter-rotating gear drive. Three ready-made demonstrations include Dual Gear Drive, Wheel & Axle, and Pin Fixture. Save a constrained, replayable JSON build recipe or export GLB geometry.
+
+This is a **guided** mechanical experiment with explicit target-hole selection rather than free-form 6-DOF drag snapping. The drive is kinematic, not a real torque or tooth-contact simulation. See [Technic mechanics specification](docs/technic-mechanics.md).
 
 ## Snap Builder Lab (V0.3)
 
@@ -70,6 +76,8 @@ src/
   brick-system.js     # Reusable procedural part geometry
   connection-anchors.js # Typed anchors, coordinate transforms and compatibility
   snap-engine.js       # Rigid stud/socket solver, overlap checks and JSON schema
+  technic-engine.js    # Beam pin/axle joints, keyed mounts and gear ratios
+  mechanics-lab.js     # Interactive mechanical assembly and drive animation
   builder-lab.js       # Drag/rotate/preview interactive Three.js builder
   viewer.js           # Three.js scene, assembly and exploded-view controls
   main.js             # Gallery, filters, detail panel and interactions
@@ -79,11 +87,13 @@ docs/
   component-system.md
   connection-anchors.md
   snap-builder.md
+  technic-mechanics.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
   snap-engine.test.mjs
+  technic-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
