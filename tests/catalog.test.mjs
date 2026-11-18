@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { SERIES, COMPONENTS, MODELS } from '../src/catalog.js';
 import { buildAssembly, createPart, SYSTEM_DIMENSIONS } from '../src/brick-system.js';
 
-const supportedTypes = new Set(["brick","sphere","cylinder","plate","tile","jumper","slope","inverted-slope","curved-slope","curved-tile","arch","dome","cone","wedge","bracket","clip","bar","hinge","connector","corner","beam","angle-beam","frame","pin","axle","bushing","gear","worm-gear","rack-gear","bevel-gear","turntable","differential","wheel","track","panel","window","door","leaf","flower","tree-trunk","rock","ring","spring","transparent-shell","light-brick","grille"]);
+const supportedTypes = new Set(["brick","sphere","cylinder","plate","tile","jumper","slope","inverted-slope","curved-slope","curved-tile","arch","dome","cone","wedge","bracket","clip","bar","hinge","connector","corner","beam","bearing","angle-beam","frame","pin","axle","bushing","gear","worm-gear","rack-gear","bevel-gear","turntable","differential","wheel","track","panel","window","door","leaf","flower","tree-trunk","rock","ring","spring","transparent-shell","light-brick","grille"]);
 
 test('publishes exactly three core series and an independent creative lab', () => {
   assert.equal(SERIES.length, 3);
@@ -36,10 +36,10 @@ test('all part manifests use supported geometry, finite transforms and valid ste
   }
 });
 
-test('component library contains exactly 100 coded reusable components', () => {
-  assert.equal(COMPONENTS.length, 100);
-  assert.equal(new Set(COMPONENTS.map(component => component.id)).size, 100);
-  assert.equal(new Set(COMPONENTS.map(component => component.code)).size, 100);
+test('component library contains 101 coded reusable components', () => {
+  assert.equal(COMPONENTS.length, 101);
+  assert.equal(new Set(COMPONENTS.map(component => component.id)).size, 101);
+  assert.equal(new Set(COMPONENTS.map(component => component.code)).size, 101);
   for (const component of COMPONENTS) {
     assert.ok(supportedTypes.has(component.type), 'unsupported component ' + component.id);
     assert.ok(component.name && component.description && component.dimensions && component.connectionProfile);
@@ -76,7 +76,7 @@ test('nominal grid dimensions preserve the 3:1 brick-to-plate relationship', () 
 });
 
 
-test('all 100 component previews create finite, non-empty procedural geometry', () => {
+test('all 101 component previews create finite, non-empty procedural geometry', () => {
   for (const component of COMPONENTS) {
     const object = createPart({
       id: component.id, name: component.name, type: component.type,

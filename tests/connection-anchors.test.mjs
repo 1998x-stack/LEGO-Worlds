@@ -24,8 +24,8 @@ test('anchor schema is versioned and uses millimetres', () => {
   assert.equal(ANCHOR_UNITS, 'mm');
 });
 
-test('all 100 catalogue components expose stable, finite, oriented anchors', () => {
-  assert.equal(COMPONENTS.length, 100);
+test('all 101 catalogue components expose stable, finite, oriented anchors', () => {
+  assert.equal(COMPONENTS.length, 101);
   for (const item of COMPONENTS) {
     const anchors = getPartAnchors(item);
     assert.ok(anchors.length > 0, 'no anchors for ' + item.id);

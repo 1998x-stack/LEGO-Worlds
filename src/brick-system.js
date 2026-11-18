@@ -149,6 +149,15 @@ function createGear(group, spec) {
   }
 }
 
+function createBearing(group, spec) {
+  const [outerDiameter = 4.68, boreDiameter = 3.9, length = 7.6] = spec.size || [];
+  if (![outerDiameter,boreDiameter,length].every(Number.isFinite) ||
+      outerDiameter <= boreDiameter || boreDiameter <= 0 || length <= 0)
+    throw new Error('Invalid nominal bearing dimensions');
+  addExtruded(group, annulusShape(outerDiameter / 2, boreDiameter / 2), length,
+    spec.color || '#c8bda5', 'nominal-bearing-sleeve-through-bore');
+}
+
 function createWheel(group, spec) {
   const [radius = 10, width = 7] = spec.size || [];
   const hubOnly = spec.id === 'wheel-hub';
@@ -659,6 +668,9 @@ export function createPart(spec) {
       break;
     case 'axle':
       createPin(group, spec, true);
+      break;
+    case 'bearing':
+      createBearing(group, spec);
       break;
     case 'gear':
       createGear(group, spec);

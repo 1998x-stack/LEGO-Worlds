@@ -5,7 +5,8 @@ export const ANCHOR_UNITS = 'mm';
 
 export const ANCHOR_KINDS = Object.freeze({
   STUD: 'stud', STUD_SOCKET: 'stud-socket', TECHNIC_HOLE: 'technic-hole',
-  PIN: 'pin', AXLE: 'axle', AXLE_HOLE: 'axle-hole', GEAR_AXIS: 'gear-axis',
+  PIN: 'pin', AXLE: 'axle', AXLE_HOLE: 'axle-hole',
+  BEARING_OUTER: 'bearing-outer', BEARING_BORE: 'bearing-bore', GEAR_AXIS: 'gear-axis',
   GEAR_MESH: 'gear-mesh', RACK_MESH: 'rack-mesh', CLIP: 'clip', BAR: 'bar',
   BALL: 'ball', BALL_SOCKET: 'ball-socket', HINGE_AXIS: 'hinge-axis',
   WHEEL_AXIS: 'wheel-axis', ROTARY_AXIS: 'rotary-axis', TRACK_JOINT: 'track-joint',
@@ -15,8 +16,9 @@ export const ANCHOR_KINDS = Object.freeze({
 
 export const ANCHOR_COMPATIBILITY = Object.freeze({
   'stud': ['stud-socket'], 'stud-socket': ['stud'],
-  'technic-hole': ['pin', 'axle'], 'pin': ['technic-hole'],
-  'axle': ['technic-hole', 'axle-hole', 'gear-axis', 'wheel-axis'],
+  'technic-hole': ['pin', 'axle', 'bearing-outer'], 'pin': ['technic-hole'],
+  'bearing-outer': ['technic-hole'], 'bearing-bore': ['axle'],
+  'axle': ['technic-hole', 'axle-hole', 'gear-axis', 'wheel-axis', 'bearing-bore'],
   'axle-hole': ['axle'], 'gear-axis': ['axle'], 'wheel-axis': ['axle'],
   'clip': ['bar'], 'bar': ['clip'], 'ball': ['ball-socket'],
   'ball-socket': ['ball'], 'hinge-axis': ['hinge-axis'],
@@ -297,6 +299,20 @@ export function getPartAnchors(spec = {}) {
       });
       break;
     }
+    case 'bearing': {
+      const [outer = 4.68, bore = 3.9, length = 7.6] = size;
+      add(ANCHOR_KINDS.BEARING_OUTER, 'male', [0, 0, 0], {
+        normal: [0, 0, 1], axis: [0, 0, 1],
+        size: { diameterMm: outer, lengthMm: length, profile: 'round' },
+        confidence: 'schematic'
+      });
+      add(ANCHOR_KINDS.BEARING_BORE, 'female', [0, 0, 0], {
+        normal: [0, 0, 1], axis: [0, 0, 1],
+        size: { diameterMm: bore, depthMm: length, profile: 'round' },
+        confidence: 'schematic'
+      });
+      break;
+    }
     case 'bushing': {
       const [outer = 4, inner = 2.2, width = 2] = size;
       add(ANCHOR_KINDS.AXLE_HOLE, 'female', [0, 0, 0], {
@@ -527,7 +543,8 @@ const pairKey = (a, b) => [a, b].sort().join('|');
 const AXIS_PARALLEL_PAIRS = new Set([
   pairKey('technic-hole', 'pin'), pairKey('technic-hole', 'axle'),
   pairKey('axle-hole', 'axle'), pairKey('gear-axis', 'axle'),
-  pairKey('wheel-axis', 'axle'), pairKey('clip', 'bar'),
+  pairKey('wheel-axis', 'axle'), pairKey('technic-hole', 'bearing-outer'),
+  pairKey('bearing-bore', 'axle'), pairKey('clip', 'bar'),
   pairKey('hinge-axis', 'hinge-axis'), pairKey('gear-mesh', 'gear-mesh'),
   pairKey('rotary-axis', 'rotary-axis'), pairKey('track-joint', 'track-joint')
 ]);
@@ -549,7 +566,9 @@ function compareDimensions(a, b, toleranceMm) {
   }
   if (pair === pairKey('technic-hole', 'pin') || pair === pairKey('technic-hole', 'axle') ||
       pair === pairKey('axle-hole', 'axle') || pair === pairKey('gear-axis', 'axle') ||
-      pair === pairKey('wheel-axis', 'axle')) {
+      pair === pairKey('wheel-axis', 'axle') ||
+      pair === pairKey('technic-hole', 'bearing-outer') ||
+      pair === pairKey('bearing-bore', 'axle')) {
     const delta = Math.abs((aSize.diameterMm || 0) - (bSize.diameterMm || 0));
     return { compatible: delta <= toleranceMm + 0.9, delta, reason: delta <= toleranceMm + 0.9 ? 'shaft-diameter-compatible' : 'shaft-diameter-mismatch' };
   }

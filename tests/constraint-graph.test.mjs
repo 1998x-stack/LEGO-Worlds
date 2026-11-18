@@ -14,11 +14,11 @@ const catalog = COMPONENTS;
 const nearly = (a,b,tol=1e-4) => Math.abs(a-b)<tol;
 const copy = v => structuredClone(v);
 
-test('all three general graph presets have finite poses and meaningful links', () => {
+test('all four general graph presets have finite poses and meaningful links', () => {
   assert.equal(CONSTRAINT_GRAPH_VERSION,1);
   assert.equal(GRAPH_MAX_BODIES,20);
   assert.equal(GRAPH_MAX_JOINTS,32);
-  assert.equal(GRAPH_PRESETS.length,3);
+  assert.equal(GRAPH_PRESETS.length,4);
   for(const {id} of GRAPH_PRESETS){
     const graph = create(id);
     validateConstraintGraph(graph,catalog);

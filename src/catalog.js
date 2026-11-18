@@ -1839,6 +1839,25 @@ export const COMPONENTS = [
     "color": "#606b75",
     "series": "brick-system",
     "connectionProfile": "special-purpose-interface"
+  },
+  {
+    "id": "bearing-sleeve-8mm",
+    "code": "BW-TC-021",
+    "name": "Technic Sleeve Bearing · 8 mm",
+    "zh": "8mm 机械轴承衬套",
+    "family": "Technic",
+    "type": "bearing",
+    "size": [
+      4.68,
+      3.9,
+      7.6
+    ],
+    "sizeLabel": "Ø4.68 / Ø3.9 / 7.6 mm",
+    "dimensions": "Outer Ø4.68 × bore Ø3.9 × width 7.6 mm",
+    "description": "适用于机械梁孔的空心轴承衬套候选；仅说明名义几何间隙，未经材料、强度和打印配合认证。",
+    "color": "#c8bda5",
+    "series": "technic-mechanics",
+    "connectionProfile": "nominal-axial-bearing"
   }
 ];
 

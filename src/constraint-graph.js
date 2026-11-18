@@ -9,12 +9,13 @@ export const GRAPH_MAX_FREE_JOINTS = 12;
 export const CONSTRAINT_KINDS = Object.freeze(['fixed', 'hinge', 'shaft', 'slider']);
 export const GRAPH_CATALOG_IDS = Object.freeze([
   'beam-3', 'beam-5', 'beam-7', 'beam-13',
-  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t', 'axle-3', 'dome-2x2'
+  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t', 'axle-3', 'axle-5', 'bearing-sleeve-8mm', 'dome-2x2'
 ]);
 export const GRAPH_PRESETS = Object.freeze([
   { id: 'four-bar', name: 'Four-Bar Linkage', zh: '四连杆闭环机构' },
   { id: 'linear-carriage', name: 'Linear Carriage', zh: '滑轨与移动平台' },
-  { id: 'shaft-drive', name: 'Shaft Drive', zh: '旋转轴与轮组' }
+  { id: 'shaft-drive', name: 'Shaft Drive', zh: '旋转轴与轮组' },
+  { id: 'bearing-wheel', name: 'Sleeve Bearing & Wheel', zh: '轴承衬套与轮轴（名义配合）' }
 ]);
 
 const V = a => new THREE.Vector3(...a);
@@ -45,6 +46,7 @@ function componentSize(entry) {
     case 'wheel': return [(Number(s[0]) || 10) * 2, (Number(s[0]) || 10) * 2, Number(s[1]) || 7];
     case 'gear': return [(Number(s[0]) || 8) * 2, (Number(s[0]) || 8) * 2, Number(s[2]) || 3.2];
     case 'axle': return [3.5, 3.5, Number(s[0]) || 24];
+    case 'bearing': return [Number(s[0]) || 4.68, Number(s[0]) || 4.68, Number(s[2]) || 7.6];
     case 'dome': return [(Number(s[0]) || 8) * 2, Number(s[0]) || 8, (Number(s[0]) || 8) * 2];
     default: return [16, 8, 8];
   }
@@ -67,7 +69,7 @@ export function graphPorts(body, catalog) {
   ];
   const kinds = new Map();
   for (const anchor of getPartAnchors(entry)) {
-    if (!['technic-hole', 'hinge-axis', 'axle', 'axle-hole', 'gear-axis', 'wheel-axis', 'rotary-axis'].includes(anchor.kind)) continue;
+    if (!['technic-hole', 'hinge-axis', 'axle', 'axle-hole', 'bearing-outer', 'bearing-bore', 'gear-axis', 'wheel-axis', 'rotary-axis'].includes(anchor.kind)) continue;
     const index = kinds.get(anchor.kind) || 0;
     kinds.set(anchor.kind, index + 1);
     const axis = V(anchor.axis || anchor.normal).normalize();
@@ -78,6 +80,21 @@ export function graphPorts(body, catalog) {
       label: anchor.kind + ' ' + (index + 1),
       position: [...anchor.position], rotation: [e.x, e.y, e.z],
       source: 'connection-anchor', anchorId: anchor.id
+    });
+  }
+  if (entry.type === 'axle') {
+    const length = Number(entry.size?.[0]) || 24;
+    ports.push({
+      id: 'axle-seat-front',
+      label: 'Axle nominal keyed wheel seat / +Z',
+      position: [0, 0, length * 0.3], rotation: [0, 0, 0],
+      source: 'derived-axle-seat', confidence: 'schematic'
+    });
+    ports.push({
+      id: 'axle-seat-back',
+      label: 'Axle nominal keyed wheel seat / -Z',
+      position: [0, 0, -length * 0.3], rotation: [0, 0, 0],
+      source: 'derived-axle-seat', confidence: 'schematic'
     });
   }
   if (entry.type === 'beam') {
@@ -464,6 +481,20 @@ export function createConstraintPreset(id='four-bar') {
     joints:[
       j('slide','rail','center-x','carriage','center-x','slider',0,true,[-32,32]),
       j('payload','carriage','top-z','platform','bottom-z','fixed',0,false)
+    ]
+  };
+  if(id==='bearing-wheel') return {
+    id,name:'Sleeve Bearing & Wheel',zh:'轴承衬套与轮轴（名义配合）',
+    bodies:[
+      graphBody('support','beam-5',true),
+      graphBody('sleeve','bearing-sleeve-8mm'),
+      graphBody('axle','axle-5'),
+      graphBody('wheel','wheel-medium')
+    ],
+    joints:[
+      j('sleeve_mount','support','technic-hole:2','sleeve','bearing-outer:0','fixed',0,false),
+      j('journal','sleeve','bearing-bore:0','axle','axle:0','shaft',0,true,[-170,170]),
+      j('wheel_key','axle','axle-seat-front','wheel','wheel-axis:0','fixed',0,false)
     ]
   };
   if(id==='shaft-drive') return {
