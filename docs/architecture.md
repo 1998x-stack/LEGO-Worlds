@@ -47,6 +47,18 @@ src/mechanics-lab.js
   └── counter-rotating gear drive
                             |
                             v
+src/hierarchy-engine.js
+  ├── validated subassembly tree and hinge anchors
+  ├── directed angle coupling propagation
+  └── generated assembly dependency DAG
+                            |
+                            v
+src/hierarchy-lab.js
+  ├── joint sliders, subassembly selection
+  ├── reversible piece-by-piece build timeline
+  └── preset/pose JSON and static GLB export
+                            |
+                            v
 src/viewer.js
   ├── Scene + lights + camera
   ├── OrbitControls
@@ -96,3 +108,7 @@ The stud/socket snap solver is independent of the DOM and can be tested under No
 ## Guided Technic assembly
 
 Technic-style mechanical assemblies are handled by `src/technic-engine.js` (independent of the browser) and `src/mechanics-lab.js` (lazy-loaded Three.js scene). The user selects a beam hole, inserts a pin/axle, then mounts a wheel or gear to a compatible shaft. The resulting joint graph contains fixed/revolute constraints and derived spur-gear counter-rotation edges. Mechanism JSON imports are replayed from a validated operation list; untrusted arbitrary edges/poses are not accepted. The gear drive has no force or tooth-contact simulation. See [Technic Mechanics Lab](technic-mechanics.md).
+
+## V0.5 Hierarchical joint and animation layer
+
+The hierarchy engine defines parent-child rigid subassemblies, connected through typed hinge-axis anchors on existing component instances. Joint angles propagate through the tree, while separate directed coupling edges implement mirrored motion subject to validated follower limits and cycle checks. The assembly sequence is generated as a parent-first dependency DAG; its reverse drives schematic disassembly. The browser viewer operates lazily, supports selection/isolation and does not contain the solver. Exported JSON references trusted canonical presets and revalidates motion. See [Hierarchy and Joints](hierarchy-assembly.md) for detailed formulas and physical limitations.
