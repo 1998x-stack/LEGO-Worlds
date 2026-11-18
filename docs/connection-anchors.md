@@ -13,7 +13,7 @@ This milestone implements:
 - Compatibility checks for interface class, direction and selected nominal dimensions.
 - Optional 3D debug markers in the assembly inspector.
 
-It does **not** implement drag snapping, collision detection, physical tolerance validation, gear centre-distance solving or automatic assembly constraints. Those are separate builder milestones.
+It provides the underlying anchor contract only. The separate [Snap Builder](snap-builder.md) implements stud/socket dragging and conservative brick-body overlap checks; the [Technic Mechanics Lab](technic-mechanics.md) implements guided beam-hole, pin, axle and nominal gear/wheel constraints. Neither provides a general physical-tolerance, collision narrow-phase or full multi-body assembly solver.
 
 ## Coordinate convention
 
