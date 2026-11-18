@@ -39,7 +39,7 @@ were data/documentation-consistency and a browser console error.
 ## 2. Environment hazard discovered (not a repo defect)
 
 Port `4173` (the configured preview port) was already occupied on this machine by a **different
-project** (`Mechanical Worlds`) which serves an SPA catch-all. A naive `curl 127.0.0.1:4173/...`
+project** (an unrelated local web app) which serves an SPA catch-all. A naive `curl 127.0.0.1:4173/...`
 returns `200` with the *wrong* application. Preview was therefore run on `4317`
 (`npx vite preview --host 127.0.0.1 --port 4317`). Root `/` correctly 302-redirects to
 `/LEGO-Worlds/`, confirming the GitHub Pages base path.

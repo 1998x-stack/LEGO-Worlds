@@ -45,5 +45,5 @@
     "mobileMenuVisible": true,
     "navToggles": true
   },
-  "evidenceOnly": "DOM/console/network observations; no screenshot is committed because this model cannot visually verify pixels. Screenshots at /tmp/lw-qa/home.png (local, not reproducible)."
+  "evidenceOnly": "DOM/console/network observations only; no screenshot is committed because this model cannot visually verify pixels."
 }
