@@ -68,7 +68,6 @@ export function mountConstraintLab(canvas,catalog,onChange=()=>{}) {
   let motor = false;
   let motorPhase = 0;
   let driveId = 'drive';
-  let playing = true;
   let revision = 1;
   let history = [], redoHistory = [];
   let disposed = false, frame = 0, lastTime = 0, lastEmit = 0, lastSolve = 0;
@@ -95,8 +94,8 @@ export function mountConstraintLab(canvas,catalog,onChange=()=>{}) {
         for(const mat of materials) if(mat.emissive){
           mat.emissive.set(collisions.has(body.id)?'#dc514d':
             body.id===selectedBody?'#249d91':'#000000');
-          mat.emissiveIntensity=collisions.has(body.id)?.47:
-            body.id===selectedBody?.19:0;
+          mat.emissiveIntensity = collisions.has(body.id) ? 0.47 :
+            body.id === selectedBody ? 0.19 : 0;
         }
       });
     }
