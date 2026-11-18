@@ -3,6 +3,8 @@ import { mountViewer, downloadAssemblyGlb } from './viewer.js';
 import { getPartAnchors } from './connection-anchors.js';
 import { mountBuilder } from './builder-lab.js';
 import { isBuilderComponent } from './snap-engine.js';
+import { mountMechanicsLab } from './mechanics-lab.js';
+import { MECHANISM_PRESETS } from './technic-engine.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -20,7 +22,7 @@ root.innerHTML = [
       '<span class="brand-caption">OPEN BUILD SYSTEM</span>',
     '</a>',
     '<nav class="main-nav" aria-label="Main navigation">',
-      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a>',
+      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a>',
       '<a class="nav-github" href="https://github.com/1998x-stack/LEGO-Worlds" target="_blank" rel="noopener noreferrer">GitHub ↗</a>',
     '</nav>',
     '<a class="header-cta" href="#builds">Explore builds <span>↗</span></a>',
@@ -90,6 +92,27 @@ root.innerHTML = [
         '</aside>',
       '</div>',
     '</section>',
+
+    '<section class="section mechanics-section" id="mechanics">',
+      '<div class="section-heading"><div><div class="section-kicker">05 — TECHNIC MECHANICS LAB</div><h2>Connect. <em>Transmit.</em></h2></div><p>销钉、机械梁、十字轴、贯通轮毂与齿轮的装配实验台。通过真实坐标约束理解机械结构和转动关系。</p></div>',
+      '<div class="mechanics-hero" id="mechanics-hero"><div><span>TECHNIC ASSEMBLY / V0.4</span><h3>从一条梁，连接一个会转动的机械系统。</h3><p>点击梁孔选择位置，安装销钉或十字轴；再将齿轮与轮子安装到轴上。查看连接图、拆解动画和齿轮传动。</p></div><button class="button button-yellow" id="mechanics-launch">Open mechanics lab ↗</button></div>',
+      '<div class="mechanics-workspace" id="mechanics-workspace" hidden>',
+        '<div class="mechanics-stage"><div class="mechanics-stage-top"><span>LIVE MECHANICS / THREE.JS</span><span>CLICK A BEAM HOLE · ORBIT TO INSPECT</span></div><canvas id="mechanics-canvas" aria-label="Interactive Technic mechanical assembly and gear drive"></canvas><div class="mechanics-timeline"><button id="mechanics-disassemble">↗ Disassemble</button><input aria-label="Assembly explode progress" id="mechanics-explode" type="range" min="0" max="100" value="0"/><button id="mechanics-assemble">↘ Assemble</button></div><div class="mechanics-footnote">绿色圆环 = 可用梁孔 · 红色圆环 = 已占用 · 旋转是运动学示意，不是物理动力学求解</div></div>',
+        '<aside class="mechanics-sidebar">',
+          '<div class="mechanics-counters"><div><strong id="mechanics-parts-count">5</strong><span>PARTS</span></div><div><strong id="mechanics-joints-count">5</strong><span>JOINT EDGES</span></div></div>',
+          '<label class="builder-label" for="mechanics-preset">Mechanism preset / 示例机械结构</label>',
+          '<div class="mechanics-row"><select id="mechanics-preset" class="builder-part-picker">' + MECHANISM_PRESETS.map(p => '<option value="' + safe(p.id) + '">' + safe(p.zh) + ' / ' + safe(p.name) + '</option>').join('') + '</select><button id="mechanics-load">Load</button></div>',
+          '<div class="mechanics-group"><label class="builder-label" for="mechanics-hole">1 · Select beam hole / 选择梁孔</label><select id="mechanics-hole" class="builder-part-picker"></select><label class="builder-label" for="mechanics-shaft-piece">2 · Insert pin or axle / 安装销钉或轴</label><select id="mechanics-shaft-piece" class="builder-part-picker"><option value="smooth-pin">光滑销钉 / Smooth pin</option><option value="friction-pin">摩擦销钉 / Friction pin</option><option value="axle-3">3L 十字轴</option><option value="axle-5">5L 十字轴</option></select><button class="mechanics-primary" id="mechanics-insert">+ Install into hole</button></div>',
+          '<div class="mechanics-group"><label class="builder-label" for="mechanics-mount-shaft">3 · Choose installed axle / 选择轴</label><select id="mechanics-mount-shaft" class="builder-part-picker"></select><label class="builder-label" for="mechanics-accessory">4 · Mount an accessory / 安装轮组或齿轮</label><select id="mechanics-accessory" class="builder-part-picker"><option value="gear-16t">16T 齿轮</option><option value="gear-8t">8T 齿轮</option><option value="gear-24t">24T 齿轮</option><option value="wheel-medium">中型轮组</option><option value="wheel-compact">小型轮组</option></select><button class="mechanics-primary" id="mechanics-mount">+ Mount to axle</button></div>',
+          '<div class="mechanics-drive"><button id="mechanics-play">▶ Drive</button><label class="builder-label" for="mechanics-speed">DRIVE SPEED · <span id="mechanics-rpm">15</span> RPM</label><input id="mechanics-speed" type="range" min="0" max="60" step="1" value="15"/><button id="mechanics-anchors">◎ Show anchors</button></div>',
+          '<div class="mechanics-tools"><button id="mechanics-undo">← Undo</button><button id="mechanics-redo">→ Redo</button><button id="mechanics-remove">× Remove last</button><button id="mechanics-camera">◎ Reset view</button></div>',
+          '<div role="status" aria-live="polite" class="mechanics-status" id="mechanics-status">加载机械示例后，可以观察齿轮传动。</div>',
+          '<div class="mechanics-graph-heading">LIVE CONNECTION GRAPH / 连接关系</div><div class="mechanics-graph" id="mechanics-graph"></div>',
+          '<div class="mechanics-tools"><button id="mechanics-export-json">↓ Export JSON</button><button id="mechanics-import-json">↑ Import JSON</button><button id="mechanics-export-glb">↓ Export GLB</button><input type="file" accept=".json,application/json" id="mechanics-import-file" hidden/></div>',
+          '<small class="mechanics-disclaimer">仅模拟当前所支持的销孔、轴孔、键连接与两直齿轮反向运动。齿轮齿形为简化模型，尚未验证力矩、摩擦、公差和真实物理啮合。</small>',
+        '</aside>',
+      '</div>',
+    '</section>',
     '<section class="dimensions-section">',
       '<div class="section dimensions-inner"><div><div class="section-kicker">04 — THE SHARED GRID</div><h2>One system.<br/><em>Consistent dimensions.</em></h2><p>用统一的名义尺寸组织零件，才能让组件跨作品复用。这里的尺寸用于教育与视觉建模参考，并非真实零件互换或打印配合保证。</p></div>',
         '<div class="dimension-cards">',
@@ -115,6 +138,7 @@ let detailViewer = null;
 let heroViewer = null;
 let activeModal = null;
 let builderInstance = null;
+let mechanicsInstance = null;
 
 function artMarkup(model) {
   return '<div class="model-art" style="--accent:' + safe(model.accent) + '">' +
@@ -456,6 +480,125 @@ document.querySelector('#launch-builder').addEventListener('click', () => {
   }
 });
 
+document.querySelector('#mechanics-launch').addEventListener('click', () => {
+  if (mechanicsInstance) {
+    document.querySelector('#mechanics-workspace').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  const workspace = document.querySelector('#mechanics-workspace');
+  workspace.hidden = false;
+  const status = document.querySelector('#mechanics-status');
+  const holes = document.querySelector('#mechanics-hole');
+  const shafts = document.querySelector('#mechanics-mount-shaft');
+  const graph = document.querySelector('#mechanics-graph');
+  let previousHole = '0';
+  let previousShaft = '';
+  try {
+    mechanicsInstance = mountMechanicsLab(document.querySelector('#mechanics-canvas'), COMPONENTS, snapshot => {
+      status.textContent = snapshot.status;
+      document.querySelector('#mechanics-parts-count').textContent = String(snapshot.parts.length);
+      document.querySelector('#mechanics-joints-count').textContent = String(snapshot.connections.length);
+      previousHole = String(snapshot.selection);
+      holes.innerHTML = snapshot.holes.map(h =>
+        '<option value="' + h.holeIndex + '"' + (h.occupied ? ' disabled' : '') + '>' +
+        'Hole ' + (h.holeIndex + 1) + ' · X ' + h.position[0] + ' mm' +
+        (h.occupied ? ' · OCCUPIED' : ' · FREE') + '</option>'
+      ).join('');
+      // Keep the clicked hole selected even if it is occupied; the engine
+      // will reject a duplicate installation and explain the reason.
+      holes.value = previousHole;
+      const axles = snapshot.parts.filter(p => p.type === 'axle');
+      previousShaft = shafts.value || previousShaft;
+      shafts.innerHTML = axles.length ? axles.map(p =>
+        '<option value="' + safe(p.instanceId) + '">' + safe(p.name) + ' · ' +
+        safe(p.instanceId) + '</option>').join('') :
+        '<option value="">Please install an axle first</option>';
+      if (axles.some(p => p.instanceId === previousShaft)) shafts.value = previousShaft;
+      graph.innerHTML = snapshot.connections.map(edge =>
+        '<div class="mechanics-edge"><span class="mechanics-edge-kind">' + safe(edge.kind) + '</span>' +
+        '<strong>' + safe(edge.from) + ' → ' + safe(edge.to) + '</strong><small>' +
+        safe(edge.joint) + (edge.ratio !== undefined ? ' · ratio ' + edge.ratio.toFixed(2) : '') +
+        '</small></div>'
+      ).join('');
+      document.querySelector('#mechanics-play').textContent = snapshot.playing ? 'Ⅱ Pause drive' : '▶ Drive';
+      document.querySelector('#mechanics-explode').value = String(Math.round(snapshot.explosion * 100));
+      document.querySelector('#mechanics-undo').disabled = !snapshot.canUndo;
+      document.querySelector('#mechanics-redo').disabled = !snapshot.canRedo;
+      document.querySelector('#mechanics-remove').disabled = snapshot.state.steps.length === 0;
+    });
+    document.querySelector('#mechanics-hero').hidden = true;
+    const actions = {
+      '#mechanics-load': () => mechanicsInstance.loadPreset(document.querySelector('#mechanics-preset').value),
+      '#mechanics-insert': () => mechanicsInstance.addShaft(document.querySelector('#mechanics-shaft-piece').value,
+        Number(document.querySelector('#mechanics-hole').value)),
+      '#mechanics-mount': () => mechanicsInstance.addAccessory(
+        document.querySelector('#mechanics-accessory').value,
+        document.querySelector('#mechanics-mount-shaft').value),
+      '#mechanics-play': () => mechanicsInstance.toggleDrive(),
+      '#mechanics-assemble': () => mechanicsInstance.animateExplode(0),
+      '#mechanics-disassemble': () => mechanicsInstance.animateExplode(1),
+      '#mechanics-anchors': () => {
+        const visible = mechanicsInstance.toggleAnchors();
+        document.querySelector('#mechanics-anchors').textContent = visible ? '◎ Hide anchors' : '◎ Show anchors';
+      },
+      '#mechanics-undo': () => mechanicsInstance.undo(),
+      '#mechanics-redo': () => mechanicsInstance.redo(),
+      '#mechanics-remove': () => mechanicsInstance.deleteLast(),
+      '#mechanics-camera': () => mechanicsInstance.resetCamera()
+    };
+    for (const [selector, action] of Object.entries(actions)) {
+      document.querySelector(selector).addEventListener('click', action);
+    }
+    holes.addEventListener('change', event => mechanicsInstance.selectHole(Number(event.target.value)));
+    document.querySelector('#mechanics-explode').addEventListener('input', event =>
+      mechanicsInstance.setExplode(Number(event.target.value) / 100));
+    document.querySelector('#mechanics-speed').addEventListener('input', event => {
+      document.querySelector('#mechanics-rpm').textContent = event.target.value;
+      mechanicsInstance.setSpeed(Number(event.target.value));
+    });
+    document.querySelector('#mechanics-export-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(mechanicsInstance.getDocument(), null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'brick-worlds-technic-mechanism.json';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2500);
+    });
+    document.querySelector('#mechanics-import-json').addEventListener('click', () =>
+      document.querySelector('#mechanics-import-file').click());
+    document.querySelector('#mechanics-import-file').addEventListener('change', async event => {
+      const input = event.currentTarget;
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        if (file.size > 100000) throw new Error('Mechanism JSON must be under 100 KB');
+        const data = JSON.parse(await file.text());
+        if (!mechanicsInstance.loadJSON(data)) throw new Error('Mechanism recipe is incompatible');
+      } catch (error) {
+        status.textContent = '导入失败：' + error.message;
+      } finally { input.value = ''; }
+    });
+    document.querySelector('#mechanics-export-glb').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        await downloadAssemblyGlb({
+          title: 'Technic Custom Assembly', slug: 'brick-worlds-technic-mechanism',
+          parts: mechanicsInstance.getParts().map((p,index) => ({...p,id:p.instanceId,step:index+1}))
+        });
+        status.textContent = 'GLB 已导出；机械关节和传动图请使用 JSON 保存。';
+      } catch (error) {
+        console.error(error);
+        status.textContent = 'GLB 导出失败：' + error.message;
+      } finally { button.disabled = false; }
+    });
+  } catch (error) {
+    status.textContent = 'Mechanics Lab 无法启动：' + error.message;
+    console.error(error);
+  }
+});
+
 const mobileMenu = document.querySelector('#mobile-menu');
 mobileMenu.addEventListener('click', () => {
   const nav = document.querySelector('.main-nav');
@@ -488,4 +631,5 @@ window.addEventListener('beforeunload', () => {
   heroViewer?.dispose();
   detailViewer?.dispose();
   builderInstance?.dispose();
+  mechanicsInstance?.dispose();
 });
