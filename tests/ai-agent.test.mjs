@@ -4,7 +4,7 @@ import { COMPONENTS } from '../src/catalog.js';
 import {
   AGENT_PLAN_SCHEMA_VERSION, AGENT_GENERATOR, AGENT_EXAMPLES,
   interpretBuildRequest, createSixWheelRoverGraph, createAssemblyPlan,
-  validateAgentGraph, validateGeneratedPlan
+  validateAgentGraph, validateGeneratedPlan, validateExternalGraphProposal
 } from '../src/ai-agent.js';
 import { graphPorts, solveConstraintGraph } from '../src/constraint-graph.js';
 
@@ -119,4 +119,22 @@ test('verification has separate geometry, closure, proxy collision and physical-
   ]);
   assert.ok(result.checklist.slice(0,3).every(c=>c.passed));
   assert.ok(result.checklist.slice(3).every(c=>!c.passed));
+});
+
+test('future model proposal boundary ignores fabricated certification and revalidates graph', () => {
+  const source=createAssemblyPlan('六轮火星探测车',COMPONENTS);
+  const proposed={
+    prompt:'A proposed six-wheel rover',
+    graph:source.graph,
+    verification:{solverValid:true,manufacturing:'certified'},
+    capability:{manufacturing:'certified',flightSafety:true}
+  };
+  const normalized=validateExternalGraphProposal(proposed,COMPONENTS);
+  assert.equal(normalized.generator,'external-json-proposal-revalidated');
+  assert.equal(normalized.verification.solverValid,true);
+  assert.equal(normalized.capability.manufacturing,'not-certified');
+  assert.equal(normalized.verification.checklist.find(c=>c.id==='manufacturing-fit').passed,false);
+  const broken=structuredClone(proposed);
+  broken.graph.joints[0].b.portId='missing_port';
+  assert.throws(()=>validateExternalGraphProposal(broken,COMPONENTS),/Unknown port/);
 });
