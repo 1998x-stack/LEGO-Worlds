@@ -23,10 +23,17 @@
 - [x] Snap candidates, alignment previews and conservative box collision warnings.
 - [x] Save and restore custom assemblies as versioned JSON with recalculated connection edges.
 - [x] Undo/redo, 90-degree rotation, vertical adjustment and GLB export.
-- [ ] Support Technic pin/axle/hinge/gear specialized constraint solvers and narrow-phase collision checks.
+- [x] Add guided Technic beam-hole, pin, axle, keyed gear/wheel mounting and live joint graph.
+- [x] Add matching spur-gear kinematic counter-rotation and mechanical assemble/disassemble animation.
+- [ ] Add full free-form Technic dragging, arbitrary hinges and narrow-phase collision checks.
 - [ ] Shareable build URLs using versioned catalog IDs.
 
-## V0.4 — Asset pipeline
+## V0.4 — Technic assembly
+- [x] Correct gear/wheel visual bores and replace round axle visuals with a keyed cross profile.
+- [x] Publish the guided Mechanics Lab with three playable presets and canonical JSON recipe replay.
+- [ ] Add genuine gear tooth contact, bearings, flexible joint constraints and multiple articulated subassemblies.
+
+## V0.5 — Asset pipeline
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
