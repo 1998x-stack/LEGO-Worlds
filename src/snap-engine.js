@@ -109,6 +109,7 @@ export function findSnapCandidate(moving, fixedParts, options = {}) {
         if (!compatibility.compatible) continue;
         const spec = { ...moving, ...proposed };
         const collidesWith = fixed.filter(other => bodyCollision(spec, other)).map(p => p.instanceId);
+        if (bodyBounds(spec).min.y < -0.2) collidesWith.push('ground');
         candidates.push({
           fixedInstanceId: part.instanceId,
           movingAnchorId: localMoving.id,
@@ -122,7 +123,9 @@ export function findSnapCandidate(moving, fixedParts, options = {}) {
     }
   }
   if (!candidates.length) return { status: 'none', candidate: null };
-  candidates.sort((a, b) => (Number(b.valid) - Number(a.valid)) || a.distanceMm - b.distanceMm);
+  // Respect the closest visible interface: a blocked near target must not
+  // silently teleport to a farther but valid anchor.
+  candidates.sort((a, b) => a.distanceMm - b.distanceMm || Number(b.valid) - Number(a.valid));
   const candidate = candidates[0];
   return { status: candidate.valid ? 'ready' : 'blocked', candidate };
 }
