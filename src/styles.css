@@ -483,3 +483,58 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .builder-part-entry { flex-wrap:wrap; }
   .builder-actions button { flex-basis:43%; }
 }
+
+
+/* Technic mechanics lab — steel/turquoise palette */
+.mechanics-section { padding-top: 85px; padding-bottom: 85px; }
+.mechanics-hero { display:flex; align-items:center; justify-content:space-between; gap:30px; border-radius:12px; border:1px solid #aebfc5; padding:30px 36px; background:linear-gradient(120deg,#d9e7e8,#eef2e9 70%); }
+.mechanics-hero span { display:block; font-size:10px; font-weight:800; letter-spacing:1.8px; color:#3d797a; }
+.mechanics-hero h3 { max-width:600px; margin:12px 0; font:600 clamp(22px,3vw,35px)/1.2 var(--display); letter-spacing:-1.1px; color:#172c34; }
+.mechanics-hero p { max-width:650px; color:#516b73; font-size:13px; line-height:1.7; }
+.mechanics-hero button { white-space:nowrap; }
+.mechanics-hero[hidden],.mechanics-workspace[hidden] {display:none!important;}
+.mechanics-workspace { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(295px,.85fr); border:1px solid #cad6d8; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 22px 50px #21383e1d; }
+.mechanics-stage { min-width:0; display:flex; flex-direction:column; background:#edf0f3; }
+.mechanics-stage-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:7px; padding:13px 18px; color:#476773; font-size:9px; font-weight:800; letter-spacing:1px; border-bottom:1px solid #ccd6db; }
+#mechanics-canvas { display:block; width:100%; height:525px; cursor:crosshair; touch-action:pan-y; }
+.mechanics-timeline { display:flex; align-items:center; gap:11px; border-top:1px solid #ccd6db; padding:14px 17px; }
+.mechanics-timeline button { padding:9px 11px; border:1px solid #9eb4b8; border-radius:6px; background:#d9e6e7; color:#295e6a; font-size:11px; font-weight:750; white-space:nowrap; }
+.mechanics-timeline input { flex:1; min-width:40px; accent-color:#278d8c; }
+.mechanics-footnote { color:#637986; font-size:10px; padding:0 18px 16px; line-height:1.6; }
+.mechanics-sidebar { display:flex; flex-direction:column; gap:12px; padding:19px; border-left:1px solid #d4ddde; min-width:0; background:#fbfcfa; }
+.mechanics-counters { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mechanics-counters>div { background:#e6eeef; padding:13px; border-radius:7px; display:flex; flex-direction:column; }
+.mechanics-counters strong { font:600 27px/1.15 var(--display); color:#245c65; }
+.mechanics-counters span { font-size:9px; color:#577a82; font-weight:800; letter-spacing:1px; margin-top:5px; }
+.mechanics-row { display:flex; gap:7px; }
+.mechanics-row select { flex:1; min-width:0; }
+.mechanics-row button { min-width:52px; padding:8px 9px; border:1px solid #9bbab7; border-radius:6px; color:#245e62; background:#d9ece8; font-size:11px; font-weight:800; }
+.mechanics-group { display:flex; flex-direction:column; gap:8px; padding:14px; border:1px solid #dbe3e2; border-radius:7px; background:#f4f8f7; }
+.mechanics-primary { padding:11px 12px; border-radius:6px; background:#197b7a; border:1px solid #136868; color:#fff; font-weight:800; font-size:12px; }
+.mechanics-drive { display:flex; flex-direction:column; gap:9px; border:1px solid #c7dedc; border-radius:7px; background:#e7f2ef; padding:14px; }
+.mechanics-drive>button { padding:11px 12px; background:#fff; border:1px solid #94b2b0; border-radius:6px; color:#1d625d; font-weight:800; font-size:12px; }
+.mechanics-drive #mechanics-play { background:#203b41; color:#edfdf6; border-color:#203b41; }
+.mechanics-drive input { accent-color:#15827f; width:100%; }
+.mechanics-tools { display:flex; flex-wrap:wrap; gap:7px; }
+.mechanics-tools button { flex:1 0 27%; padding:9px 8px; font-size:10px; font-weight:800; border:1px solid #c6d7d7; border-radius:6px; background:#e9f1f1; color:#385966; }
+.mechanics-tools button:disabled {opacity:.5; cursor:not-allowed;}
+.mechanics-status { padding:12px; border-left:3px solid #22a3a1; border-radius:3px; background:#eaf8f7; color:#4a686d; font-size:12px; line-height:1.65; }
+.mechanics-graph-heading { font-size:10px; font-weight:800; color:#597b80; letter-spacing:1.2px; border-bottom:1px solid #d7e4e3; padding-bottom:8px; }
+.mechanics-graph { display:flex; flex-direction:column; gap:5px; max-height:205px; overflow:auto; }
+.mechanics-edge { display:flex; flex-wrap:wrap; align-items:center; gap:7px; padding:9px; border-radius:5px; background:#eef4f2; color:#325760; }
+.mechanics-edge-kind { background:#d3e4e2; border-radius:4px; padding:4px; font-weight:800; font-size:9px; color:#196966; }
+.mechanics-edge strong { font-size:11px; overflow-wrap:anywhere; flex:1; }
+.mechanics-edge small { font-size:10px; color:#668084; }
+.mechanics-disclaimer { font-size:10px; line-height:1.7; color:#788f92; }
+@media(max-width:960px) {
+  .mechanics-workspace { grid-template-columns:1fr; }
+  .mechanics-sidebar { border-left:0; border-top:1px solid #d4ddde; }
+  #mechanics-canvas { height:min(64vh,470px); min-height:315px; }
+}
+@media(max-width:600px) {
+  .mechanics-section { padding-top:52px; padding-bottom:52px; }
+  .mechanics-hero { flex-direction:column; align-items:stretch; padding:22px; }
+  .mechanics-row { flex-wrap:wrap; }
+  .mechanics-timeline { gap:6px; padding:10px; }
+  .mechanics-timeline button { padding:8px 6px; font-size:10px; }
+}
