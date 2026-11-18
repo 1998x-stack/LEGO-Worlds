@@ -5,6 +5,8 @@ import { mountBuilder } from './builder-lab.js';
 import { isBuilderComponent } from './snap-engine.js';
 import { mountMechanicsLab } from './mechanics-lab.js';
 import { MECHANISM_PRESETS } from './technic-engine.js';
+import { mountHierarchyLab } from './hierarchy-lab.js';
+import { HIERARCHY_PRESETS } from './hierarchy-engine.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -22,7 +24,7 @@ root.innerHTML = [
       '<span class="brand-caption">OPEN BUILD SYSTEM</span>',
     '</a>',
     '<nav class="main-nav" aria-label="Main navigation">',
-      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a>',
+      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a><a href="#assembly">Assembly</a>',
       '<a class="nav-github" href="https://github.com/1998x-stack/LEGO-Worlds" target="_blank" rel="noopener noreferrer">GitHub ↗</a>',
     '</nav>',
     '<a class="header-cta" href="#builds">Explore builds <span>↗</span></a>',
@@ -113,6 +115,29 @@ root.innerHTML = [
         '</aside>',
       '</div>',
     '</section>',
+
+    '<section class="section hierarchy-section" id="assembly">',
+      '<div class="section-heading"><div><div class="section-kicker">06 — JOINTS & HIERARCHY / V0.5</div><h2>Move one joint. <em>Move a system.</em></h2></div><p>层级装配树、铰链约束传播、对称联动，以及自动生成的逐零件拆解和装配时间轴。</p></div>',
+      '<div class="hierarchy-intro" id="hierarchy-intro"><div><span>NEW · HIERARCHICAL ASSEMBLY</span><h3>让机械结构真正理解自己的父子关系。</h3><p>三种原创机械结构：双关节吊臂、双叶联动吊桥、双翼太阳能观测站。调整任意主关节，整个子总成同步变换。</p></div><button id="hierarchy-launch" class="button button-yellow">Open assembly lab ↗</button></div>',
+      '<div class="hierarchy-workspace" id="hierarchy-workspace" hidden>',
+        '<div class="hierarchy-stage"><div class="hierarchy-stage-top"><span>REAL-TIME KINEMATICS / THREE.JS</span><span>ORBIT · ZOOM · CLICK TO SELECT SUBASSEMBLY</span></div><canvas id="hierarchy-canvas" aria-label="Interactive hierarchy and hinged assembly viewer"></canvas>',
+          '<div class="hierarchy-timeline"><button id="hierarchy-disassemble">↗ Disassemble</button><input id="hierarchy-progress" type="range" min="0" max="1000" value="1000" aria-label="Assembly completion progress"/><button id="hierarchy-assemble">↘ Reassemble</button></div>',
+          '<div class="hierarchy-controls"><button id="hierarchy-motor">▶ Joint motion</button><button id="hierarchy-reset-joints">↺ Home angles</button><button id="hierarchy-isolate">◉ Isolate</button><button id="hierarchy-anchors">◎ Anchors</button><button id="hierarchy-camera">◎ Camera</button></div>',
+          '<div class="hierarchy-footnote">时间轴遵守装配依赖：先拆末端，再拆父节点；重新装配时顺序相反。箭头为示意装配路径，不代表已验证的无碰撞运动规划。</div>',
+        '</div>',
+        '<aside class="hierarchy-sidebar">',
+          '<div class="hierarchy-stats"><div><strong id="hierarchy-parts">—</strong><span>PARTS</span></div><div><strong id="hierarchy-nodes">—</strong><span>SUBASSEMBLIES</span></div><div><strong id="hierarchy-steps">—</strong><span>BUILD STEPS</span></div></div>',
+          '<label class="builder-label" for="hierarchy-preset">Choose mechanism / 示例装配</label>',
+          '<div class="hierarchy-preset-row"><select class="builder-part-picker" id="hierarchy-preset">' + HIERARCHY_PRESETS.map(p => '<option value="' + safe(p.id) + '">' + safe(p.zh) + '</option>').join('') + '</select><button id="hierarchy-load">Load</button></div>',
+          '<div class="hierarchy-small-heading">ASSEMBLY TREE · SUBASSEMBLIES</div><div id="hierarchy-tree" class="hierarchy-tree"></div>',
+          '<div class="hierarchy-small-heading">HINGE CONSTRAINTS · 关节角度</div><div class="hierarchy-joints" id="hierarchy-joints"></div>',
+          '<div role="status" aria-live="polite" class="hierarchy-status" id="hierarchy-status">点击启动实验台查看层级装配。</div>',
+          '<div class="hierarchy-small-heading">AUTO-GENERATED BUILD SEQUENCE</div><div id="hierarchy-steps-list" class="hierarchy-steps-list"></div>',
+          '<div class="hierarchy-exports"><button id="hierarchy-json">↓ Export JSON</button><button id="hierarchy-import">↑ Import JSON</button><button id="hierarchy-glb">↓ Export GLB</button><input id="hierarchy-file" type="file" accept=".json,application/json" hidden/></div>',
+          '<small class="hierarchy-disclaimer">角度传播基于刚体层级与约束 DAG。当前铰链和运动路径是可视化简化模型，尚未进行齿面接触、间隙与全局碰撞检测。</small>',
+        '</aside>',
+      '</div>',
+    '</section>',
     '<section class="dimensions-section">',
       '<div class="section dimensions-inner"><div><div class="section-kicker">04 — THE SHARED GRID</div><h2>One system.<br/><em>Consistent dimensions.</em></h2><p>用统一的名义尺寸组织零件，才能让组件跨作品复用。这里的尺寸用于教育与视觉建模参考，并非真实零件互换或打印配合保证。</p></div>',
         '<div class="dimension-cards">',
@@ -139,6 +164,7 @@ let heroViewer = null;
 let activeModal = null;
 let builderInstance = null;
 let mechanicsInstance = null;
+let hierarchyInstance = null;
 
 function artMarkup(model) {
   return '<div class="model-art" style="--accent:' + safe(model.accent) + '">' +
@@ -599,6 +625,122 @@ document.querySelector('#mechanics-launch').addEventListener('click', () => {
   }
 });
 
+document.querySelector('#hierarchy-launch').addEventListener('click', () => {
+  if (hierarchyInstance) {
+    document.querySelector('#hierarchy-workspace').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  const workspace = document.querySelector('#hierarchy-workspace');
+  workspace.hidden = false;
+  const status = document.querySelector('#hierarchy-status');
+  const tree = document.querySelector('#hierarchy-tree');
+  const joints = document.querySelector('#hierarchy-joints');
+  const steps = document.querySelector('#hierarchy-steps-list');
+  let currentPreset = '';
+  let selectedNode = '';
+  try {
+    hierarchyInstance = mountHierarchyLab(document.querySelector('#hierarchy-canvas'), COMPONENTS, snapshot => {
+      status.textContent = snapshot.status;
+      document.querySelector('#hierarchy-parts').textContent = String(snapshot.steps.length);
+      document.querySelector('#hierarchy-nodes').textContent = String(snapshot.nodes.length);
+      document.querySelector('#hierarchy-steps').textContent = String(snapshot.steps.length);
+      document.querySelector('#hierarchy-progress').value = String(Math.round(snapshot.progress * 1000));
+      document.querySelector('#hierarchy-motor').textContent = snapshot.motor ? 'Ⅱ Pause joints' : '▶ Joint motion';
+      document.querySelector('#hierarchy-isolate').textContent = snapshot.isolated ? '◉ Show all' : '◉ Isolate';
+      document.querySelector('#hierarchy-anchors').textContent = snapshot.anchors ? '◎ Hide anchors' : '◎ Anchors';
+      if (snapshot.preset !== currentPreset) {
+        currentPreset = snapshot.preset;
+        document.querySelector('#hierarchy-preset').value = snapshot.preset;
+        tree.innerHTML = snapshot.nodes.map(n =>
+          '<button data-hierarchy-node="' + safe(n.id) + '" class="hierarchy-node">' +
+            '<span>' + (n.parentId ? '↳' : '◇') + '</span><strong>' + safe(n.id) + '</strong><small>' +
+            n.count + ' parts · ' + safe(n.type) + '</small></button>').join('');
+        joints.innerHTML = snapshot.drivers.map(j =>
+          '<label class="hierarchy-joint"><span><strong>' + safe(j.id) + '</strong><output data-angle-for="' + safe(j.id) + '"></output></span>' +
+          '<input type="range" data-hinge-slider="' + safe(j.id) + '" min="' + j.limits[0] +
+          '" max="' + j.limits[1] + '" step="1" value="' + j.angle + '"/></label>').join('') +
+          snapshot.couplings.map(c => '<div class="hierarchy-coupling">↳ ' +
+          safe(c.driven) + ' follows ' + safe(c.driver) + ' × ' + c.ratio + '</div>').join('');
+        steps.innerHTML = snapshot.steps.map(s =>
+          '<button class="hierarchy-step" data-hierarchy-step="' + s.step + '">' +
+            '<span>' + String(s.step).padStart(2,'0') + '</span><strong>' +
+            safe(s.partId) + '</strong><small>' + safe(s.nodeId) + '</small></button>').join('');
+      }
+      if (snapshot.selected !== selectedNode) selectedNode = snapshot.selected;
+      tree.querySelectorAll('[data-hierarchy-node]').forEach(button => {
+        button.classList.toggle('selected', button.dataset.hierarchyNode === snapshot.selected);
+      });
+      joints.querySelectorAll('[data-hinge-slider]').forEach(slider => {
+        const value = snapshot.drivers.find(j => j.id === slider.dataset.hingeSlider)?.angle;
+        if (value === undefined) return;
+        if (document.activeElement !== slider) slider.value = String(value);
+        const output = joints.querySelector('[data-angle-for="' + slider.dataset.hingeSlider + '"]');
+        if (output) output.textContent = value.toFixed(1) + '°';
+      });
+      steps.querySelectorAll('[data-hierarchy-step]').forEach(button =>
+        button.classList.toggle('assembled', Number(button.dataset.hierarchyStep) <=
+          Math.round(snapshot.progress * snapshot.steps.length)));
+    });
+    document.querySelector('#hierarchy-intro').hidden = true;
+    document.querySelector('#hierarchy-load').addEventListener('click', () =>
+      hierarchyInstance.preset(document.querySelector('#hierarchy-preset').value));
+    document.querySelector('#hierarchy-disassemble').addEventListener('click', () => hierarchyInstance.play(0));
+    document.querySelector('#hierarchy-assemble').addEventListener('click', () => hierarchyInstance.play(1));
+    document.querySelector('#hierarchy-progress').addEventListener('input', event =>
+      hierarchyInstance.setProgress(Number(event.target.value) / 1000));
+    document.querySelector('#hierarchy-motor').addEventListener('click', () => hierarchyInstance.toggleMotor());
+    document.querySelector('#hierarchy-reset-joints').addEventListener('click', () => hierarchyInstance.resetJoints());
+    document.querySelector('#hierarchy-isolate').addEventListener('click', () => hierarchyInstance.toggleIsolate());
+    document.querySelector('#hierarchy-anchors').addEventListener('click', () => hierarchyInstance.toggleAnchors());
+    document.querySelector('#hierarchy-camera').addEventListener('click', () => hierarchyInstance.resetCamera());
+    tree.addEventListener('click', event => {
+      const button = event.target.closest('[data-hierarchy-node]');
+      if (button) hierarchyInstance.selectNode(button.dataset.hierarchyNode);
+    });
+    joints.addEventListener('input', event => {
+      const slider = event.target.closest('[data-hinge-slider]');
+      if (slider) hierarchyInstance.setAngle(slider.dataset.hingeSlider, Number(slider.value));
+    });
+    steps.addEventListener('click', event => {
+      const button = event.target.closest('[data-hierarchy-step]');
+      if (!button) return;
+      const total = steps.querySelectorAll('[data-hierarchy-step]').length;
+      hierarchyInstance.setProgress(Number(button.dataset.hierarchyStep) / total);
+    });
+    document.querySelector('#hierarchy-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(hierarchyInstance.getDocument(),null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob), link = document.createElement('a');
+      link.href = url;link.download = 'brick-worlds-hierarchy.json';link.click();
+      setTimeout(() => URL.revokeObjectURL(url),2500);
+    });
+    document.querySelector('#hierarchy-import').addEventListener('click', () =>
+      document.querySelector('#hierarchy-file').click());
+    document.querySelector('#hierarchy-file').addEventListener('change', async event => {
+      const input = event.currentTarget, file = input.files?.[0];
+      if (!file) return;
+      try {
+        if (file.size > 100000) throw new Error('File exceeds 100KB');
+        hierarchyInstance.importRecipe(await file.text());
+      } catch(error) {status.textContent = '导入失败：' + error.message;}
+      finally {input.value='';}
+    });
+    document.querySelector('#hierarchy-glb').addEventListener('click', async event => {
+      const button=event.currentTarget;button.disabled=true;
+      try {
+        await downloadAssemblyGlb({
+          title:'Hierarchical Assembly',slug:'brick-worlds-hierarchy',
+          parts:hierarchyInstance.getParts()
+        });
+        status.textContent='已导出当前姿态 GLB；层级约束与装配步骤请保留 JSON。';
+      } catch(error) {console.error(error);status.textContent='GLB 导出失败：'+error.message;}
+      finally {button.disabled=false;}
+    });
+  } catch(error) {
+    status.textContent='Hierarchy Lab 启动失败：'+error.message;
+    console.error(error);
+  }
+});
+
 const mobileMenu = document.querySelector('#mobile-menu');
 mobileMenu.addEventListener('click', () => {
   const nav = document.querySelector('.main-nav');
@@ -632,4 +774,5 @@ window.addEventListener('beforeunload', () => {
   detailViewer?.dispose();
   builderInstance?.dispose();
   mechanicsInstance?.dispose();
+  hierarchyInstance?.dispose();
 });
