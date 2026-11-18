@@ -100,22 +100,47 @@ function createBeam(group, spec) {
 function createPin(group, spec, axle = false) {
   const length = Number(spec.size?.[0]) || (axle ? 40 : 12);
   const radius = axle ? 1.75 : 2.25;
-  const geo = new THREE.CylinderGeometry(radius, radius, length, 16);
-  const mesh = addMesh(group, geo, spec.color, axle ? 'cross-axle' : 'connector-pin');
-  mesh.rotation.x = Math.PI / 2;
-  const cap = addMesh(group, new THREE.CylinderGeometry(radius * 1.22, radius * 1.22, 1.2, 16), axle ? '#313b43' : spec.color, 'pin-flange');
-  cap.rotation.x = Math.PI / 2;
-  cap.position.z = -length / 2 + 1;
+  if (axle) {
+    // A simple twelve-edge cross-section gives a visible keyed axle,
+    // rather than an incorrectly cylindrical "cross axle".
+    const halfArm = 0.72;
+    const outline = [
+      [-halfArm, -radius], [halfArm, -radius], [halfArm, -halfArm],
+      [radius, -halfArm], [radius, halfArm], [halfArm, halfArm],
+      [halfArm, radius], [-halfArm, radius], [-halfArm, halfArm],
+      [-radius, halfArm], [-radius, -halfArm], [-halfArm, -halfArm]
+    ];
+    const shape = new THREE.Shape();
+    shape.moveTo(...outline[0]);
+    for (const point of outline.slice(1)) shape.lineTo(...point);
+    shape.closePath();
+    addExtruded(group, shape, length, spec.color, 'cross-section-axle');
+  } else {
+    const shaft = addMesh(group, new THREE.CylinderGeometry(radius, radius, length, 20), spec.color, 'connector-pin');
+    shaft.rotation.x = Math.PI / 2;
+    const cap = addMesh(group, new THREE.CylinderGeometry(radius * 1.2, radius * 1.2, 0.9, 20),
+      spec.color, 'connector-pin-flange');
+    cap.rotation.x = Math.PI / 2;
+    cap.position.z = -length / 2 + 0.45;
+  }
+}
+
+function annulusShape(outerRadius, innerRadius) {
+  const shape = new THREE.Shape();
+  shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+  const hole = new THREE.Path();
+  hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+  shape.holes.push(hole);
+  return shape;
 }
 
 function createGear(group, spec) {
   const [radius = 8, teeth = 16, thickness = 3.2] = spec.size || [];
-  const body = addMesh(group, new THREE.CylinderGeometry(radius * 0.82, radius * 0.82, thickness, 40), spec.color, 'gear-disc');
-  body.rotation.x = Math.PI / 2;
-  const hub = addMesh(group, new THREE.CylinderGeometry(radius * 0.35, radius * 0.35, thickness + 0.8, 24), '#d8dce0', 'gear-hub');
-  hub.rotation.x = Math.PI / 2;
-  const hole = addMesh(group, new THREE.CylinderGeometry(radius * 0.13, radius * 0.13, thickness + 1.1, 16), '#202a32', 'axle-hole');
-  hole.rotation.x = Math.PI / 2;
+  const boreRadius = 1.9;
+  addExtruded(group, annulusShape(radius * 0.82, boreRadius), thickness,
+    spec.color, 'gear-body-with-through-bore');
+  addExtruded(group, annulusShape(radius * 0.35, boreRadius), thickness + 0.8,
+    '#d8dce0', 'gear-hub-with-through-bore');
   for (let i = 0; i < teeth; i++) {
     const angle = (i / teeth) * Math.PI * 2;
     const tooth = addMesh(group, new THREE.BoxGeometry(2.8, 3.1, thickness), spec.color, 'gear-tooth');
@@ -128,21 +153,22 @@ function createWheel(group, spec) {
   const [radius = 10, width = 7] = spec.size || [];
   const hubOnly = spec.id === 'wheel-hub';
   if (!hubOnly) {
-    const tire = addMesh(group, new THREE.CylinderGeometry(radius, radius, width, 32), spec.color || '#252d34', 'rubber-tire');
-    tire.rotation.x = Math.PI / 2;
+    addExtruded(group, annulusShape(radius, radius * 0.56), width,
+      spec.color || '#252d34', 'rubber-tire-ring');
     if (spec.id === 'tire-offroad') {
       for (let i = 0; i < 18; i++) {
-        const angle = i / 18 * Math.PI * 2;
-        const lug = addMesh(group, new THREE.BoxGeometry(3.2, width + 0.6, 1.6), '#303941', 'offroad-tread-lug');
-        lug.position.set(Math.cos(angle) * (radius + 0.45), Math.sin(angle) * (radius + 0.45), 0);
+        const angle = (i / 18) * Math.PI * 2;
+        const lug = addMesh(group, new THREE.BoxGeometry(3.2, 1.6, width + 0.7),
+          '#303941', 'offroad-tread-lug');
+        lug.position.set(Math.cos(angle) * (radius + 0.25), Math.sin(angle) * (radius + 0.25), 0);
         lug.rotation.z = angle;
       }
     }
   }
-  const rim = addMesh(group, new THREE.CylinderGeometry(radius * 0.58, radius * 0.58, width + 0.5, 24), '#c7cbd0', 'wheel-rim');
-  rim.rotation.x = Math.PI / 2;
-  const hub = addMesh(group, new THREE.CylinderGeometry(radius * 0.22, radius * 0.22, width + 1, 20), '#4a5964', 'wheel-hub');
-  hub.rotation.x = Math.PI / 2;
+  addExtruded(group, annulusShape(radius * 0.57, 1.9), width + 0.5,
+    '#c7cbd0', 'wheel-rim-with-through-bore');
+  addExtruded(group, annulusShape(radius * 0.23, 1.9), width + 0.9,
+    '#4a5964', 'wheel-hub-with-through-bore');
 }
 
 function createPanel(group, spec) {
