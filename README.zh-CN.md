@@ -4,9 +4,28 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [AI 拼搭 Agent](docs/ai-assembly-agent.md) · [系列 Skills](docs/skills-system.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
+
+## AI 拼搭 Agent 与跨平台物理世界 Skills · V0.7
+
+[**打开 AI 拼搭 Agent**](https://1998x-stack.github.io/LEGO-Worlds/#agent)，输入「**搭建一辆六轮火星探测车**」即可生成组件清单、连接图、关节关系、装配步骤与约束求解报告。第一版探测车概念装配由中央车体、两条机械纵梁、六个轮组和传感器舱组成，共 **10 个可见组件、9 条连接**，可以转入三维 Constraint Lab 检视。**六个轮组使用虚拟转轴接口，并未实现真实悬架、电机和越野动力学**。
+
+当前采用可复现的**离线模板规划器**，不是调用云端大模型的无限制 CAD 生成服务。支持六轮探测车、四连杆、线性滑轨、转轴驱动四种路径；建筑物、飞机等请求先输出需求与物理验证清单，不伪造结构安全或适航性结论。
+
+为未来大型物理世界建立了 **12 个领域 Skill**：系统架构、参数化几何、连接接口、通用约束、物理验证、建筑、航空、移动机器人、AI 装配规划、装配动画、资产质量和 Skill 治理。各自包含 `SKILL.md`、`references/`、`scripts/`、`assets/`；[AGENTS.md](AGENTS.md) 约束代码质量，`.codex/`、`.pi/`、`.claude/` 提供符合各平台发现机制的入口，并由 CI 进行校验。
+
+```bash
+npm install
+npm run agent:plan -- "搭建一辆六轮火星探测车" > rover-plan.json
+npm run agent:validate -- rover-plan.json
+npm run test:skills
+npm test
+npm run build
+```
+
+技术说明：[AI 拼搭 Agent](docs/ai-assembly-agent.md) · [Skills 体系](docs/skills-system.md) · [正式技能源](.agents/skills/README.md)。
 
 ## 100 种基础组件
 
@@ -128,6 +147,7 @@ src/
   technic-engine.js    # 梁孔连接、键轴固定、齿轮传动
   hierarchy-engine.js # 层级刚体、关节与装配依赖
   constraint-graph.js # 多重连接、闭环求解和 OBB 碰撞提示
+  ai-agent.js        # 自然语言意图、BOM、连接图、装配步骤
   constraint-lab.js   # 可视化连接图编辑与运动学驱动
   hierarchy-lab.js    # 三维铰链调节、拆解重装时间轴
   mechanics-lab.js     # 机械装配、拆解与运动学交互
@@ -143,6 +163,8 @@ docs/
   technic-mechanics.md
   hierarchy-assembly.md
   constraint-graph.md
+  ai-assembly-agent.md
+  skills-system.md
   roadmap.md
 tests/
   catalog.test.mjs
@@ -151,6 +173,13 @@ tests/
   technic-engine.test.mjs
   hierarchy-engine.test.mjs
   constraint-graph.test.mjs
+  ai-agent.test.mjs
+.agents/skills/        # 12 个跨平台技能的正式源
+.codex/skills/         # Codex 镜像入口
+.claude/skills/        # Claude Code 入口
+.pi/skills/            # Pi 路由技能
+scripts/               # 自动校验与 Agent CLI
+AGENTS.md              # 工程规范
 .github/workflows/
   pages.yml
 ```
