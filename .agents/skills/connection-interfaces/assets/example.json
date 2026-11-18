@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "mount_1",
+  "kind": "axle-hole",
+  "role": "female",
+  "positionMm": [
+    0,
+    0,
+    0
+  ],
+  "normal": [
+    0,
+    0,
+    1
+  ],
+  "axis": [
+    0,
+    0,
+    1
+  ],
+  "nominalDiameterMm": 3.8,
+  "confidence": "schematic",
+  "measuredFit": false
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "source": ".agents/skills",
+  "skills": [
+    {
+      "id": "world-systems-architect",
+      "description": "Decompose new 3D worlds such as buildings, aircraft, cities or robots into scalable subsystems, physical-domain contracts and validation gates. Use for system architecture and roadmap design; not for creating certified engineering plans.",
+      "domain": "world",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "parametric-component-modeling",
+      "description": "Create or refine reusable procedural 3D parts in src/catalog.js and src/brick-system.js. Use for dimensions, meshes, material systems and printable component design; not as a substitute for manufacturing fit testing.",
+      "domain": "parametric",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "connection-interfaces",
+      "description": "Design or audit mating anchors, holes, studs, shafts, hinge axes, face ports and tolerances in the 3D-world component system. Use when adding connectionProfile data, snap targets or connector semantics.",
+      "domain": "connection",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "mechanical-constraint-solving",
+      "description": "Extend the general rigid-body constraint graph, revolute/shaft/slider/fixed joints, loop closure or numerical kinematics. Use for assembly motion, graph validity, collision and solver performance; not for torque or CAD certification.",
+      "domain": "mechanical",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "physics-validation",
+      "description": "Plan and validate the physics readiness of 3D worlds, including materials, structural loads, rigid-body dynamics, collision fidelity, fluid/aero effects and environmental constraints. Use for physical-world claims, never to invent simulation outcomes.",
+      "domain": "physics",
+      "stage": "physics-simulation",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "building-world-planning",
+      "description": "Architect large multi-floor buildings and built environments as domain-separated 3D world systems. Use for building concept scenes, floor graphs, MEP, structural layouts and streaming; not for code-compliant design approval.",
+      "domain": "building",
+      "stage": "concept",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "aerospace-world-planning",
+      "description": "Design conceptual aircraft, aerospace vehicles and airport-world systems as modular visual and simulation requirements. Use for aircraft model architecture, subsystems, coordinate frames and readiness reviews; never for airworthiness claims.",
+      "domain": "aerospace",
+      "stage": "concept",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "mobile-robotics-worlds",
+      "description": "Build and validate educational rovers and mobile robot assemblies using catalog parts and constrained chassis/wheel graphs. Use for six-wheel Mars rover concepts, wheel mounts, sensor payloads and robotics kinematics.",
+      "domain": "mobile",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "ai-assembly-planning",
+      "description": "Turn Chinese/English natural-language build requests into catalog BOM, connection graph, joint parameters, ordered assembly steps and solver validation. Use when implementing or auditing the AI assembly Agent; never trust raw model-produced geometry.",
+      "domain": "ai",
+      "stage": "kinematic",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "assembly-sequence-animation",
+      "description": "Generate and review assembly/disassembly step dependency DAGs, exploded paths, and Three.js step animations. Use for instruction generation and subassembly ordering; not for claiming collision-free robot motion.",
+      "domain": "assembly",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "asset-quality-release",
+      "description": "Review procedural meshes, schema stability, 3D asset performance, tests, documentation and GitHub Pages release readiness. Use for quality gates, asset import or production deployment.",
+      "domain": "asset",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    },
+    {
+      "id": "skill-system-governance",
+      "description": "Author, revise and validate reusable Agent Skills for Codex, Claude and Pi in the 3D worlds repository. Use for new skill modules, reference/script/asset contracts and skill metadata maintenance.",
+      "domain": "skill",
+      "stage": "engineering",
+      "resources": [
+        "SKILL.md",
+        "references/domain.md",
+        "scripts/check.mjs",
+        "assets/example.json"
+      ]
+    }
+  ]
+}

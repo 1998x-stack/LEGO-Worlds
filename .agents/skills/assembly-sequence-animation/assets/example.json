@@ -1,0 +1,16 @@
+{
+  "step": 4,
+  "bodyId": "wheel_port_1",
+  "componentId": "wheel-medium",
+  "operation": "connect",
+  "dependsOn": [
+    2
+  ],
+  "viaJointId": "bearing_port_1",
+  "approachOffsetMm": [
+    0,
+    0,
+    30
+  ],
+  "trajectoryVerified": false
+}

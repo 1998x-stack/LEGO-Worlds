@@ -1,0 +1,14 @@
+{
+  "assetId": "sample_asset",
+  "source": "original-procedural",
+  "licenses": [
+    "original"
+  ],
+  "checks": {
+    "nodeTests": "pending",
+    "build": "pending",
+    "browser": "pending",
+    "geometry": "pending",
+    "physical": "not-certified"
+  }
+}

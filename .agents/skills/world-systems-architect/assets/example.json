@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "domain": "built-environment",
+  "worldScale": "building",
+  "frame": {
+    "unit": "m",
+    "up": "+Y",
+    "handedness": "right"
+  },
+  "subsystems": [
+    "structure",
+    "architecture",
+    "MEP",
+    "occupancy",
+    "environment"
+  ],
+  "verification": {
+    "geometry": "pending",
+    "kinematics": "not-applicable",
+    "structural": "not-run",
+    "codeCompliance": "not-reviewed"
+  }
+}

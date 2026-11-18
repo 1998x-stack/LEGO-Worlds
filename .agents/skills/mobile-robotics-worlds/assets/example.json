@@ -1,0 +1,17 @@
+{
+  "prompt": "搭建一辆六轮火星探测车",
+  "wheelCount": 6,
+  "expectedParts": 10,
+  "expectedWheelParts": 6,
+  "sensor": "dome-2x2",
+  "validation": [
+    "graph",
+    "kinematics",
+    "OBB"
+  ],
+  "absent": [
+    "rocker-bogie",
+    "motor",
+    "load-analysis"
+  ]
+}

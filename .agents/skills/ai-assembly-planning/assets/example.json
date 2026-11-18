@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "request": "搭建一辆六轮火星探测车",
+  "generator": "deterministic-local-planner",
+  "status": "kinematic-validated-concept",
+  "graphSchemaVersion": 1,
+  "requirements": {
+    "wheelCount": 6
+  },
+  "evidence": {
+    "geometry": "conceptual",
+    "kinematics": "solver-reviewed",
+    "dynamics": "not-run"
+  }
+}

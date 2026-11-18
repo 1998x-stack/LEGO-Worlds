@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "aircraft_concept_01",
+  "fidelity": "display-only",
+  "dimensionsM": {
+    "span": 12,
+    "length": 8
+  },
+  "subsystems": [
+    "airframe",
+    "propulsion",
+    "controls",
+    "avionics"
+  ],
+  "verification": {
+    "cfd": "not-run",
+    "structural": "not-run",
+    "flight": "not-tested"
+  },
+  "status": "concept-only"
+}

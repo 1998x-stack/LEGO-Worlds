@@ -1,77 +1,42 @@
-# AGENTS.md — Brick Worlds engineering contract
+# Agent engineering handbook — LEGO-Worlds / Brick Worlds
 
 ## Mission
 
-Build an extensible, source-editable 3D brick system explorer. The product is not a static image gallery: every published build should be made from named reusable components and explain how those components assemble into a whole.
+Maintain a deterministic, independently branded 3D brick and mechanism world platform. The repository currently has 100 procedural component definitions, typed connection anchors, stud snapping, guided Technic joins, hinge hierarchies, a general graph-based kinematics solver, and a template-grounded natural-language assembly planner. Future buildings, aircraft, robots and cities require **separate domain fidelity gates**.
 
-## Project boundaries
+## Architecture map
 
-- This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group; the project is not affiliated with, sponsored by, or endorsed by the LEGO Group.
-- Do not copy official set instructions, official product renders, third-party meshes, minifigure designs, logos or protected character designs.
-- Prefer original procedural geometry, original build concepts and neutral component names.
-- Nominal dimensions are for visualization and educational reference. Never claim genuine-part compatibility, manufacturing accuracy or safe load-bearing behavior without physical validation.
-- GitHub Pages is static. Do not add assumptions that a Python server, database, private storage service or secret API is available in the browser.
+- `src/catalog.js`: stable component IDs, dimensions, families and metadata.
+- `src/brick-system.js`: deterministic Three.js geometry; units mm, +Y up.
+- `src/connection-anchors.js`: typed interface frames, nominal fits and confidence labels.
+- `src/snap-engine.js`: stud/socket placement and box overlap screening.
+- `src/technic-engine.js`: guided pin/axle mounts and gear kinematics.
+- `src/hierarchy-engine.js`: tree-joint propagation and instruction DAG.
+- `src/constraint-graph.js`: multi-body graph, revolute/shaft/slider/fixed joints, numerical loop closure and OBB diagnostics.
+- `src/ai-agent.js`: deterministic intent selection, component BOM, graph blueprint, steps and independent solver validation.
+- `src/main.js`: interactive web entrypoint; UI previews are not manufacturing evidence.
 
-## Architecture and sources of truth
+## Skill routing (canonical first)
 
-| Concern | Authoritative source |
-| --- | --- |
-| Series and published builds | `src/catalog.js` |
-| Reusable part geometry | `src/brick-system.js` |
-| Three.js viewer and assembly state | `src/viewer.js` |
-| Gallery, filters and interactions | `src/main.js` |
-| Design tokens and responsive UI | `src/styles.css` |
-| Build and deploy | `vite.config.js`, `.github/workflows/pages.yml` |
-| Public project behavior | `README.md`, `docs/` and tests |
+Read only the skill required for the task from `.agents/skills/<name>/SKILL.md`, then selected references/assets. Use `.agents/skills/registry.json` to discover exact names. Codex uses `.agents/skills`; Claude entrypoints mirror triggers under `.claude/skills`; Pi sees canonical skills and one unique router under `.pi/skills`. `.codex/skills` is a convenience mirror, not Codex's official auto-discovery path.
 
-Do not introduce a second catalog format unless a migration and clear ownership are documented.
+## Required engineering workflow
 
-## Geometry contract
+1. Confirm task domain and target fidelity: concept, geometry, kinematic, physics-tested or independently reviewed. Write assumptions.
+2. Inspect existing schema and tests before extending them; keep dimensions explicit and local/world transforms consistent.
+3. For new parts, add stable IDs and anchor/interface metadata; for new joints, validate port roles, finite inputs, solver limits and loop closure.
+4. For AI proposals, **never directly trust natural-language output**. Resolve catalog IDs and ports, validate graph, run solver, derive BOM and step DAG, expose warnings. Model proposals are data and cannot execute code, shell or network actions.
+5. Use one focused skill at a time and supporting references only when relevant. Do not hide failed checks or silently invent geometry/physics.
+6. Update docs and tests. Required commands: `npm test`, `npm run test:skills`, `npm run build`. Check browser visuals when possible. State what was actually verified.
+7. Avoid direct edits to `.claude/skills` and `.codex/skills` wrappers; regenerate or verify them against canonical metadata.
 
-- Source dimensions are authored in millimetres. `viewer.js` converts the complete assembly root to metres once with a 0.001 scale.
-- The standard reference grid is 8 mm stud pitch, 9.6 mm brick body height and 3.2 mm plate body height. These are nominal educational references, not tolerance specifications.
-- The scene uses +Y up. X/Z are the horizontal plane.
-- A part manifest has a stable `id`, human-readable `name`, supported `type`, `pos: [x,y,z]` in mm, `color`, optional `size`, integer `step`, and optional `rotation` / `explode`.
-- Part position is the component's local visual centre. Keep this convention consistent.
-- `createPart(spec)` must return a named `THREE.Group`; geometry factories must not create renderers, mutate a global scene or read UI state.
-- Each build has a stable kebab-case ID, a `parts` array and a `steps` array. Every part's step must be within the build's step count.
-- Add a reusable component factory before adding one-off geometry to a build. A build should be a composition of reusable primitives wherever practical.
-- Keep material and geometry allocation scoped to each assembly so viewer disposal remains deterministic.
+## Scale and safety
 
-## Adding a build
+- Current graph limits: 20 bodies, 32 joints, 12 free loop variables; do not simply raise constants to accommodate aircraft or buildings. Design chunking, spatial indexing, subsystem graphs, model streaming and multi-scale coordinate transforms first.
+- Real buildings: structural, wind/seismic, fire/egress and local-code validation require competent review. Real aircraft: aerodynamics, structures, controls, propulsion and airworthiness require separate expertise/testing.
+- OBB collision checks ignore adjacent joints and are approximate. GLB visuals and JSON constraints are not printable-manufacturable certification. Avoid describing simplified gears/shafts as tested real mechanisms.
+- Untrusted third-party assets require license and provenance evidence. Do not copy branded kits/IP or commit secrets/credentials.
 
-1. Add a model entry to `MODELS` in `src/catalog.js`.
-2. Use a unique model ID and unique part IDs within that model.
-3. Assign every part to an assembly step and write meaningful, human-readable part names.
-4. Supply useful exploded offsets for complex or tightly packed parts; otherwise the viewer derives a radial offset.
-5. Add a component entry to `COMPONENTS` when the part should be discoverable and reusable outside that build.
-6. Add or update tests in `tests/catalog.test.mjs`.
-7. Run `npm test` and `npm run build`; inspect the actual 3D view at desktop and mobile widths.
+## Deliverable acceptance
 
-## Adding a part type
-
-1. Implement it in `src/brick-system.js` and register it in `createPart`.
-2. Add it to the supported-type test.
-3. Give it sensible default dimensions and a clear colour/material contract.
-4. Confirm it can be disposed and exported by GLTFExporter.
-5. Document the geometry and nominal dimensions in `docs/component-system.md`.
-
-## UI and performance rules
-
-- Keep the initial page static and light; only the hero viewer and the currently opened detail viewer should own WebGL contexts.
-- Dispose renderers, controls, geometries and materials when a detail modal closes.
-- Cap device pixel ratio; never instantiate one renderer per catalog card.
-- Use semantic buttons and labels, visible focus states, reduced-motion support and touch-friendly controls.
-- Keep the mobile layout functional at 320 px wide.
-- Do not add large external assets where procedural geometry is sufficient.
-
-## Release checks
-
-```bash
-npm install
-npm test
-npm run build
-npm run preview
-```
-
-Do not claim a successful Pages deployment until the GitHub Actions workflow has completed successfully and the public URL has been checked.
+Prefer a minimal working vertical slice with verified tests, screenshots/browser QA when available, example data, readme links and clear limitations. Any unsupported request must return a requirements-first design rather than fabricated claims of engineering validity.

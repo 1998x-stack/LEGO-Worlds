@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "canonicalDirectory": ".agents/skills",
+  "mode": "read-through",
+  "doNotDuplicateCanonicalNames": true
+}

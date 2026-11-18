@@ -1,0 +1,14 @@
+{
+  "domain": "robotics",
+  "tier": "kinematic",
+  "solver": "none",
+  "gravityMs2": null,
+  "massKg": null,
+  "loadCases": [],
+  "collisionMode": "OBB-proxy",
+  "verification": {
+    "measured": false,
+    "externalReview": false
+  },
+  "claim": "educational-preview"
+}

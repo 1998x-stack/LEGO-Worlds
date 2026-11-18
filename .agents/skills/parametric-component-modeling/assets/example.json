@@ -1,0 +1,22 @@
+{
+  "id": "future-bracket",
+  "type": "bracket",
+  "units": "mm",
+  "size": [
+    32,
+    16,
+    4
+  ],
+  "material": "PLA-placeholder",
+  "datum": [
+    0,
+    0,
+    0
+  ],
+  "toleranceStatus": "not-verified",
+  "geometryTests": [
+    "finite-bounds",
+    "visual-bore",
+    "mesh-review"
+  ]
+}

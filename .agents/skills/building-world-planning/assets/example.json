@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "building_concept_01",
+  "units": "m",
+  "floors": 5,
+  "footprintM": [
+    24,
+    16
+  ],
+  "zones": [
+    "core",
+    "residential",
+    "utilities"
+  ],
+  "engineering": {
+    "structural": "pending",
+    "fire": "pending",
+    "egress": "pending",
+    "energy": "pending"
+  },
+  "status": "concept-only"
+}

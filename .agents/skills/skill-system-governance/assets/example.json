@@ -1,0 +1,12 @@
+{
+  "name": "new-world-skill",
+  "description": "Specific trigger and exclusion description",
+  "directories": [
+    "SKILL.md",
+    "references/domain.md",
+    "assets/example.json",
+    "scripts/check.mjs"
+  ],
+  "owner": "repository",
+  "version": 1
+}

@@ -1,0 +1,22 @@
+{
+  "id": "joint_1",
+  "kind": "hinge",
+  "a": {
+    "bodyId": "base",
+    "portId": "center-z"
+  },
+  "b": {
+    "bodyId": "arm",
+    "portId": "center-z"
+  },
+  "value": 0,
+  "limits": [
+    -90,
+    90
+  ],
+  "controlled": true,
+  "validation": {
+    "loopClosure": "required",
+    "collision": "proxy-warning"
+  }
+}
