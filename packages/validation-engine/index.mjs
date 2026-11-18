@@ -183,6 +183,8 @@ export function checkL2(worldSpec,geometry,assembly,catalog=COMPONENTS,options={
     }
     if(clearance?.mesh===true) {
       const mesh=inspectGraphMeshContacts(a.graph,solved.poses,catalog);
+      if(mesh.incomplete)checks.push(failure('L2.mesh-resource','MESH_VALIDATION_INCOMPLETE',
+        'Explicit mesh clearance request exceeded the bounded triangle/pair budget'));
       checks.push(result('L2.mesh-surface',mesh.incomplete?'NOT_RUN':
         mesh.contacts.length?'WARN':'PASS',
         mesh.incomplete?'MESH_BUDGET_INCOMPLETE':
@@ -198,6 +200,8 @@ export function checkL2(worldSpec,geometry,assembly,catalog=COMPONENTS,options={
     }
     if(clearance?.path) {
       const path=inspectInsertionPath(a.graph,solved.poses,catalog,clearance.path);
+      if(path.status==='incomplete')checks.push(failure('L2.insertion-resource',
+        'PATH_VALIDATION_INCOMPLETE','Requested insertion scan stopped before all samples were checked'));
       checks.push(result('L2.insertion-path',path.status==='blocked'?'FAIL':
         path.status==='incomplete'?'NOT_RUN':'WARN',
         path.status==='blocked'?'ASSEMBLY_PATH_BLOCKED':

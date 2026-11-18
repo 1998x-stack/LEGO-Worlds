@@ -300,7 +300,13 @@ export function reviewNominalAxialInterfaces(graph,poses,catalog=COMPONENTS){
       -centerDelta.dot(femalePort.axis)).length();
     const clearanceMm=female.radius-male.radius-offset;
     const femaleHalf=female.length/2,maleHalf=male.length/2;
-    const displacement=centerDelta.dot(femalePort.axis);
+    // The axle-seat is a connection datum offset along the *real* shaft.
+    // Compute engagement against the physical axle center and full shaft ends,
+    // not a fictitious shaft of full length centered on the offset seat.
+    const maleBody=a.role==='male'?bodyA:bodyB;
+    const maleCenter=male.type==='axle-cross-nominal'
+      ? v3(poses[maleBody.id].pos) : malePort.p;
+    const displacement=maleCenter.clone().sub(femalePort.p).dot(femalePort.axis);
     const axialOverlapMm=Math.max(0,Math.min(femaleHalf,displacement+maleHalf)-
       Math.max(-femaleHalf,displacement-maleHalf));
     const compatible=clearanceMm>=-0.005 && axialOverlapMm>0.1 && angle<2;

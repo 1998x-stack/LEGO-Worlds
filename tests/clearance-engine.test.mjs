@@ -158,3 +158,14 @@ test('independent L2 gate rejects blocked insertion even when graph kinematics c
   assert.equal(runner.status,'needs_revision');
   assert.ok(runner.diagnostics.some(d=>d.code==='ASSEMBLY_PATH_BLOCKED'));
 });
+
+
+test('axle-seat is an offset locator, but engagement uses actual physical shaft ends',()=>{
+  const g=graph(),s=solve(g);
+  const displaced=structuredClone(s.poses);
+  displaced.wheel.pos[2]+=21; // wheel back face is beyond the axle front end
+  const fits=reviewNominalAxialInterfaces(g,displaced,catalog);
+  const wheel=fits.find(f=>f.jointId==='wheel_key');
+  assert.equal(wheel.status,'FAIL',JSON.stringify(wheel));
+  assert.equal(wheel.axialOverlapMm,0);
+});
