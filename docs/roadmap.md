@@ -55,7 +55,19 @@
 - [ ] Add connector-specific physical fit, geometric mesh narrow-phase and CCD.
 - [ ] Add generalized loop-closure branch finding and dynamic torque/friction models.
 
-## V0.7 — Asset pipeline
+## V0.7 — Physical-world Skills and natural-language Assembly Agent
+- [x] Add AGENTS.md and 12 canonical domain Skills, each with SKILL.md, references, scripts and assets.
+- [x] Integrate Codex, Claude and Pi entrypoints without Pi duplicate-name collisions.
+- [x] Add skill registry validation, adapter synchronization and npm/CI verification.
+- [x] Implement deterministic Chinese/English natural-language request routing and approved assembly blueprints.
+- [x] Generate a conceptual six-wheel Mars rover with ten parts, nine connections, BOM and step dependencies.
+- [x] Reuse existing kinematics and OBB collision validation with explicit pending physical gates.
+- [x] Display the plan in the browser, export JSON and load the graph into the Three.js Constraint Lab.
+- [x] Return requirements-only responses for unsupported structural building and flight-critical aircraft requests.
+- [ ] Add model-backed plan proposals behind a server-side permission/validation boundary.
+- [ ] Add rover suspension, actual wheel axle geometries, motors and terrain-dynamics checks.
+
+## V0.8 — Asset pipeline
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
@@ -64,5 +76,5 @@
 ## V1 — Open construction platform
 - [ ] Searchable, versioned component database.
 - [ ] Public assembly schema and documented connection graph.
-- [ ] AI-agent-friendly build recipes and validation.
+- [x] Versioned, template-grounded agent recipes and independent validation; unconstrained LLM generation is still planned.
 - [ ] Optional print-oriented export with explicit fit and safety disclaimers.
