@@ -282,3 +282,28 @@ export function validateGeneratedPlan(document,catalog) {
     explanation:'Imported assembly revalidated locally; original generator provenance and safety claims are not trusted.'
   };
 }
+
+
+/**
+ * Provider-neutral security boundary for future model-produced JSON proposals.
+ * The LLM (if one is connected later) may propose data, but cannot declare
+ * the result certified, skip graph validation or supply executable actions.
+ */
+export function validateExternalGraphProposal(proposal,catalog) {
+  if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal))
+    throw new Error('External model proposal must be a JSON object');
+  const candidateGraph = proposal.graph || proposal;
+  const rechecked = validateGeneratedPlan({
+    schemaVersion:AGENT_PLAN_SCHEMA_VERSION,
+    generator:AGENT_GENERATOR,
+    graph:candidateGraph,
+    request:{prompt:typeof proposal.prompt==='string'?proposal.prompt:
+      typeof proposal.request?.prompt==='string'?proposal.request.prompt:'External graph proposal'}
+  },catalog);
+  return {
+    ...rechecked,
+    generator:'external-json-proposal-revalidated',
+    request:{...rechecked.request,mode:'external-untrusted-json'},
+    explanation:'A proposed external graph was treated as untrusted data and rechecked. No LLM, engineering validation or physical certification was inferred.'
+  };
+}
