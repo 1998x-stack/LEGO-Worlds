@@ -35,6 +35,18 @@ src/builder-lab.js     interactive builder
   └── JSON import/export
                             |
                             v
+src/technic-engine.js
+  ├── beam-hole, pin and axle constraints
+  ├── keyed wheel/gear mounts
+  └── gear-pair ratio and replayable recipes
+                            |
+                            v
+src/mechanics-lab.js
+  ├── clickable holes and joint graph
+  ├── exploded assembly motion
+  └── counter-rotating gear drive
+                            |
+                            v
 src/viewer.js
   ├── Scene + lights + camera
   ├── OrbitControls
@@ -80,3 +92,7 @@ Vite's base path is `/LEGO-Worlds/`. The Pages workflow runs tests, builds the s
 ## Snap Builder
 
 The stud/socket snap solver is independent of the DOM and can be tested under Node.js. The Builder UI creates a separate scene only on user launch and uses a translucent candidate mesh to show ready/blocked/near states. The JSON schema is versioned and stores catalog-based part instances plus computed connection edges. This first implementation deliberately excludes specialized Technic, gear and hinged auto-snap behavior; see [Snap Builder](snap-builder.md).
+
+## Guided Technic assembly
+
+Technic-style mechanical assemblies are handled by `src/technic-engine.js` (independent of the browser) and `src/mechanics-lab.js` (lazy-loaded Three.js scene). The user selects a beam hole, inserts a pin/axle, then mounts a wheel or gear to a compatible shaft. The resulting joint graph contains fixed/revolute constraints and derived spur-gear counter-rotation edges. Mechanism JSON imports are replayed from a validated operation list; untrusted arbitrary edges/poses are not accepted. The gear drive has no force or tooth-contact simulation. See [Technic Mechanics Lab](technic-mechanics.md).
