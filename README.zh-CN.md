@@ -4,7 +4,7 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
 
@@ -25,6 +25,12 @@
 首页新增 **Builder** 工作区：选择标准砖块、薄板、光滑板或 Jumper，点击添加后拖到已有零件附近。绿色半透明预览表示可以吸附，红色表示实体重叠，黄色表示没有找到合适的连接点。支持 90° 旋转、±3.2 mm 高度调节、撤销/重做、删除零件、JSON 装配关系保存与导入，以及 GLB 模型导出。
 
 初期以固定的 2×6 薄板作为底座，仅对 stud/socket 凸点网格开放自动吸附，不能视为精确制造配合或机械强度保证。详见[自动吸附拼搭技术文档](docs/snap-builder.md)。
+
+## Technic 机械实验台 · 梁孔、轴、齿轮与轮组
+
+首页新增 **Mechanics**：支持从 8 mm 间距的 Technic 梁孔选择连接点，安装摩擦销、光滑销或十字轴；可沿轴安装齿轮及轮组，检查占用孔位、轴长度与齿轮名义啮合关系。提供三个演示：**双齿轮传动、轮轴总成、销钉连接架**。
+
+支持拆解/重新合成动画、转速调整、齿轮反向旋转、连接关系图、撤销/重做、装配 JSON 方案导入导出及静态 GLB 导出。齿轮比来自齿数；这是运动学演示而非齿面接触、摩擦与动力学仿真。当前为选择孔位后安装的引导式交互，不是所有 Technic 零件的自由拖拽吸附。详见[机械连接系统设计](docs/technic-mechanics.md)。
 
 ## 首期三个核心系列
 
@@ -103,6 +109,8 @@ src/
   brick-system.js     # 可复用程序化零件几何
   connection-anchors.js # 锚点生成、坐标变换与接口兼容性
   snap-engine.js       # 吸附求解、碰撞校验、装配 JSON
+  technic-engine.js    # 梁孔连接、键轴固定、齿轮传动
+  mechanics-lab.js     # 机械装配、拆解与运动学交互
   builder-lab.js       # Three.js 拖动拼搭工作台
   viewer.js           # Three.js 场景、爆炸视图与装配步骤
   main.js             # 首页、筛选、组件浏览与交互
@@ -112,11 +120,13 @@ docs/
   component-system.md
   connection-anchors.md
   snap-builder.md
+  technic-mechanics.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
   snap-engine.test.mjs
+  technic-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
