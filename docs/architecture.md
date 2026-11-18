@@ -128,3 +128,11 @@ The hierarchy engine defines parent-child rigid subassemblies, connected through
 ## V0.6 General constraint graph
 
 The multi-connection rigid-body solver does not assume a single parent. Each joint references two independently addressable body-local frames (either native connection anchors or labeled virtual datums). The spanning-forest evaluation propagates poses across any direction of a joint; each extra edge produces a six-dimensional closure residual. A damped finite-difference least-squares search adjusts dependent joint values while preserving controlled targets and limits. Oriented box proxies report overlaps between nonadjacent bodies. The independent `constraint-lab.js` renders the editable 3D workbench; `constraint-graph.js` contains the DOM-free engine and tested versioned JSON schema. See [constraint graph specification](constraint-graph.md). This is not verified physical collision or certified mechanical fitting.
+
+## V0.7 AI assembly planning and multi-provider Skills
+
+The browser's deterministic `src/ai-agent.js` parses supported requests, compiles catalog-based blueprints and sends each generated constraint graph through the existing `validateConstraintGraph` / `solveConstraintGraph` pipeline. BOM and assembly steps are derived from the resulting graph. Import validation discards untrusted BOM, operation history, unverifiable provenance and physical safety claims. The six-wheel rover has ten visualization components and virtual shaft bearings; no real suspension or powertrain is represented.
+
+The engineering instruction layer is intentionally separate from the runtime: root `AGENTS.md`, twelve canonical bundles under `.agents/skills/`, Claude discovery adapters under `.claude/skills/`, Codex mirrors under `.codex/skills/` (Codex officially discovers the canonical .agents path), and a unique Pi-specific router under `.pi/skills/` to avoid duplicate Pi skill names. A Node registry checker and wrapper generator are CI gates. See [skills system](skills-system.md) and [Agent planner](ai-assembly-agent.md).
+
+Future buildings and aircraft require subsystem-level scene partitioning, physics validation, measured material parameters and specialized safety/flight engineering reviews. The current 20-body graph limit must not be treated as a world-scale scene capacity specification.
