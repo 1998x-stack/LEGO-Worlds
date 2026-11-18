@@ -80,6 +80,13 @@ test('blocked candidate reports colliding instance, without committing it', () =
   assert.ok(result.candidate.collidesWith.includes('brick_1'));
 });
 
+test('a mating solution below the build floor is rejected', () => {
+  const below = part('brick-1x1','below',[-4,-4.8,-20]);
+  const result = findSnapCandidate(below,[base()],{ maxDistanceMm: 2 });
+  assert.equal(result.status,'blocked');
+  assert.ok(result.candidate.collidesWith.includes('ground'));
+});
+
 test('snap threshold rejects distant parts', () => {
   const result = findSnapCandidate(part('brick-2x4','far',[400,8,200]),[base()]);
   assert.equal(result.status,'none');
