@@ -115,6 +115,22 @@ export function mountMechanicsLab(canvas, catalog, onChange = () => {}) {
       obj.add(debug);
       root.add(obj);
       nodes.set(spec.instanceId, obj);
+      if (spec.type === 'beam') {
+        const holes = getPartAnchors(spec).filter(a => a.kind === 'technic-hole');
+        holes.forEach((hole, index) => {
+          const picker = new THREE.Mesh(
+            new THREE.CircleGeometry(3.25, 20),
+            new THREE.MeshBasicMaterial({
+              color: '#ffffff', transparent: true, opacity: 0,
+              depthWrite: false, side: THREE.DoubleSide
+            })
+          );
+          picker.name = 'technic-hole-pick-target';
+          picker.userData.holeIndex = index;
+          picker.position.set(hole.position[0], hole.position[1], Number(spec.size[1]) / 2 + 0.11);
+          obj.add(picker);
+        });
+      }
     }
     holeMarker = new THREE.Mesh(
       new THREE.TorusGeometry(3, 0.45, 8, 32),
@@ -164,8 +180,11 @@ export function mountMechanicsLab(canvas, catalog, onChange = () => {}) {
   }
 
   function loadPreset(id) {
-    return transact(() => createMechanismPreset(catalog, id), '装配完成：' +
-      (MECHANISM_PRESETS.find(p => p.id === id)?.zh || id)) && (preset = id, emit(), true);
+    selection = 0;
+    const ok = transact(() => createMechanismPreset(catalog, id), '装配完成：' +
+      (MECHANISM_PRESETS.find(p => p.id === id)?.zh || id));
+    if (ok) { preset = id; emit(); }
+    return ok;
   }
 
   function addShaft(componentId, holeIndex = selection) {
@@ -214,7 +233,14 @@ export function mountMechanicsLab(canvas, catalog, onChange = () => {}) {
   }
 
   function loadJSON(document) {
-    return transact(() => replayMechanism(catalog, document), 'JSON 导入成功；装配规则已重新校验。');
+    selection = 0;
+    const ok = transact(() => replayMechanism(catalog, document), 'JSON 导入成功；装配规则已重新校验。');
+    if (ok) {
+      const ids = state.parts.map(p => /^tech_(\d+)$/.exec(p.instanceId))
+        .filter(Boolean).map(m => Number(m[1]) + 1);
+      seq = Math.max(seq, 1, ...ids);
+    }
+    return ok;
   }
 
   function selectHole(index) {
@@ -243,6 +269,11 @@ export function mountMechanicsLab(canvas, catalog, onChange = () => {}) {
   }
 
   function toggleDrive() {
+    if (!state.parts.some(p => p.type === 'axle')) {
+      status = '当前装配不包含传动轴。先添加十字轴或加载双齿轮示例。';
+      emit();
+      return false;
+    }
     playing = !playing;
     if (playing && explosion > 0) {
       explosion = 0;
@@ -277,9 +308,16 @@ export function mountMechanicsLab(canvas, catalog, onChange = () => {}) {
       -(event.clientY - rect.top) / rect.height * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
     const hits = raycaster.intersectObject(beam, true).filter(hit =>
-      !hit.object.name.includes('anchor') && hit.object !== holeMarker
+      hit.object.name === 'technic-hole-pick-target' ||
+      hit.object.name === 'perforated-liftarm' ||
+      hit.object.name === 'beam-hole-rim'
     );
     if (!hits.length) return;
+    const chosen = hits.find(hit => Number.isInteger(hit.object.userData.holeIndex));
+    if (chosen) {
+      selectHole(chosen.object.userData.holeIndex);
+      return;
+    }
     const local = beam.worldToLocal(hits[0].point.clone());
     const holes = availableHoles(state);
     const best = holes.map(hole => ({
