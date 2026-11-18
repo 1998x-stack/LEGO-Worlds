@@ -56,8 +56,8 @@ test('beam mounting face ports align wheel centers outside longitudinal rails', 
       assert.ok(Math.abs(wheel.pos[2])>Math.abs(rail.pos[2])+3);
     }
   }
-  assert.equal(solution.poses.wheel_port_2.pos[0],0);
-  assert.equal(solution.poses.wheel_starboard_2.pos[0],0);
+  assert.ok(Math.abs(solution.poses.wheel_port_2.pos[0])<1e-8);
+  assert.ok(Math.abs(solution.poses.wheel_starboard_2.pos[0])<1e-8);
 });
 
 test('assembly steps are deterministic, unique and each connection follows its parent', () => {
