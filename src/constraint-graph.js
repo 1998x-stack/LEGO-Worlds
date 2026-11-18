@@ -54,6 +54,10 @@ export function graphPorts(body, catalog) {
   const ports = [
     { id: 'center-z', label: 'Center / Z axis', position: [0, 0, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'center-x', label: 'Center / X guide', position: [0, 0, 0], rotation: [0, Math.PI / 2, 0], source: 'virtual-datum' },
+    { id: 'top-z', label: 'Top surface datum', position: [0, baseSize[1] / 2, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
+    { id: 'bottom-z', label: 'Bottom surface datum', position: [0, -baseSize[1] / 2, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
+    { id: 'front-z', label: 'Front face / shaft axis', position: [0, 0, baseSize[2] / 2], rotation: [0, 0, 0], source: 'virtual-datum' },
+    { id: 'back-z', label: 'Back face / shaft axis', position: [0, 0, -baseSize[2] / 2], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'left-z', label: 'Left endpoint', position: [-baseSize[0] / 2, 0, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'right-z', label: 'Right endpoint', position: [baseSize[0] / 2, 0, 0], rotation: [0, 0, 0], source: 'virtual-datum' }
   ];
@@ -429,15 +433,15 @@ export function createConstraintPreset(id='four-bar') {
     bodies:[graphBody('rail','beam-13',true),graphBody('carriage','brick-2x4'),graphBody('platform','plate-2x6')],
     joints:[
       j('slide','rail','center-x','carriage','center-x','slider',0,true,[-32,32]),
-      j('payload','carriage','center-z','platform','center-z','fixed',0,false)
+      j('payload','carriage','top-z','platform','bottom-z','fixed',0,false)
     ]
   };
   if(id==='shaft-drive') return {
     id,name:'Shaft Drive',zh:'旋转轴与轮组',
     bodies:[graphBody('support','beam-5',true),graphBody('rotor','gear-16t'),graphBody('wheel','wheel-medium')],
     joints:[
-      j('motor','support','technic-hole:2','rotor','gear-axis:0','shaft',0,true,[-170,170]),
-      j('keyed_wheel','rotor','center-z','wheel','center-z','fixed',0,false)
+      j('motor','support','front-z','rotor','back-z','shaft',0,true,[-170,170]),
+      j('keyed_wheel','rotor','front-z','wheel','back-z','fixed',0,false)
     ]
   };
   throw new Error('Unknown constraint graph preset');
