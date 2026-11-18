@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { COMPONENTS } from '../src/catalog.js';
 import { compileWorldSpec, buildGeometryAndGraph } from '../packages/world-builder/index.mjs';
+import { handleMcpMessage } from '../adapters/mcp/server.mjs';
 import { validateWorldArtifacts } from '../packages/validation-engine/index.mjs';
 import { runWorldTool } from '../packages/world-runner/index.mjs';
 import { createPart } from '../src/brick-system.js';
@@ -190,4 +191,32 @@ test('example script exercises a complete successful and deliberately blocked in
   const bad=JSON.parse(blocked.stdout);
   assert.equal(bad.status,'needs_revision');
   assert.ok(bad.checks.some(x=>x.code==='ASSEMBLY_PATH_BLOCKED'));
+});
+
+
+test('bounded triangle comparator never reports unexamined geometry as clear',()=>{
+  const brick=part('brick-2x4'),pose={pos:[0,0,0],rotation:[0,0,0]};
+  const cut=inspectMeshPair(brick,pose,brick,{pos:[5,0,0],rotation:[0,0,0]},
+    {maxTriangleComparisons:1});
+  assert.equal(cut.status,'incomplete');
+  assert.equal(cut.interference,false);
+});
+
+test('MCP world_validate accepts explicit clearance options and returns independent evidence',()=>{
+  const parsed=compileWorldSpec('装配一个轴承衬套、转轴和轮组');
+  const built=buildGeometryAndGraph(parsed.artifact,parsed.proposal);
+  const response=handleMcpMessage({jsonrpc:'2.0',id:18,method:'tools/call',
+    params:{name:'world_validate',arguments:{
+      worldSpec:parsed.artifact,geometry:built.geometry,assembly:built.assembly,
+      targetLevel:'L2',clearance:{mesh:true,path:{
+        movingBodyId:'axle',installedBodyIds:['support','sleeve'],
+        fromOffsetMm:[0,0,35],samples:8
+      }}
+    }}
+  });
+  assert.equal(response.result.structuredContent.status,'ok',JSON.stringify(response.result.structuredContent.diagnostics));
+  const checked=response.result.structuredContent.artifacts[0].content.checks;
+  assert.ok(checked.some(x=>x.code==='NOMINAL_COAXIAL_FITS_CHECKED'));
+  assert.ok(checked.some(x=>x.code==='MESH_SURFACE_SAMPLE_CLEAR'));
+  assert.ok(checked.some(x=>x.code==='SAMPLED_PATH_CLEAR'));
 });

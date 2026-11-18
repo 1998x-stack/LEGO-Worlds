@@ -6,6 +6,7 @@ import { getPartAnchors } from '../../src/connection-anchors.js';
 export const CLEARANCE_ENGINE_VERSION = 1;
 const TRIANGLE_BUDGET = 6000;
 const PAIR_BUDGET = 60;
+const TRIANGLE_COMPARISON_BUDGET = 500000;
 const PATH_SAMPLE_MAX = 32;
 const DEFAULT_CONTACT_EPSILON_MM = 0.02;
 const EPS = 1e-10;
@@ -122,15 +123,21 @@ function detectContainment(left,right,probes=16){
   return {inside:false,limited:false};
 }
 
-function collisionOfColliders(a,b,{epsilonMm=DEFAULT_CONTACT_EPSILON_MM,maxTriangles=TRIANGLE_BUDGET}={}){
+function collisionOfColliders(a,b,{epsilonMm=DEFAULT_CONTACT_EPSILON_MM,maxTriangles=TRIANGLE_BUDGET,
+  maxTriangleComparisons=TRIANGLE_COMPARISON_BUDGET}={}){
   if(!a.box.intersectsBox(b.box))
     return {interference:false,status:'clear',method:'mesh-triangle-surface',candidates:0};
   const left=triangleList(a,maxTriangles),right=triangleList(b,maxTriangles);
   if(left.limited||right.limited)
     return {interference:false,status:'incomplete',method:'mesh-triangle-surface',reason:'triangle-budget-exceeded'};
-  let candidates=0;
+  let candidates=0,comparisons=0;
+  const boundedComparisons=Math.min(TRIANGLE_COMPARISON_BUDGET,
+    Math.max(0,Math.floor(Number(maxTriangleComparisons)||0)));
   for(const x of left.triangles){
     for(const y of right.triangles){
+      if(++comparisons>boundedComparisons)
+        return {interference:false,status:'incomplete',method:'mesh-triangle-surface',
+          reason:'triangle-comparison-budget-exceeded',comparisons};
       if(!trianglesClose(x,y,epsilonMm))continue;
       candidates++;
       if(surfaceTrianglesContact(x,y,epsilonMm)){
