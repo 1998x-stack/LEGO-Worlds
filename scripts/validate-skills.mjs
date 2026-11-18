@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { diffAdapters } from './sync-skill-adapters.mjs';
+import { readPluginRegistry, verifyRegistryLock } from '../packages/plugin-registry/index.mjs';
 const root = fileURLToPath(new URL('../',import.meta.url));
 const at = p => path.join(root,p);
 const read = p => fs.readFileSync(at(p),'utf8');
@@ -40,13 +41,15 @@ export function validateAll(){
   const failures=[];
   try{
     const registry=JSON.parse(read('.agents/skills/registry.json'));
-    if(registry.schemaVersion!==1)failures.push('Unknown skill registry version');
+    if(registry.schemaVersion!==2)failures.push('Unknown skill registry version');
     if(!Array.isArray(registry.skills)||registry.skills.length<6)failures.push('Missing skill definitions');
     const list=registry.skills.map(s=>s.id);
     if(new Set(list).size!==list.length)failures.push('Duplicate skill names in registry');
     const disk=fs.readdirSync(at('.agents/skills'),{withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>d.name);
     if(list.slice().sort().join('|')!==disk.slice().sort().join('|'))failures.push('Registry is out of sync with canonical skill directories');
     for(const id of list)failures.push(...validateBundle(id));
+    readPluginRegistry();
+    verifyRegistryLock();
     for(const adapter of diffAdapters())failures.push('Stale generated adapter: '+adapter.relative);
     const piSkills=fs.readdirSync(at('.pi/skills'),{withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>d.name);
     if(piSkills.includes('world-systems-architect')||piSkills.some(n=>list.includes(n)))

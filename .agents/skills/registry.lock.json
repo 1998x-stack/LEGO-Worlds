@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "registryBlobSha1": "30e30dac86117d7cee28a28d6934c2cb6245fa74",
+  "plugins": [
+    {
+      "id": "world-systems-architect",
+      "version": "1.0.0",
+      "manifestBlobSha1": "e02b87cbb044f2c4422c79ebfad4a70179cf3407",
+      "skillBlobSha1": "1d941ac9736383bf5ce2301c0dc1d8fbef32f8ac"
+    },
+    {
+      "id": "parametric-component-modeling",
+      "version": "1.0.0",
+      "manifestBlobSha1": "b2b517ba5aa81fe68d6a8d932c0d458f8a0bbf02",
+      "skillBlobSha1": "ee2ef838d85eef47a823763deb83e0676260054a"
+    },
+    {
+      "id": "connection-interfaces",
+      "version": "1.0.0",
+      "manifestBlobSha1": "25508fb559edb914b57e1657581a280ce9abe4f0",
+      "skillBlobSha1": "d49bcd2213ae53ed5d5c8418cd2832b9c7956f08"
+    },
+    {
+      "id": "mechanical-constraint-solving",
+      "version": "1.0.0",
+      "manifestBlobSha1": "e17ff78962693415e48cf02ee89ba0a8189657e2",
+      "skillBlobSha1": "d50bed7a739f69958216b9daed77d48f40fbbfa3"
+    },
+    {
+      "id": "physics-validation",
+      "version": "1.0.0",
+      "manifestBlobSha1": "8927c0e5702ec4657231d919a4b5a94432885fb0",
+      "skillBlobSha1": "8c5d23d7d6d8235223fdfd84d9d63da5eef11d60"
+    },
+    {
+      "id": "building-world-planning",
+      "version": "1.0.0",
+      "manifestBlobSha1": "0a83160c619e4a4b37aa70f311799905881c1df6",
+      "skillBlobSha1": "d69d87408fc13fc119bf2633eeec9cff9291af5b"
+    },
+    {
+      "id": "aerospace-world-planning",
+      "version": "1.0.0",
+      "manifestBlobSha1": "d292c1e8127ce52bf1e9d7b3c507fc221ee63b99",
+      "skillBlobSha1": "0487b4508d5b8d28ce365dd6a2181992d90b171b"
+    },
+    {
+      "id": "mobile-robotics-worlds",
+      "version": "1.0.0",
+      "manifestBlobSha1": "cb0975e4e6b0a8f3518bc78dfe529e1bdb1f5acb",
+      "skillBlobSha1": "67df784844d8241d3b1f8452d8bb64d02bb2b2d9"
+    },
+    {
+      "id": "ai-assembly-planning",
+      "version": "1.0.0",
+      "manifestBlobSha1": "36e157b5403e0a9b0043ba78b4a1d7d9e775fbc0",
+      "skillBlobSha1": "c639bc6e00b061d7949f602785473581d19ea3ca"
+    },
+    {
+      "id": "assembly-sequence-animation",
+      "version": "1.0.0",
+      "manifestBlobSha1": "856067730060d611821d403e4fa401c2dfca1372",
+      "skillBlobSha1": "6876ffd6f733da5d62de35c1ebad3af132abd005"
+    },
+    {
+      "id": "asset-quality-release",
+      "version": "1.0.0",
+      "manifestBlobSha1": "caa2fd49a407ef0d2e451bf0e341ecf54ba65858",
+      "skillBlobSha1": "58c33881a468a7431c88100aca6df10242460c05"
+    },
+    {
+      "id": "skill-system-governance",
+      "version": "1.0.0",
+      "manifestBlobSha1": "6ffc927f99572037020fa27db9dc8f9d4fdde31d",
+      "skillBlobSha1": "146ba3a6be07a2753d8c336b4822e1d0cfa90afe"
+    }
+  ]
+}
