@@ -5,6 +5,7 @@ import { getPartAnchors } from './connection-anchors.js';
 export const CONSTRAINT_GRAPH_VERSION = 1;
 export const GRAPH_MAX_BODIES = 20;
 export const GRAPH_MAX_JOINTS = 32;
+export const GRAPH_MAX_FREE_JOINTS = 12;
 export const CONSTRAINT_KINDS = Object.freeze(['fixed', 'hinge', 'shaft', 'slider']);
 export const GRAPH_CATALOG_IDS = Object.freeze([
   'beam-3', 'beam-5', 'beam-7', 'beam-13',
@@ -317,6 +318,11 @@ export function solveConstraintGraph(graph, catalog, options={}) {
     const candidate = supplied === undefined ? joint.value : Number(supplied);
     if (!Number.isFinite(candidate)) throw new Error('Non-finite joint target');
     base[joint.id]=clamp(candidate,...joint.limits);
+  }
+  const initialClosure=closureResidual(graph,catalog,base);
+  if (initialClosure.cycleCount>0 &&
+      graph.joints.filter(j=>!j.controlled && j.kind!=='fixed').length>GRAPH_MAX_FREE_JOINTS) {
+    throw new Error('Closed-loop solver supports at most '+GRAPH_MAX_FREE_JOINTS+' free joint variables');
   }
   const optimized=optimizeFreeJoints(graph,catalog,base,
     Math.max(0,Math.min(90,Number(options.maxIterations??55))));
