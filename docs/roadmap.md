@@ -31,9 +31,19 @@
 ## V0.4 — Technic assembly
 - [x] Correct gear/wheel visual bores and replace round axle visuals with a keyed cross profile.
 - [x] Publish the guided Mechanics Lab with three playable presets and canonical JSON recipe replay.
-- [ ] Add genuine gear tooth contact, bearings, flexible joint constraints and multiple articulated subassemblies.
+- [ ] Add genuine gear tooth contact, physical bearings and flexible mechanical constraints.
+- [x] Add multiple articulated subassemblies with revolute hinge pivots and hierarchical transform propagation.
 
-## V0.5 — Asset pipeline
+## V0.5 — Hierarchy, hinge constraints and assembly animations
+- [x] Create validated parent-child rigid subassembly trees with hinge-axis connector references.
+- [x] Propagate arbitrary-depth hinge transforms and directed joint couplings.
+- [x] Validate coupling DAG cycles, follower limits and anchor references.
+- [x] Generate parent-first part assembly dependencies and play reverse disassembly steps.
+- [x] Add an interactive 3D hierarchy inspector with joint sliders, motor demo, isolate and timeline.
+- [x] Ship three original presets with versioned joint recipe export/import.
+- [ ] Implement collision-aware assembly motion planning, multiple-parent joint loop closure and true dynamics.
+
+## V0.6 — Asset pipeline
 - [ ] Generate deterministic GLB and WebP previews in CI.
 - [ ] Add geometry and bounding-box regression tests.
 - [ ] Add optional LOD and mesh optimization.
