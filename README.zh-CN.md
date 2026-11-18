@@ -4,7 +4,7 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [通用约束图求解器](docs/constraint-graph.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
 
@@ -39,6 +39,14 @@
 可以拖动主铰链角度滑块，观察镜像联动的角度传播；选择并隔离子总成，打开锚点显示，播放自动生成的 **逐件拆解、重新装配** 动画，还可以点击步骤或拖动装配时间轴。支持版本化 JSON 姿态/关节配方导入导出与静态 GLB 导出。
 
 装配步骤遵循父子依赖 DAG，动画路径属于可视化示意，**暂不保证物理上无碰撞或可实际拆卸**；系统也尚未实现真实动力学、完整闭环机构或多个父连接。详见[层级装配与关节规范](docs/hierarchy-assembly.md)。
+
+## 通用机械约束图 · V0.6
+
+新增 **Constraints** 三维实验台，将原本单一的父子树升级为可以存在多条连接和闭环的刚体图。可以自行添加目录中的零件，选择两端连接孔位或虚拟定位基准，创建 **固定、铰链、转轴、滑轨** 四种约束。系统采用阻尼最小二乘迭代调整未驱动的关节，检测闭环是否满足；当连接矛盾时会拒绝提交，并给出残差。非直接连接的零件之间还会进行 OBB 定向包围盒碰撞提示。
+
+提供三个可操作案例：**四连杆闭环机构、直线滑轨移动平台、旋转轴与轮组**。可播放关节驱动、手动调整角度或位移、观察连线与碰撞，撤销/重做并导入导出可编辑的装配图 JSON，或导出当前状态的静态 GLB。
+
+**边界：** 这是教育/可视化的运动学约束引擎。虚拟接口基准不意味着实际机械零件已通过尺寸匹配；碰撞只基于简化 OBB，不包括三角网格窄相、连续碰撞和受力仿真。详见[通用机械约束图技术文档](docs/constraint-graph.md)。
 
 ## 首期三个核心系列
 
@@ -119,6 +127,8 @@ src/
   snap-engine.js       # 吸附求解、碰撞校验、装配 JSON
   technic-engine.js    # 梁孔连接、键轴固定、齿轮传动
   hierarchy-engine.js # 层级刚体、关节与装配依赖
+  constraint-graph.js # 多重连接、闭环求解和 OBB 碰撞提示
+  constraint-lab.js   # 可视化连接图编辑与运动学驱动
   hierarchy-lab.js    # 三维铰链调节、拆解重装时间轴
   mechanics-lab.js     # 机械装配、拆解与运动学交互
   builder-lab.js       # Three.js 拖动拼搭工作台
@@ -132,6 +142,7 @@ docs/
   snap-builder.md
   technic-mechanics.md
   hierarchy-assembly.md
+  constraint-graph.md
   roadmap.md
 tests/
   catalog.test.mjs
@@ -139,6 +150,7 @@ tests/
   snap-engine.test.mjs
   technic-engine.test.mjs
   hierarchy-engine.test.mjs
+  constraint-graph.test.mjs
 .github/workflows/
   pages.yml
 ```
