@@ -538,3 +538,70 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .mechanics-timeline { gap:6px; padding:10px; }
   .mechanics-timeline button { padding:8px 6px; font-size:10px; }
 }
+
+
+/* V0.5 hierarchy and linked-hinge assembly lab */
+.hierarchy-section { padding-top:85px; padding-bottom:85px; }
+.hierarchy-intro { display:flex;justify-content:space-between;align-items:center;gap:30px;padding:30px 36px;background:linear-gradient(115deg,#e3f2ec,#e7e9f0);border:1px solid #b7ccc6;border-radius:12px; }
+.hierarchy-intro[hidden],.hierarchy-workspace[hidden] {display:none!important;}
+.hierarchy-intro span {font-size:10px;font-weight:800;letter-spacing:1.8px;color:#387c71;}
+.hierarchy-intro h3 {margin:12px 0;font:600 clamp(22px,3vw,35px)/1.2 var(--display);letter-spacing:-1px;color:#243b3b;}
+.hierarchy-intro p {max-width:670px;font-size:13px;line-height:1.7;color:#55706b;}
+.hierarchy-intro button {white-space:nowrap;}
+.hierarchy-workspace {display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,.85fr);background:#fff;border:1px solid #cbd8d6;border-radius:12px;overflow:hidden;box-shadow:0 20px 48px #19363120;}
+.hierarchy-stage {min-width:0;display:flex;flex-direction:column;background:#edf0ed;}
+.hierarchy-stage-top {display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:13px 16px;border-bottom:1px solid #d5dcdb;color:#587572;font-weight:800;letter-spacing:1px;font-size:9px;}
+#hierarchy-canvas {width:100%;height:515px;display:block;touch-action:pan-y;}
+.hierarchy-timeline {display:flex;align-items:center;gap:9px;padding:14px;border-top:1px solid #cddbd6;}
+.hierarchy-timeline input {flex:1;min-width:40px;accent-color:#177c73;}
+.hierarchy-timeline button,.hierarchy-controls button {border:1px solid #b8cfca;border-radius:6px;background:#e4f0eb;color:#326b64;font-size:11px;font-weight:800;padding:10px;}
+.hierarchy-timeline button {white-space:nowrap;}
+.hierarchy-controls {display:flex;flex-wrap:wrap;gap:7px;padding:0 14px 12px;}
+.hierarchy-controls button {flex:1 0 18%;padding:9px 7px;}
+.hierarchy-controls #hierarchy-motor {background:#195b57;border-color:#195b57;color:#fff;}
+.hierarchy-footnote {padding:0 17px 14px;color:#69837c;line-height:1.55;font-size:10px;}
+.hierarchy-sidebar {display:flex;flex-direction:column;gap:11px;padding:18px;background:#f9fbf9;border-left:1px solid #cedbd6;min-width:0;}
+.hierarchy-stats {display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.hierarchy-stats>div {display:flex;flex-direction:column;background:#e6f0eb;border-radius:6px;padding:11px;}
+.hierarchy-stats strong {font:600 25px/1.2 var(--display);color:#1c685b;}
+.hierarchy-stats span {font-size:8px;letter-spacing:.9px;color:#5c8076;font-weight:800;margin-top:3px;}
+.hierarchy-preset-row {display:flex;gap:7px;}
+.hierarchy-preset-row select {flex:1;min-width:0;}
+.hierarchy-preset-row button {border:1px solid #9dbeb5;border-radius:6px;padding:8px 13px;background:#def1e8;color:#176151;font-weight:800;font-size:11px;}
+.hierarchy-small-heading {font-size:10px;font-weight:800;letter-spacing:1px;color:#568477;border-bottom:1px solid #d6e4de;padding:8px 0;}
+.hierarchy-tree {display:flex;flex-direction:column;gap:5px;}
+.hierarchy-node {display:flex;align-items:center;gap:8px;padding:9px 10px;background:#edf3ef;border:1px solid #d8e4dd;border-radius:6px;color:#28534b;text-align:left;}
+.hierarchy-node span {color:#29987d;font-size:17px;}
+.hierarchy-node strong {font-size:11px;flex:1;}
+.hierarchy-node small {color:#759084;font-size:9px;}
+.hierarchy-node.selected {background:#d5f2e7;border-color:#299b80;box-shadow:inset 3px 0 #199a7e;}
+.hierarchy-joints {display:flex;flex-direction:column;gap:8px;}
+.hierarchy-joint {display:flex;flex-direction:column;gap:8px;padding:11px;background:#eaf3ef;border-radius:6px;}
+.hierarchy-joint>span {display:flex;justify-content:space-between;gap:10px;color:#356b61;font-size:11px;}
+.hierarchy-joint output {font-weight:800;}
+.hierarchy-joint input {width:100%;accent-color:#19897c;}
+.hierarchy-coupling {font-size:10px;padding:8px;color:#517d6f;background:#eef5f0;border-left:3px solid #52ac8e;}
+.hierarchy-status {font-size:12px;color:#477267;line-height:1.6;padding:12px;background:#e5f6ed;border-left:3px solid #239e82;border-radius:3px;}
+.hierarchy-steps-list {display:flex;flex-direction:column;gap:4px;max-height:210px;overflow:auto;}
+.hierarchy-step {display:flex;align-items:center;gap:8px;background:#f0f4f1;border:1px solid #e0e8e3;border-radius:5px;padding:8px;color:#668077;text-align:left;}
+.hierarchy-step>span {font-size:10px;font-weight:800;}
+.hierarchy-step strong {font-size:11px;flex:1;color:#465d57;overflow-wrap:anywhere;}
+.hierarchy-step small {font-size:9px;}
+.hierarchy-step.assembled {border-color:#b4ddd0;background:#e1f4eb;color:#167b68;}
+.hierarchy-exports {display:flex;flex-wrap:wrap;gap:6px;}
+.hierarchy-exports button {flex:1 0 30%;padding:10px 5px;background:#e6f0eb;color:#37695f;border:1px solid #bbd2c8;border-radius:6px;font-size:10px;font-weight:800;}
+.hierarchy-exports button:disabled {opacity:.5;}
+.hierarchy-disclaimer {font-size:10px;line-height:1.65;color:#7d9790;}
+@media(max-width:960px) {
+  .hierarchy-workspace {grid-template-columns:1fr;}
+  .hierarchy-sidebar {border-left:0;border-top:1px solid #cedbd6;}
+  #hierarchy-canvas {height:min(60vh,470px);min-height:300px;}
+}
+@media(max-width:600px) {
+  .hierarchy-section {padding-top:50px;padding-bottom:50px;}
+  .hierarchy-intro {flex-direction:column;align-items:stretch;padding:22px;}
+  .hierarchy-controls button {flex-basis:28%;}
+  .hierarchy-timeline {padding:9px;gap:5px;}
+  .hierarchy-timeline button {font-size:10px;padding:8px 6px;}
+  .hierarchy-node {flex-wrap:wrap;}
+}
