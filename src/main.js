@@ -9,6 +9,7 @@ import { mountHierarchyLab } from './hierarchy-lab.js';
 import { HIERARCHY_PRESETS } from './hierarchy-engine.js';
 import { mountConstraintLab } from './constraint-lab.js';
 import { GRAPH_PRESETS, GRAPH_CATALOG_IDS, graphPorts } from './constraint-graph.js';
+import { AGENT_EXAMPLES, createAssemblyPlan } from './ai-agent.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -26,7 +27,7 @@ root.innerHTML = [
       '<span class="brand-caption">OPEN BUILD SYSTEM</span>',
     '</a>',
     '<nav class="main-nav" aria-label="Main navigation">',
-      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a><a href="#assembly">Assembly</a><a href="#constraints">Constraints</a>',
+      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a><a href="#assembly">Assembly</a><a href="#constraints">Constraints</a><a href="#agent">AI Agent</a>',
       '<a class="nav-github" href="https://github.com/1998x-stack/LEGO-Worlds" target="_blank" rel="noopener noreferrer">GitHub ↗</a>',
     '</nav>',
     '<a class="header-cta" href="#builds">Explore builds <span>↗</span></a>',
@@ -166,6 +167,23 @@ root.innerHTML = [
           '<small class="constraint-note">闭环约束通过数值迭代求解；碰撞检测使用简化刚体 OBB 包围盒，并跳过直接关节连接的相邻零件。不是精密机械仿真或碰撞自由装配规划。</small>',
         '</aside>',
       '</div>',
+    '</section>',
+
+    '<section class="section agent-section" id="agent">',
+      '<div class="section-heading"><div><div class="section-kicker">08 — AI ASSEMBLY AGENT / V0.7</div><h2>Describe a world. <em>Compile a build.</em></h2></div><p>从自然语言需求生成组件清单、结构关系、关节参数和装配顺序，再由约束引擎独立验证。第一版采用可复现的离线蓝图规划器。</p></div>',
+      '<div class="agent-workspace"><div class="agent-editor">',
+        '<div class="agent-kicker">LOCAL BLUEPRINT AGENT · NO API KEY</div>',
+        '<h3>你想搭建什么？</h3>',
+        '<label for="agent-prompt" class="agent-label">Describe your assembly / 输入拼搭需求</label>',
+        '<textarea id="agent-prompt" rows="4" maxlength="600" spellcheck="false" placeholder="例如：搭建一辆六轮火星探测车">搭建一辆六轮火星探测车</textarea>',
+        '<div class="agent-examples">' + AGENT_EXAMPLES.map((e,i) => '<button data-agent-example="' + i + '">' + safe(e.prompt) + '</button>').join('') + '</div>',
+        '<button class="agent-generate" id="agent-generate">✧ Generate & validate build</button>',
+        '<p class="agent-caveat">此版本是具有自然语言入口的确定性规划引擎，不会调用外部大模型。未支持的建筑／飞机需求只生成工程需求检查项，不伪造装配或安全认证。</p>',
+      '</div><div class="agent-results">',
+        '<div class="agent-results-top"><strong>PLANNING PIPELINE</strong><span>INTENT → BOM → GRAPH → SOLVER → STEPS</span></div>',
+        '<div id="agent-result" class="agent-result" aria-live="polite"><div class="agent-empty"><span>✦</span><h3>Ready to design.</h3><p>输入需求并点击生成。可用示例包括六轮火星探测车、四连杆、滑轨和轮轴机构。</p></div></div>',
+        '<div class="agent-actions"><button id="agent-open-graph" disabled>◎ Open in 3D Constraint Lab</button><button id="agent-export" disabled>↓ Export plan JSON</button></div>',
+      '</div></div>',
     '</section>',
     '<section class="dimensions-section">',
       '<div class="section dimensions-inner"><div><div class="section-kicker">04 — THE SHARED GRID</div><h2>One system.<br/><em>Consistent dimensions.</em></h2><p>用统一的名义尺寸组织零件，才能让组件跨作品复用。这里的尺寸用于教育与视觉建模参考，并非真实零件互换或打印配合保证。</p></div>',
@@ -936,6 +954,77 @@ document.querySelector('#constraint-launch').addEventListener('click', () => {
       finally{button.disabled=false;}
     });
   }catch(error){status.textContent='Constraint Lab 启动失败：'+error.message;console.error(error);}
+});
+
+let latestAgentPlan = null;
+const agentPromptInput = document.querySelector('#agent-prompt');
+const agentResult = document.querySelector('#agent-result');
+document.querySelectorAll('[data-agent-example]').forEach(button =>
+  button.addEventListener('click', () => {
+    agentPromptInput.value = AGENT_EXAMPLES[Number(button.dataset.agentExample)].prompt;
+    document.querySelector('#agent-generate').click();
+  }));
+document.querySelector('#agent-generate').addEventListener('click', () => {
+  try {
+    const plan = createAssemblyPlan(agentPromptInput.value, COMPONENTS);
+    latestAgentPlan = plan;
+    const supported = Boolean(plan.graph && plan.verification?.solverValid);
+    document.querySelector('#agent-open-graph').disabled = !supported;
+    document.querySelector('#agent-export').disabled = !supported;
+    if (!supported) {
+      agentResult.innerHTML =
+        '<div class="agent-result-status"><span class="agent-result-tag">REQUIREMENTS ONLY</span>' +
+        '<h3>' + safe(plan.request.domain) + '</h3><p>' + safe(plan.explanation) + '</p></div>' +
+        '<div class="agent-result-section"><strong>需要先解决的工程问题</strong><ul>' +
+        plan.nextActions.map(action=>'<li>'+safe(action)+'</li>').join('') + '</ul></div>';
+      return;
+    }
+    const v = plan.verification;
+    const statusLabel = v.collisionPairs.length ? 'CONCEPT · REVIEW COLLISIONS' : 'KINEMATICS CHECKED';
+    agentResult.innerHTML =
+      '<div class="agent-result-status"><span class="agent-result-tag">' + statusLabel +
+      '</span><h3>' + safe(plan.planName) + '</h3><p>' +
+      safe(plan.explanation) + '</p></div>' +
+      '<div class="agent-result-metrics"><div><strong>'+v.bodyCount+'</strong><span>PARTS</span></div>' +
+      '<div><strong>'+v.jointCount+'</strong><span>JOINTS</span></div>' +
+      '<div><strong>'+v.closureErrorMm.toFixed(3)+'</strong><span>ERROR MM</span></div>' +
+      '<div><strong>'+v.collisionPairs.length+'</strong><span>OBB WARNINGS</span></div></div>' +
+      '<div class="agent-result-section"><strong>BOM · 组件清单</strong><div class="agent-bom">' +
+      plan.bom.map(item=>'<div><b>'+safe(item.name)+'</b><small>'+safe(item.code||item.componentId)+'</small><span>×'+item.quantity+'</span></div>').join('')+
+      '</div></div><div class="agent-result-section"><strong>JOINT GRAPH · 连接关系</strong><div class="agent-joints">' +
+      plan.graph.joints.map(joint=>'<div><span>'+safe(joint.kind)+'</span>' +
+      safe(joint.a.bodyId)+' → '+safe(joint.b.bodyId)+'</div>').join('')+
+      '</div></div><div class="agent-result-section"><strong>ASSEMBLY SEQUENCE · 装配步骤</strong><div class="agent-steps">' +
+      plan.assemblySteps.map(step=>'<div><span>'+String(step.step).padStart(2,'0')+'</span><b>' +
+      safe(step.componentName||step.viaJointId)+'</b><small>'+safe(step.operation)+'</small></div>').join('')+
+      '</div></div><div class="agent-result-section"><strong>VALIDATION GATES · 验证门槛</strong><div class="agent-checks">' +
+      v.checklist.map(check=>'<div><span class="'+(check.passed?'pass':'pending')+'">'+(check.passed?'✓':'!')+'</span>' +
+      '<b>'+safe(check.id)+'</b><small>'+safe(check.detail)+'</small></div>').join('')+
+      '</div></div><p class="agent-warning">'+v.warnings.map(safe).join(' · ')+'</p>';
+  } catch(error) {
+    latestAgentPlan = null;
+    document.querySelector('#agent-open-graph').disabled = true;
+    document.querySelector('#agent-export').disabled = true;
+    agentResult.innerHTML='<div class="agent-result-status"><span class="agent-result-tag">NEEDS REVISION</span><h3>无法生成可验证装配</h3><p>'+
+      safe(error.message)+'</p></div>';
+  }
+});
+document.querySelector('#agent-open-graph').addEventListener('click', () => {
+  if (!latestAgentPlan?.graph) return;
+  if (!constraintInstance) document.querySelector('#constraint-launch').click();
+  if (!constraintInstance) {
+    agentResult.insertAdjacentHTML('afterbegin','<p class="agent-warning">3D 工作台尚未成功启动，请检查浏览器 WebGL 支持。</p>');
+    return;
+  }
+  const accepted = constraintInstance.loadGraph(latestAgentPlan.graph);
+  if (accepted) document.querySelector('#constraint-workspace').scrollIntoView({behavior:'smooth'});
+});
+document.querySelector('#agent-export').addEventListener('click', () => {
+  if (!latestAgentPlan?.graph) return;
+  const blob=new Blob([JSON.stringify(latestAgentPlan,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='brick-worlds-agent-plan.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2500);
 });
 
 const mobileMenu = document.querySelector('#mobile-menu');
