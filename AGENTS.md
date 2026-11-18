@@ -40,3 +40,7 @@ Read only the skill required for the task from `.agents/skills/<name>/SKILL.md`,
 ## Deliverable acceptance
 
 Prefer a minimal working vertical slice with verified tests, screenshots/browser QA when available, example data, readme links and clear limitations. Any unsupported request must return a requirements-first design rather than fabricated claims of engineering validity.
+
+## Future-world design reference
+
+For new buildings, aircraft, cities or large physical environments, consult docs/physical-world-architecture.md before choosing data schemas or relaxing graph solver limits. The document is a target architecture, not evidence of implemented physics.
