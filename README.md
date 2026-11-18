@@ -2,11 +2,17 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## Hierarchical Joint & Assembly Lab (V0.5)
+
+**[Launch the Assembly Lab](https://1998x-stack.github.io/LEGO-Worlds/#assembly)** to explore parent-child rigid subassemblies and hinge constraints. This release includes three original demos: **Articulated Crane**, **Twin Drawbridge**, and **Solar Observatory**. Select subassemblies, drive hinge angles, inspect mirrored couplings, show connection anchors, isolate moving branches and play a dependency-based piece-by-piece disassembly/reassembly timeline. Save/reopen the versioned joint recipe or export the current static GLB pose.
+
+The solver propagates 3D rigid transforms through a validated parent tree. Animation trajectories are **schematic, not collision-planned**, and the joint motion is kinematic rather than physical. See [Hierarchy & Joint System](docs/hierarchy-assembly.md).
 
 ## Technic Mechanics Lab (V0.4)
 
@@ -77,6 +83,8 @@ src/
   connection-anchors.js # Typed anchors, coordinate transforms and compatibility
   snap-engine.js       # Rigid stud/socket solver, overlap checks and JSON schema
   technic-engine.js    # Beam pin/axle joints, keyed mounts and gear ratios
+  hierarchy-engine.js # Joint tree, angle propagation and assembly steps
+  hierarchy-lab.js    # Interactive hierarchy/hinge animation inspector
   mechanics-lab.js     # Interactive mechanical assembly and drive animation
   builder-lab.js       # Drag/rotate/preview interactive Three.js builder
   viewer.js           # Three.js scene, assembly and exploded-view controls
@@ -88,12 +96,14 @@ docs/
   connection-anchors.md
   snap-builder.md
   technic-mechanics.md
+  hierarchy-assembly.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
   snap-engine.test.mjs
   technic-engine.test.mjs
+  hierarchy-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
