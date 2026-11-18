@@ -47,7 +47,9 @@ function result(capability,status,artifacts=[],data={},diagnostics=[],runId) {
 function fail(capability,error,runId) {
   const message=String(error?.message||error).slice(0,300);
   const code=/^([A-Z][A-Z0-9_]+):/.exec(message)?.[1]||'RUNNER_EXECUTION_FAILED';
-  return result(capability,'needs_revision',[],{},[{
+  const status=code==='CAPABILITY_NOT_EXECUTABLE'?'unsupported':
+    code==='RUNNER_EXECUTION_FAILED'?'failed':'needs_revision';
+  return result(capability,status,[],{},[{
     code,severity:'error',message,repairable:/PORT|GEOMETRY|JOINT|GRAPH|REQUIREMENT/.test(code)
   }],runId);
 }
@@ -156,6 +158,8 @@ export function runWorldTool(request,{workspace=null,writeAllowed=false,catalog=
       };
       let location=null;
       if(options.outputPath){
+        if(!resolved.plugin.permissions.filesystem.write.includes('artifact-workspace'))
+          throw new Error('PLUGIN_PERMISSION_DENIED: export requires artifact-workspace permission');
         if(!writeAllowed||!workspace)
           throw new Error('FILE_WRITE_NOT_AUTHORIZED: require explicit workspace and --allow-write');
         location=writeWorkspaceBundle(workspace,options.outputPath,bundle);

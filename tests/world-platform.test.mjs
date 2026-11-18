@@ -157,7 +157,7 @@ test('Runner rejects arbitrary keys and never evaluates caller scripts',()=>{
   assert.equal(rejected.status,'needs_revision');
   assert.match(rejected.diagnostics[0].code,/INPUT_FIELDS_DENIED/);
   const bogus=runWorldTool(tool('plan','third-party.exec',{prompt:'hello'}));
-  assert.equal(bogus.status,'needs_revision');
+  assert.equal(bogus.status,'unsupported');
   const valid=runWorldTool(tool('plan','world.assembly.plan',{prompt:'六轮火星探测车'}));
   assert.equal(valid.status,'ok');
 });
@@ -349,4 +349,16 @@ test('Agent proposal callback cannot smuggle a reduction of hard wheel count',()
   assert.equal(attempted.status,'needs_revision');
   assert.ok(attempted.diagnostics.some(d=>d.code==='HARD_REQUIREMENT_VIOLATED'));
   assert.ok(attempted.trace.content.attempts.length<=3);
+});
+
+
+test('Default six-wheel baseline is a soft assumption unless user explicitly demands six wheels',()=>{
+  const unspecified=compileWorldSpec('Build a Mars rover').artifact.content;
+  const defaultCount=unspecified.requirements.find(r=>r.property==='wheelCount');
+  assert.equal(defaultCount.value,6);
+  assert.equal(defaultCount.priority,'soft');
+  assert.equal(defaultCount.source,'assumption');
+  assert.ok(unspecified.assumptions.some(x=>x.includes('default')));
+  const explicit=compileWorldSpec('Build a six wheel Mars rover').artifact.content;
+  assert.equal(explicit.requirements.find(r=>r.property==='wheelCount').priority,'hard');
 });

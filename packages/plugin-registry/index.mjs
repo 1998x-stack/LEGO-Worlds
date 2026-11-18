@@ -34,6 +34,9 @@ export function readPluginRegistry(root=REPO_ROOT) {
       if(manifest.execution.mode==='builtin'&&cap.readiness!=='available')
         throw new Error('BUILTIN_READINESS_MISMATCH: '+record.id);
     }
+    if((manifest.execution.mode==='builtin' && manifest.execution.adapter!=='world-runner-builtin-v1') ||
+       (manifest.execution.mode==='guidance-only' && manifest.execution.adapter!==null))
+      throw new Error('PLUGIN_EXECUTION_ADAPTER_DENIED: '+record.id);
     if(manifest.permissions.network || manifest.permissions.subprocess ||
        manifest.permissions.filesystem.write.some(p=>p!=='artifact-workspace'))
       throw new Error('UNSAFE_PLUGIN_PERMISSIONS: '+record.id);

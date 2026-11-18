@@ -19,9 +19,12 @@ export function compileWorldSpec(raw,{targetLevel='L2'}={}) {
     id:'REQ_design',property:'designIntent',operator:'describe',
     value:prompt,unit:'text',priority:'hard',source:'user'
   }];
+  const explicitWheelCount=/(?:[2468]|[六四八两二])\s*(?:个)?(?:轮|轮子|车轮|wheel)|\b(?:six|four|eight|two)\s*(?:-|\s)?wheel/i.test(prompt);
   if(request.intent==='mars-rover') requirements.push({
     id:'REQ_wheels',property:'wheelCount',operator:'eq',
-    value:request.constraints.wheelCount,unit:'count',priority:'hard',source:'user'
+    value:request.constraints.wheelCount,unit:'count',
+    priority:explicitWheelCount?'hard':'soft',
+    source:explicitWheelCount?'user':'assumption'
   });
   if(request.domain==='built-environment') {
     const match=prompt.match(/([1-9][0-9]{0,3})\s*(?:层|[- ]?storey|[- ]?story|[- ]?floor)/i);
@@ -38,7 +41,8 @@ export function compileWorldSpec(raw,{targetLevel='L2'}={}) {
         ? ['Physical mating tolerances and mechanical load ratings','Motion-envelope CCD, dynamics and material properties']
         : ['Unrecognized design grammar: choose a supported plugin or clarify requirements'];
   const assumptions=request.intent==='mars-rover'
-    ? ['Wheel joints are virtual bearing datums, not functional axles or suspension']
+    ? [...(explicitWheelCount?[]:['Six wheels chosen as a default, not a user-stated hard constraint']),
+       'Wheel joints are virtual bearing datums, not functional axles or suspension']
     : [];
   const domain=domainL0Systems(request.domain);
   for(const required of domain.unresolved)if(!unresolved.includes(required))unresolved.push(required);
