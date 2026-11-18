@@ -1845,7 +1845,7 @@ export const COMPONENTS = [
     "code": "BW-TC-021",
     "name": "Technic Sleeve Bearing · 8 mm",
     "zh": "8mm 机械轴承衬套",
-    "family": "Technic",
+    "family": "Technic Structure",
     "type": "bearing",
     "size": [
       4.68,
