@@ -5,8 +5,8 @@
   "agent": "pi",
   "branch": "agent/local-validation-20261118",
   "baseSha": "08c1141c8712132e0a05520d5ca246430f09b581",
-  "headSha": "a74ac2dff94ee0c322e669d013a093cce4de78fd",
-  "remoteHeadSha": "08c1141c8712132e0a05520d5ca246430f09b581",
+  "headSha": "92345cf7a82f9062abccceddd5510fd677ddfd6b",
+  "remoteHeadSha": "e207ac57d33fadfb6ef2379a42089459fc7961d6",
   "environment": {
     "os": "macOS Darwin 27.3.0 arm64",
     "node": "v26.13.1",
@@ -14,57 +14,67 @@
     "browser": "Google Chrome 158.0.8127.37 (headless=new, SwiftShader, no GPU)"
   },
   "checks": [
-    { "command": "npm run test:skills", "status": "pass", "exitCode": 0, "evidence": "12 canonical skills + Claude/Codex adapters + Pi router validated" },
-    { "command": "npm test", "status": "pass", "exitCode": 0, "evidence": "tests 104 / pass 104 / fail 0" },
-    { "command": "npm run build", "status": "pass", "exitCode": 0, "evidence": "vite build ok; single JS chunk 803.89 kB" },
-    { "command": "npm run world:run -- registry", "status": "pass", "exitCode": 0, "evidence": "world-tools/v1 capability list; guidance-only modes preserved" },
-    { "command": "npm run world:pipeline -- --prompt \"搭建一辆六轮火星探测车\"", "status": "pass", "exitCode": 0, "evidence": "status ok; WorldSpec,GeometryManifest,AssemblyGraph,ValidationReport" },
-    { "command": "npm run world:pipeline -- --prompt \"装配一个轴承衬套、转轴和轮组\" --mesh", "status": "pass", "exitCode": 0, "evidence": "status ok; kinematic-concept" },
-    { "command": "npm run world:pipeline -- --prompt \"设计一栋10层建筑\"", "status": "pass", "exitCode": 0, "evidence": "status unsupported; L0 WorldSpec+ValidationReport only" },
-    { "command": "node scripts/inspect-bearing-wheel.mjs", "status": "pass", "exitCode": 0, "evidence": "pass7 warn3 fail0 notRun5 classification=kinematic-concept" },
-    { "command": "node scripts/inspect-bearing-wheel.mjs --blocked", "status": "pass", "exitCode": 2, "evidence": "expected deliberate ASSEMBLY_PATH_BLOCKED counter-example" },
-    { "command": "vite preview (127.0.0.1:4321) + Chrome headless browser QA", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/browser-qa.json; WebGL ok, 0 console errors" },
-    { "command": "Playwright screenshot pass (15 page + 5 canvas + 4 lab captures)", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/visual-qa.md + screenshots/; 0 page errors, all canvases non-blank, no horizontal overflow" },
+    { "command": "npm ci --no-audit --no-fund (clean node_modules)", "status": "pass", "exitCode": 0, "evidence": "20 packages in 2.5s; lockfileVersion 3" },
+    { "command": "npm run test:skills", "status": "pass", "exitCode": 0, "evidence": "12 canonical skills + adapters + Pi router validated" },
+    { "command": "npm test", "status": "pass", "exitCode": 0, "evidence": "tests 116 / pass 116 / fail 0" },
+    { "command": "npm run build", "status": "pass", "exitCode": 0, "evidence": "vite build ok" },
     { "command": "git diff --check", "status": "pass", "exitCode": 0, "evidence": "no whitespace errors" },
-    { "command": "remote GitHub Pages deployment", "status": "not_run", "exitCode": null, "evidence": "branch not pushed; no GitHub write access this run" },
+    { "command": "CLI: agent-plan mars-rover", "status": "pass", "exitCode": 0, "evidence": "10 parts / 9 joints; nominal-axial-fit NOT_APPLICABLE" },
+    { "command": "CLI: agent-plan bearing-wheel", "status": "pass", "exitCode": 0, "evidence": "nominal-axial-fit PASS; 1 OBB proxy; authoritative=false" },
+    { "command": "CLI: agent-plan four-bar", "status": "pass", "exitCode": 0, "evidence": "nominal-axial-fit NOT_APPLICABLE; 1 cycle" },
+    { "command": "CLI: pipeline building L0", "status": "pass", "exitCode": 0, "evidence": "status unsupported; WorldSpec+ValidationReport only" },
+    { "command": "node scripts/inspect-bearing-wheel.mjs --blocked", "status": "pass", "exitCode": 2, "evidence": "expected ASSEMBLY_PATH_BLOCKED (deliberate counter-example)" },
+    { "command": "invalid connector validateConstraintGraph", "status": "pass", "exitCode": 0, "evidence": "rejected: Unknown port missing_port on support" },
+    { "command": "Playwright browser QA (vite preview @4322)", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/product-qa-phase5.json; 0 console errors; export downloads; agent messaging correct" },
+    { "command": "npm ci in GitHub Actions verify job", "status": "pass", "exitCode": 0, "evidence": "workflow run for e207ac5 success (verify); deploy skipped on PR" },
+    { "command": "remote GitHub Pages deployment", "status": "not_run", "exitCode": null, "evidence": "PR #1 open, not merged" },
+    { "command": "LDraw export / round-trip diff", "status": "not_run", "exitCode": null, "evidence": "no export implemented; no licensed fixture" },
     { "command": "measured fit / CCD / dynamics / structural / aero", "status": "not_run", "exitCode": null, "evidence": "no dedicated solver exists; must stay NOT_RUN" }
   ],
   "changes": [
-    "src/catalog.js: bearing-sleeve-8mm family 'Technic' -> 'Technic Structure' (removed stray 11th family and UI filter chip)",
-    "tests/catalog.test.mjs: added ten-family taxonomy regression test",
-    "tests/docs-consistency.test.mjs: NEW documented-count + favicon guard suite",
-    "AGENTS.md: 100 -> 101 procedural component definitions",
-    "docs/roadmap.md: 100 -> 101 components (x2), 46 -> 47 geometry factory types",
-    "index.html: inline SVG favicon (removes /favicon.ico 404 console error)"
+    "src/ai-agent.js: 8 explicitly-graded validation gates; nominal-axial-fit; collisionSemantics authoritiative:false; status strings",
+    "src/main.js + src/styles.css: broad-phase proxy UI label, proxy note, PASS/FAIL/NOT_RUN gate rendering",
+    "packages/validation-engine/index.mjs: OBB gate message + proxyKind/authoritative fields; axial-fit counts evaluated interfaces",
+    "packages/clearance-engine/index.mjs: hole-to-hole role mismatch is NOT_APPLICABLE not FAIL",
+    "packages/agent-repair/index.mjs: clearer OBB proxy diagnostic",
+    "package-lock.json: NEW (lockfileVersion 3, 71 packages)",
+    ".github/workflows/pages.yml: npm install -> npm ci",
+    "packages/ldraw-interop/index.mjs: NEW bounded .ldr/.mpd importer",
+    "tests/ldraw-interop.test.mjs + tests/fixtures/ldraw/{basic.ldr,stack.mpd}: NEW",
+    "docs/rfc/ldraw-interop.md: NEW",
+    "tests/ai-agent.test.mjs: nominal-fit / proxy / FAIL / NOT_APPLICABLE regressions",
+    "tests/docs-consistency.test.mjs: lockfile + npm ci guard",
+    "docs/business/pilot-readiness.md: capability tiers",
+    "docs/roadmap.md: V0.9a/b/c split; delivered items marked"
   ],
   "issues": [
-    { "id": "P1-001", "severity": "P1", "title": "bearing sleeve registered under stray 11th family 'Technic'", "reproduction": "load #components; family filter showed an extra 'Technic' chip with one part", "status": "fixed" },
-    { "id": "P2-002", "severity": "P2", "title": "AGENTS.md/roadmap.md stale component and factory counts", "reproduction": "grep 100 component / 46 geometry in docs vs COMPONENTS.length=101, 47 factory cases", "status": "fixed" },
-    { "id": "P2-003", "severity": "P2", "title": "missing favicon produced a 404 console error", "reproduction": "open site, capture console -> 404 for /favicon.ico", "status": "fixed" },
-    { "id": "P2-004", "severity": "P2", "title": "no package-lock.json; CI uses npm install not npm ci", "reproduction": "ls package-lock.json -> absent; pages.yml runs npm install", "status": "open" },
-    { "id": "P2-005", "severity": "P2", "title": "roadmap.md has two consecutive '## V0.9' sections", "reproduction": "grep '## V0.9' docs/roadmap.md", "status": "open" },
-    { "id": "P1-006", "severity": "P1", "title": "Agent bearing plan shows '1 OBB WARNING' for a valid nominal fit (box-proxy false positive)", "reproduction": "#agent -> '装配一个轴承衬套、转轴和轮组' -> OBB WARNINGS 1", "status": "open" },
-    { "id": "P2-007", "severity": "P2", "title": "production JS bundle is one 803.89 kB chunk", "reproduction": "npm run build -> chunk-size warning", "status": "open" },
-    { "id": "P2-008", "severity": "P2", "title": "small muted captions (7-9px) flagged below WCAG AA contrast by automated heuristic", "reproduction": "Playwright contrast audit; primary CTAs fine (~11:1)", "status": "open" }
+    { "id": "P1-006", "severity": "P1", "title": "Agent showed a coarse OBB overlap as a collision for a valid bearing fit", "reproduction": "#agent -> '装配一个轴承衬套、转轴和轮组' previously showed 'REVIEW COLLISIONS' / 'OBB WARNINGS 1'", "status": "fixed" },
+    { "id": "P2-004", "severity": "P2", "title": "no package-lock.json; CI used npm install", "reproduction": "ls package-lock.json absent; pages.yml ran npm install", "status": "fixed" },
+    { "id": "P2-005", "severity": "P2", "title": "roadmap.md had two consecutive '## V0.9' sections", "reproduction": "grep '## V0.9' docs/roadmap.md", "status": "fixed" },
+    { "id": "P1-101", "severity": "P1", "title": "LDraw export and measured Studio round-trip absent", "reproduction": "no export path; round-trip NOT_RUN", "status": "open" },
+    { "id": "P2-102", "severity": "P2", "title": "LDraw map covers only 6 part numbers; no element-ID dataset", "reproduction": "LDRAW_PART_MAP has 6 entries", "status": "open" },
+    { "id": "P2-007", "severity": "P2", "title": "production JS bundle single 803.89 kB chunk", "reproduction": "npm run build chunk-size warning", "status": "open" },
+    { "id": "P2-008", "severity": "P2", "title": "small muted captions flagged below WCAG AA by heuristic (candidate)", "reproduction": "Playwright contrast audit", "status": "open" },
+    { "id": "P3-103", "severity": "P3", "title": "PR #1 not merged; remote Pages deploy unverified", "reproduction": "gh pr view 1 -> OPEN", "status": "open" }
   ],
   "knownLimitations": [
     "Buildings and aircraft are L0 requirements-only; no L1/L2 engineering solver",
     "Measured mechanical fit/tolerances NOT_RUN",
     "Continuous (CCD) swept collision NOT_RUN; only discrete path samples",
     "Dynamics, torque, friction, mass properties NOT_RUN",
-    "Studio / LDraw round-trip not implemented",
-    "Remote GitHub Pages deploy not verified this run",
-    "Known limitation: the agent model cannot display images; screenshots committed as machine-captured evidence, not visually reviewed"
+    "LDraw import is bounded (6 parts, no third-party geometry); export/round-trip NOT_RUN",
+    "Remote GitHub Pages deploy not verified (PR unmerged)",
+    "Agent model cannot display images; screenshots are machine-captured, not visually reviewed"
   ],
   "nextActions": [
-    "Push agent/local-validation-20261118, open PR, confirm pages.yml green on the head SHA, re-check live site console",
-    "Write docs/rfc/ldraw-interop.md with licensed fixtures and a measured import->edit->export diff",
-    "Distinguish nominal-fit warning from collision wording in the Agent summary with a regression test"
+    "Merge PR #1 and verify the deployed Pages build on the merged SHA",
+    "Implement LDraw export and measure a round-trip diff on a licensed fixture",
+    "Expand the LDraw/element-ID mapping with provenance and publish a measured coverage number"
   ],
   "github": {
-    "commitUrl": null,
-    "prUrl": null,
-    "ciUrl": null,
+    "commitUrl": "https://github.com/1998x-stack/LEGO-Worlds/commit/e207ac57d33fadfb6ef2379a42089459fc7961d6",
+    "prUrl": "https://github.com/1998x-stack/LEGO-Worlds/pull/1",
+    "ciUrl": "https://github.com/1998x-stack/LEGO-Worlds/actions/runs/44253556117",
     "pagesVerified": false
   }
 }
