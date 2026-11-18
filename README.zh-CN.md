@@ -4,7 +4,7 @@
 
 一个独立的 3D 模块化积木系统探索项目。浏览可复用基础组件，以三维方式观察原创拼搭作品，显示标准化连接锚点，逐步拆解装配过程，并理解每个模型由哪些零件组成。
 
-[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [架构文档](docs/architecture.md)
+[100 种组件完整目录](docs/parts-index.md) · [组件系统规范](docs/component-system.md) · [连接锚点规范](docs/connection-anchors.md) · [自动吸附拼搭](docs/snap-builder.md) · [Technic 机械实验台](docs/technic-mechanics.md) · [层级装配与铰链系统](docs/hierarchy-assembly.md) · [架构文档](docs/architecture.md)
 
 > **非官方项目声明：** 本项目为独立的教育与三维可视化项目，与 LEGO Group 没有任何隶属、赞助、授权或认可关系。LEGO® 是 LEGO Group 的商标。本仓库使用原创程序化几何，不分发官方套装说明书、品牌标识、人仔 IP 或复制的第三方模型。
 
@@ -31,6 +31,14 @@
 首页新增 **Mechanics**：支持从 8 mm 间距的 Technic 梁孔选择连接点，安装摩擦销、光滑销或十字轴；可沿轴安装齿轮及轮组，检查占用孔位、轴长度与齿轮名义啮合关系。提供三个演示：**双齿轮传动、轮轴总成、销钉连接架**。
 
 支持拆解/重新合成动画、转速调整、齿轮反向旋转、连接关系图、撤销/重做、装配 JSON 方案导入导出及静态 GLB 导出。齿轮比来自齿数；这是运动学演示而非齿面接触、摩擦与动力学仿真。当前为选择孔位后安装的引导式交互，不是所有 Technic 零件的自由拖拽吸附。详见[机械连接系统设计](docs/technic-mechanics.md)。
+
+## 层级装配与机械关节系统 · V0.5
+
+首页新增 **Assembly** 三维实验台，直接查看三个原创演示：**双关节机械吊臂、双叶联动吊桥、双翼太阳能观测站**。系统将零件组织为父子刚体子总成，每个可旋转子总成都通过铰链锚点连接到父节点；父节点转动时，其下所有零件和关节同步移动。
+
+可以拖动主铰链角度滑块，观察镜像联动的角度传播；选择并隔离子总成，打开锚点显示，播放自动生成的 **逐件拆解、重新装配** 动画，还可以点击步骤或拖动装配时间轴。支持版本化 JSON 姿态/关节配方导入导出与静态 GLB 导出。
+
+装配步骤遵循父子依赖 DAG，动画路径属于可视化示意，**暂不保证物理上无碰撞或可实际拆卸**；系统也尚未实现真实动力学、完整闭环机构或多个父连接。详见[层级装配与关节规范](docs/hierarchy-assembly.md)。
 
 ## 首期三个核心系列
 
@@ -110,6 +118,8 @@ src/
   connection-anchors.js # 锚点生成、坐标变换与接口兼容性
   snap-engine.js       # 吸附求解、碰撞校验、装配 JSON
   technic-engine.js    # 梁孔连接、键轴固定、齿轮传动
+  hierarchy-engine.js # 层级刚体、关节与装配依赖
+  hierarchy-lab.js    # 三维铰链调节、拆解重装时间轴
   mechanics-lab.js     # 机械装配、拆解与运动学交互
   builder-lab.js       # Three.js 拖动拼搭工作台
   viewer.js           # Three.js 场景、爆炸视图与装配步骤
@@ -121,12 +131,14 @@ docs/
   connection-anchors.md
   snap-builder.md
   technic-mechanics.md
+  hierarchy-assembly.md
   roadmap.md
 tests/
   catalog.test.mjs
   connection-anchors.test.mjs
   snap-engine.test.mjs
   technic-engine.test.mjs
+  hierarchy-engine.test.mjs
 .github/workflows/
   pages.yml
 ```
