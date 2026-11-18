@@ -120,10 +120,25 @@ test('assembly DAG is complete, deterministic and parent-before-child', () => {
       unique.add(step.partId);
       assert.ok(step.dependsOn.every(dep=>dep>0&&dep<step.step));
       assert.ok(step.approachOffsetMm.every(Number.isFinite));
+      assert.ok(step.componentName && step.componentZh && step.operationZh);
     }
     const first=steps.find(s=>s.nodeId!==document.nodes[0].id);
     assert.ok(first.dependsOn.length>=1);
   }
+});
+
+test('drawbridge and solar wings lift upward with mirrored hinge angles', () => {
+  const bridge = createHierarchyPreset('twin-drawbridge');
+  const folded = evaluateHierarchy(bridge, COMPONENTS, {left_deck: -40});
+  const flat = evaluateHierarchy(bridge, COMPONENTS, {left_deck: 0});
+  const B = (frame,id) => frame.parts.find(part => part.instanceId === id).pos[1];
+  assert.ok(B(folded,'left_road') > B(flat,'left_road'));
+  assert.ok(B(folded,'right_road') > B(flat,'right_road'));
+  const solar = createHierarchyPreset('solar-observatory');
+  const deployed = evaluateHierarchy(solar, COMPONENTS, {left_wing: -40});
+  const neutral = evaluateHierarchy(solar, COMPONENTS, {left_wing: 0});
+  assert.ok(B(deployed,'left_solar_panel') > B(neutral,'left_solar_panel'));
+  assert.ok(B(deployed,'right_solar_panel') > B(neutral,'right_solar_panel'));
 });
 
 test('automatic assembly and disassembly share a reversible plan', () => {
