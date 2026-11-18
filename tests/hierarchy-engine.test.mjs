@@ -58,10 +58,10 @@ test('couplings propagate signed, mirrored joint angles and disallow conflict', 
     const document=createHierarchyPreset(id);
     const driver=id==='twin-drawbridge'?'left_deck':'left_wing';
     const follower=id==='twin-drawbridge'?'right_deck':'right_wing';
-    const angles=resolveJointAngles(document,{[driver]:40});
-    assert.equal(angles[driver],40);
-    assert.equal(angles[follower],-40);
-    const frame=evaluateHierarchy(document,COMPONENTS,{[driver]:40});
+    const angles=resolveJointAngles(document,{[driver]:-40});
+    assert.equal(angles[driver],-40);
+    assert.equal(angles[follower],40);
+    const frame=evaluateHierarchy(document,COMPONENTS,{[driver]:-40});
     assert.equal(frame.pivots.length,2);
   }
   const document=createHierarchyPreset('twin-drawbridge');
@@ -70,7 +70,7 @@ test('couplings propagate signed, mirrored joint angles and disallow conflict', 
   assert.throws(()=>validateHierarchy(bad,COMPONENTS),/cycle/);
   const beyond=deep(document);
   beyond.couplings[0].ratio=4;
-  assert.throws(()=>resolveJointAngles(beyond,{left_deck:70}),/exceeds/);
+  assert.throws(()=>resolveJointAngles(beyond,{left_deck:-70}),/exceeds/);
 });
 
 test('joint motion respects angle limits for manual inputs and fixed joints', () => {
@@ -142,11 +142,11 @@ test('automatic assembly and disassembly share a reversible plan', () => {
 
 test('hierarchy JSON recipe roundtrip verifies coupled motion and discards untrusted operation edits', () => {
   const document=createHierarchyPreset('twin-drawbridge');
-  const written=exportHierarchyRecipe(document,{left_deck:35});
+  const written=exportHierarchyRecipe(document,{left_deck:-35});
   assert.equal(written.schemaVersion,1);
   assert.equal(written.anchorSchemaVersion,1);
   assert.equal(written.units,'mm');
-  assert.equal(written.angles.right_deck,-35);
+  assert.equal(written.angles.right_deck,35);
   const tampered=deep(written);
   tampered.operations=[{nodeId:'malicious',componentId:'unknown',pos:[999,999,999]}];
   const restored=importHierarchyRecipe(tampered,COMPONENTS);
