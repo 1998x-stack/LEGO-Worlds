@@ -9,7 +9,7 @@ export const GRAPH_MAX_FREE_JOINTS = 12;
 export const CONSTRAINT_KINDS = Object.freeze(['fixed', 'hinge', 'shaft', 'slider']);
 export const GRAPH_CATALOG_IDS = Object.freeze([
   'beam-3', 'beam-5', 'beam-7', 'beam-13',
-  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t'
+  'brick-2x4', 'plate-2x6', 'wheel-medium', 'gear-16t', 'axle-3'
 ]);
 export const GRAPH_PRESETS = Object.freeze([
   { id: 'four-bar', name: 'Four-Bar Linkage', zh: '四连杆闭环机构' },
@@ -44,6 +44,7 @@ function componentSize(entry) {
     case 'jumper': return [(Number(s[0]) || 2) * 8, 3.2, (Number(s[1]) || 2) * 8];
     case 'wheel': return [(Number(s[0]) || 10) * 2, (Number(s[0]) || 10) * 2, Number(s[1]) || 7];
     case 'gear': return [(Number(s[0]) || 8) * 2, (Number(s[0]) || 8) * 2, Number(s[2]) || 3.2];
+    case 'axle': return [3.5, 3.5, Number(s[0]) || 24];
     default: return [16, 8, 8];
   }
 }
@@ -55,6 +56,7 @@ export function graphPorts(body, catalog) {
   const ports = [
     { id: 'center-z', label: 'Center / Z axis', position: [0, 0, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'center-x', label: 'Center / X guide', position: [0, 0, 0], rotation: [0, Math.PI / 2, 0], source: 'virtual-datum' },
+    { id: 'center-z-reversed', label: 'Center / reversed Z axis', position: [0, 0, 0], rotation: [0, Math.PI, 0], source: 'virtual-datum' },
     { id: 'top-z', label: 'Top surface datum', position: [0, baseSize[1] / 2, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'bottom-z', label: 'Bottom surface datum', position: [0, -baseSize[1] / 2, 0], rotation: [0, 0, 0], source: 'virtual-datum' },
     { id: 'front-z', label: 'Front face / shaft axis', position: [0, 0, baseSize[2] / 2], rotation: [0, 0, 0], source: 'virtual-datum' },
@@ -76,6 +78,27 @@ export function graphPorts(body, catalog) {
       position: [...anchor.position], rotation: [e.x, e.y, e.z],
       source: 'connection-anchor', anchorId: anchor.id
     });
+  }
+  if (entry.type === 'beam') {
+    const depth = Number(entry.size?.[1]) || 7.8;
+    const nativeHoles = ports.filter(port => port.id.startsWith('technic-hole:'));
+    for (const native of nativeHoles) {
+      const index = native.id.slice('technic-hole:'.length);
+      ports.push({
+        id: 'front-hole:' + index,
+        label: 'Outer front mount · hole ' + (Number(index) + 1),
+        position: [native.position[0], native.position[1], depth / 2],
+        rotation: [0, 0, 0], source: 'derived-face-datum',
+        parentAnchorId: native.anchorId, confidence: 'schematic'
+      });
+      ports.push({
+        id: 'back-hole:' + index,
+        label: 'Outer back mount · hole ' + (Number(index) + 1),
+        position: [native.position[0], native.position[1], -depth / 2],
+        rotation: [0, Math.PI, 0], source: 'derived-face-datum',
+        parentAnchorId: native.anchorId, confidence: 'schematic'
+      });
+    }
   }
   return ports;
 }
