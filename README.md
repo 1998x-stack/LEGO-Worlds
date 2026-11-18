@@ -2,11 +2,30 @@
 
 **Build it. Break it. Understand it.**
 
-[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [Roadmap](docs/roadmap.md)
+[中文说明](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Component system](docs/component-system.md) · [100-piece index](docs/parts-index.md) · [Connection anchors](docs/connection-anchors.md) · [Snap Builder](docs/snap-builder.md) · [Technic Mechanics](docs/technic-mechanics.md) · [Hierarchy & Joints](docs/hierarchy-assembly.md) · [Constraint Graph](docs/constraint-graph.md) · [AI Assembly Agent](docs/ai-assembly-agent.md) · [Skills](docs/skills-system.md) · [Roadmap](docs/roadmap.md)
 
 An independent, open-source 3D brick system explorer. Discover reusable components, inspect original assemblies in 3D, reveal typed connection anchors, explode builds into their constituent parts, follow step-by-step construction sequences, and design small stud-grid builds in the Snap Builder Lab.
 
 > **Unofficial project notice:** This is an independent educational and visualization project. LEGO® is a trademark of the LEGO Group, which does not sponsor, authorize, or endorse this project. This repository uses original procedural geometry and does not distribute LEGO set instructions, logos, minifigure IP, or copied third-party models.
+
+## AI Assembly Agent & cross-platform Skills (V0.7)
+
+**[Open the AI Assembly Agent](https://1998x-stack.github.io/LEGO-Worlds/#agent)**. Enter `搭建一辆六轮火星探测车` to generate a verified conceptual assembly: **10 catalog components, 9 connection graph edges, a structured BOM and ordered build steps**. The plan is checked by the existing constraint solver and simplified OBB collision diagnostics, then can be exported as JSON or opened in the interactive [Constraint Lab](https://1998x-stack.github.io/LEGO-Worlds/#constraints).
+
+The planner currently uses deterministic language matching and approved blueprints — **not an open-ended LLM service**. Supported examples include the six-wheel rover, four-bar linkage, linear carriage, and shaft drive. Buildings and aircraft trigger requirements-first responses rather than unverified physical claims.
+
+To scale into complex world systems, we added **12 canonical Agent Skills** with `SKILL.md`, `references/`, `scripts/`, `assets/`, supported by [AGENTS.md](AGENTS.md), [Codex](.codex/README.md), [Pi](.pi/README.md), and [Claude](.claude/README.md) adapters. See [Skills architecture](docs/skills-system.md).
+
+```bash
+npm install
+npm run agent:plan -- "搭建一辆六轮火星探测车" > rover-plan.json
+npm run agent:validate -- rover-plan.json
+npm run test:skills
+npm test
+npm run build
+```
+
+[AI Agent specification](docs/ai-assembly-agent.md) · [Canonical skills](.agents/skills/README.md)
 
 ## General Constraint Graph Lab (V0.6)
 
@@ -91,6 +110,7 @@ src/
   technic-engine.js    # Beam pin/axle joints, keyed mounts and gear ratios
   hierarchy-engine.js # Joint tree, angle propagation and assembly steps
   constraint-graph.js # Multi-connection graph, closure solver and OBB checks
+  ai-agent.js        # NL intent → BOM → graph → steps → validation
   constraint-lab.js   # Editable kinematic graph, motors and diagnostics
   hierarchy-lab.js    # Interactive hierarchy/hinge animation inspector
   mechanics-lab.js     # Interactive mechanical assembly and drive animation
@@ -106,6 +126,8 @@ docs/
   technic-mechanics.md
   hierarchy-assembly.md
   constraint-graph.md
+  ai-assembly-agent.md
+  skills-system.md
   roadmap.md
 tests/
   catalog.test.mjs
@@ -114,6 +136,13 @@ tests/
   technic-engine.test.mjs
   hierarchy-engine.test.mjs
   constraint-graph.test.mjs
+  ai-agent.test.mjs
+.agents/skills/        # 12 canonical Agent Skills
+.codex/skills/         # Codex reference mirrors
+.claude/skills/        # Claude Code entrypoints
+.pi/skills/            # Unique Pi project router
+scripts/               # Skills validation, adapter sync, Agent CLI
+AGENTS.md              # Durable agent engineering conventions
 .github/workflows/
   pages.yml
 ```
