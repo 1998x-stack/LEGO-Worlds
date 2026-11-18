@@ -40,6 +40,14 @@ npm run build
 
 The browser route `/#agent` provides prompt examples, plan generation, metrics, BOM, graph, ordered steps and validation gates. An approved plan can be loaded into the existing `/#constraints` lab for interactive rotation/inspection.
 
+## Future model-proposal adapter boundary
+
+`validateExternalGraphProposal(proposal, COMPONENTS)` accepts an untrusted structured graph proposal (or `{graph, prompt}`) and rebuilds catalog references, component quantities, assembly steps, solver diagnostics and physical-fidelity claims. It explicitly replaces the original generator provenance and never trusts external certification fields. It has no network/LLM dependency; when a real provider is added later, keep credentials server-side.
+
+```bash
+node scripts/agent-validate.mjs --proposal proposal.json
+```
+
 ## Versioning and trust
 
 Every plan includes `schemaVersion`, `generator`, `request`, `status`, graph/BOM/steps, `verification` and an explicit `capability` map. The graph is always validated with its current catalog and solver. The client contains no API key; any future model-generated proposal must be treated as untrusted data, normalized to a schema, resource bounded, and checked before rendering/export.
