@@ -93,6 +93,17 @@ Browser (Chrome headless against the production build): WebGL available, 9 secti
 Agent plan renders 10 parts / 9 joints / 0.000 mm error, Constraint Lab loads all four presets,
 mobile `☰` toggles the nav, **0 console errors**.
 
+### 4b. Playwright screenshot pass
+
+A dedicated Playwright run captured **15 page screenshots, 5 canvas crops and 4 lab captures**
+(see `docs/handoff/evidence/screenshots/` and `docs/handoff/evidence/visual-qa.md`).
+Results: **0 page errors, 0 console errors**; all five WebGL canvases produced non-uniform pixels
+(not blank); `scrollWidth − clientWidth = 0` at 1440 px and 390 px (no horizontal overflow);
+20 web-fonts loaded. A corrected WCAG contrast audit found the primary CTAs are fine (≈11:1) but
+flagged 7–9 px muted captions at ≈2.6–3.6:1 as a **candidate** (not confirmed) P2 issue.
+**Honesty caveat:** the agent model cannot display images, so the shots were analysed with PIL and
+DOM assertions, not reviewed by eye.
+
 ## 5. Commits
 
 ```

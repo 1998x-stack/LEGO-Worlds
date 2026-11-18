@@ -23,7 +23,8 @@
     { "command": "npm run world:pipeline -- --prompt \"设计一栋10层建筑\"", "status": "pass", "exitCode": 0, "evidence": "status unsupported; L0 WorldSpec+ValidationReport only" },
     { "command": "node scripts/inspect-bearing-wheel.mjs", "status": "pass", "exitCode": 0, "evidence": "pass7 warn3 fail0 notRun5 classification=kinematic-concept" },
     { "command": "node scripts/inspect-bearing-wheel.mjs --blocked", "status": "pass", "exitCode": 2, "evidence": "expected deliberate ASSEMBLY_PATH_BLOCKED counter-example" },
-    { "command": "vite preview (127.0.0.1:4317) + Chrome headless browser QA", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/browser-qa.json; WebGL ok, 0 console errors" },
+    { "command": "vite preview (127.0.0.1:4321) + Chrome headless browser QA", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/browser-qa.json; WebGL ok, 0 console errors" },
+    { "command": "Playwright screenshot pass (15 page + 5 canvas + 4 lab captures)", "status": "pass", "exitCode": 0, "evidence": "docs/handoff/evidence/visual-qa.md + screenshots/; 0 page errors, all canvases non-blank, no horizontal overflow" },
     { "command": "git diff --check", "status": "pass", "exitCode": 0, "evidence": "no whitespace errors" },
     { "command": "remote GitHub Pages deployment", "status": "not_run", "exitCode": null, "evidence": "branch not pushed; no GitHub write access this run" },
     { "command": "measured fit / CCD / dynamics / structural / aero", "status": "not_run", "exitCode": null, "evidence": "no dedicated solver exists; must stay NOT_RUN" }
@@ -43,7 +44,8 @@
     { "id": "P2-004", "severity": "P2", "title": "no package-lock.json; CI uses npm install not npm ci", "reproduction": "ls package-lock.json -> absent; pages.yml runs npm install", "status": "open" },
     { "id": "P2-005", "severity": "P2", "title": "roadmap.md has two consecutive '## V0.9' sections", "reproduction": "grep '## V0.9' docs/roadmap.md", "status": "open" },
     { "id": "P1-006", "severity": "P1", "title": "Agent bearing plan shows '1 OBB WARNING' for a valid nominal fit (box-proxy false positive)", "reproduction": "#agent -> '装配一个轴承衬套、转轴和轮组' -> OBB WARNINGS 1", "status": "open" },
-    { "id": "P2-007", "severity": "P2", "title": "production JS bundle is one 803.89 kB chunk", "reproduction": "npm run build -> chunk-size warning", "status": "open" }
+    { "id": "P2-007", "severity": "P2", "title": "production JS bundle is one 803.89 kB chunk", "reproduction": "npm run build -> chunk-size warning", "status": "open" },
+    { "id": "P2-008", "severity": "P2", "title": "small muted captions (7-9px) flagged below WCAG AA contrast by automated heuristic", "reproduction": "Playwright contrast audit; primary CTAs fine (~11:1)", "status": "open" }
   ],
   "knownLimitations": [
     "Buildings and aircraft are L0 requirements-only; no L1/L2 engineering solver",
@@ -52,7 +54,7 @@
     "Dynamics, torque, friction, mass properties NOT_RUN",
     "Studio / LDraw round-trip not implemented",
     "Remote GitHub Pages deploy not verified this run",
-    "No screenshots committed; model cannot visually verify pixels"
+    "Known limitation: the agent model cannot display images; screenshots committed as machine-captured evidence, not visually reviewed"
   ],
   "nextActions": [
     "Push agent/local-validation-20261118, open PR, confirm pages.yml green on the head SHA, re-check live site console",

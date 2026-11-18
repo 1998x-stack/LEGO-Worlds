@@ -54,7 +54,16 @@ it fixed one P1 data/UX defect and two P2 authenticity defects, guarded by new t
 | `git diff --check` | 0 | clean |
 
 Evidence: [`evidence/validation-summary.json`](evidence/validation-summary.json),
-[`evidence/browser-qa.json`](evidence/browser-qa.json).
+[`evidence/browser-qa.json`](evidence/browser-qa.json),
+[`evidence/visual-qa.md`](evidence/visual-qa.md) + [`evidence/screenshots/`](evidence/screenshots/).
+
+### Playwright screenshot pass (this round)
+
+15 page screenshots + 5 canvas + 4 lab captures via Playwright → local Chrome 158 headless.
+**0 page errors, 0 console errors.** All five WebGL canvases render non-uniform pixels (not blank).
+No horizontal overflow at 1440 px or 390 px. Mobile `☰` nav toggles. 20 web-fonts loaded.
+**Caveat:** the agent model cannot display images, so the screenshots were analysed
+programmatically (PIL) and via DOM assertions, not judged by eye — a human should still open them.
 
 ## 4. Capability truth (L0 / L1 / L2)
 
@@ -82,6 +91,9 @@ Evidence: [`evidence/validation-summary.json`](evidence/validation-summary.json)
   documented simplified box-proxy false positive; the mesh/path gates already treat it
   separately, but the Agent summary could label it more clearly. Deferred.
 - **P2-007** Production JS bundle is single-chunk 803.89 kB (>500 kB). No code-splitting.
+- **P2-008** Automated contrast heuristic flags very small muted captions (7–9 px, ≈2.6–3.6:1) as
+  below WCAG AA. Primary CTAs are fine (≈11:1). **Candidate, not confirmed** — heuristic can
+  mis-read translucent layers; needs a human visual check. See `evidence/visual-qa.md`.
 
 ## 6. Cannot be claimed (guardrails)
 
