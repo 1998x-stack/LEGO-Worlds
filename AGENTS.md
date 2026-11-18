@@ -2,7 +2,7 @@
 
 ## Mission
 
-Maintain a deterministic, independently branded 3D brick and mechanism world platform. The repository currently has 100 procedural component definitions, typed connection anchors, stud snapping, guided Technic joins, hinge hierarchies, a general graph-based kinematics solver, and a template-grounded natural-language assembly planner. Future buildings, aircraft, robots and cities require **separate domain fidelity gates**.
+Maintain a deterministic, independently branded 3D brick and mechanism world platform. The repository currently has 101 procedural component definitions, typed connection anchors, stud snapping, guided Technic joins, hinge hierarchies, a general graph-based kinematics solver, and a template-grounded natural-language assembly planner. Future buildings, aircraft, robots and cities require **separate domain fidelity gates**.
 
 ## Architecture map
 

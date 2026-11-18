@@ -9,9 +9,9 @@
 - [x] Responsive, colour-themed GitHub Pages site and CI deployment workflow.
 
 ## V0.2 — Assembly depth
-- [x] Publish 100 coded, parameterized component definitions across ten families.
-- [x] Add 46 procedural geometry factory types and geometry regression coverage.
-- [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 100 catalogue components.
+- [x] Publish 101 coded, parameterized component definitions across ten families.
+- [x] Add 47 procedural geometry factory types and geometry regression coverage.
+- [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 101 catalogue components.
 - [x] Add optional 3D anchor overlays to the assembly inspector.
 - [x] Implement rigid stud/socket alignment, snap candidates and conservative brick-body collision checks.
 - [ ] Add animated assembly transitions and per-part isolation.
