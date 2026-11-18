@@ -7,6 +7,8 @@ import { mountMechanicsLab } from './mechanics-lab.js';
 import { MECHANISM_PRESETS } from './technic-engine.js';
 import { mountHierarchyLab } from './hierarchy-lab.js';
 import { HIERARCHY_PRESETS } from './hierarchy-engine.js';
+import { mountConstraintLab } from './constraint-lab.js';
+import { GRAPH_PRESETS, GRAPH_CATALOG_IDS, graphPorts } from './constraint-graph.js';
 import './styles.css';
 
 const root = document.querySelector('#app');
@@ -24,7 +26,7 @@ root.innerHTML = [
       '<span class="brand-caption">OPEN BUILD SYSTEM</span>',
     '</a>',
     '<nav class="main-nav" aria-label="Main navigation">',
-      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a><a href="#assembly">Assembly</a>',
+      '<a href="#series">Series</a><a href="#builds">Builds</a><a href="#components">Components</a><a href="#builder">Builder</a><a href="#mechanics">Mechanics</a><a href="#assembly">Assembly</a><a href="#constraints">Constraints</a>',
       '<a class="nav-github" href="https://github.com/1998x-stack/LEGO-Worlds" target="_blank" rel="noopener noreferrer">GitHub ↗</a>',
     '</nav>',
     '<a class="header-cta" href="#builds">Explore builds <span>↗</span></a>',
@@ -138,6 +140,33 @@ root.innerHTML = [
         '</aside>',
       '</div>',
     '</section>',
+
+    '<section class="section constraint-section" id="constraints">',
+      '<div class="section-heading"><div><div class="section-kicker">07 — GENERAL CONSTRAINT GRAPH / V0.6</div><h2>Build beyond <em>a tree.</em></h2></div><p>让一个零件拥有多个连接：创建铰链、轴、滑轨和固定约束；求解闭环机构，并实时检查运动学残差和实体碰撞。</p></div>',
+      '<div class="constraint-intro" id="constraint-intro"><div><span>NEW / GRAPH-BASED ASSEMBLY</span><h3>不止父子关系，而是完整的机械连接图。</h3><p>尝试四连杆闭环、滑动平台与旋转轴装配。选择两个零件及连接接口，即可添加新的关节边并检查是否可行。</p></div><button id="constraint-launch" class="button button-yellow">Open constraint lab ↗</button></div>',
+      '<div class="constraint-workspace" id="constraint-workspace" hidden>',
+        '<div class="constraint-stage"><div class="constraint-stage-top"><span>GRAPH KINEMATICS / THREE.JS</span><span>ROTATE TO INSPECT · CLICK PART TO SELECT</span></div><canvas id="constraint-canvas" aria-label="Interactive mechanical constraint graph assembly editor"></canvas>',
+          '<div class="constraint-bar"><button id="constraint-motor">▶ Run motor</button><button id="constraint-gizmos">◎ Joint markers</button><button id="constraint-camera">↺ Reset view</button><button id="constraint-undo">← Undo</button><button id="constraint-redo">→ Redo</button></div>',
+          '<div class="constraint-legend"><span><i class="hinge"></i>铰链</span><span><i class="shaft"></i>转轴</span><span><i class="slider"></i>滑轨</span><span><i class="fixed"></i>固定</span><span><i class="collision"></i>碰撞警告</span></div>',
+          '<p class="constraint-caption">铰链/轴/滑轨基于名义连接坐标求解；金属件之间的模拟连接可能使用虚拟基准点，并不等于通过真实零件的配合公差验证。</p>',
+        '</div>',
+        '<aside class="constraint-sidebar">',
+          '<div class="constraint-stats"><div><strong id="constraint-body-count">0</strong><span>BODIES</span></div><div><strong id="constraint-joint-count">0</strong><span>JOINTS</span></div><div><strong id="constraint-cycle-count">0</strong><span>LOOPS</span></div><div><strong id="constraint-error">0</strong><span>ERROR MM</span></div></div>',
+          '<label class="builder-label" for="constraint-preset">Mechanism / 机构案例</label>',
+          '<div class="constraint-row"><select class="builder-part-picker" id="constraint-preset">' + GRAPH_PRESETS.map(p => '<option value="' + safe(p.id) + '">' + safe(p.zh) + ' / ' + safe(p.name) + '</option>').join('') + '</select><button id="constraint-load">Load</button></div>',
+          '<div class="constraint-heading">01 / ADD RIGID BODY · 创建新刚体</div>',
+          '<div class="constraint-row"><select class="builder-part-picker" id="constraint-component">' + GRAPH_CATALOG_IDS.filter(id => COMPONENTS.some(c => c.id === id)).map(id => { const c = COMPONENTS.find(c => c.id === id); return '<option value="' + safe(id) + '">' + safe(c.zh) + ' · ' + safe(id) + '</option>'; }).join('') + '</select><button id="constraint-add-body">+ Body</button></div>',
+          '<div class="constraint-row"><span class="constraint-selected" id="constraint-selected">Selected: —</span><button id="constraint-delete-body">× Delete selected</button></div>',
+          '<div class="constraint-heading">02 / CONNECT INTERFACES · 建立约束</div>',
+          '<div class="constraint-form"><label for="constraint-a">Body A / Port A</label><select class="builder-part-picker" id="constraint-a"></select><select class="builder-part-picker" id="constraint-port-a"></select><label for="constraint-b">Body B / Port B</label><select class="builder-part-picker" id="constraint-b"></select><select class="builder-part-picker" id="constraint-port-b"></select><label for="constraint-kind">Joint type / 关节类型</label><select class="builder-part-picker" id="constraint-kind"><option value="hinge">Hinge · 铰链</option><option value="shaft">Shaft · 转轴</option><option value="slider">Slider · 滑轨</option><option value="fixed">Fixed · 固定</option></select><label class="constraint-drive-check"><input type="checkbox" id="constraint-drive-new"/> Controlled target / 设为主动驱动</label><button id="constraint-connect" class="constraint-primary">+ Connect selected ports</button></div>',
+          '<div class="constraint-heading">03 / JOINT GRAPH · 关节与驱动</div><div id="constraint-joint-list" class="constraint-joints"></div>',
+          '<div class="constraint-heading">04 / SOLVER DIAGNOSTICS · 约束诊断</div>',
+          '<div role="status" aria-live="polite" class="constraint-status" id="constraint-status">Loading...</div><div class="constraint-diagnostics" id="constraint-diagnostics"></div>',
+          '<div class="constraint-exports"><button id="constraint-json">↓ Export JSON</button><button id="constraint-import">↑ Import JSON</button><button id="constraint-glb">↓ Export GLB</button><input type="file" accept=".json,application/json" id="constraint-file" hidden/></div>',
+          '<small class="constraint-note">闭环约束通过数值迭代求解；碰撞检测使用简化刚体 OBB 包围盒，并跳过直接关节连接的相邻零件。不是精密机械仿真或碰撞自由装配规划。</small>',
+        '</aside>',
+      '</div>',
+    '</section>',
     '<section class="dimensions-section">',
       '<div class="section dimensions-inner"><div><div class="section-kicker">04 — THE SHARED GRID</div><h2>One system.<br/><em>Consistent dimensions.</em></h2><p>用统一的名义尺寸组织零件，才能让组件跨作品复用。这里的尺寸用于教育与视觉建模参考，并非真实零件互换或打印配合保证。</p></div>',
         '<div class="dimension-cards">',
@@ -165,6 +194,7 @@ let activeModal = null;
 let builderInstance = null;
 let mechanicsInstance = null;
 let hierarchyInstance = null;
+let constraintInstance = null;
 
 function artMarkup(model) {
   return '<div class="model-art" style="--accent:' + safe(model.accent) + '">' +
@@ -741,6 +771,173 @@ document.querySelector('#hierarchy-launch').addEventListener('click', () => {
   }
 });
 
+document.querySelector('#constraint-launch').addEventListener('click', () => {
+  if (constraintInstance) {
+    document.querySelector('#constraint-workspace').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  document.querySelector('#constraint-workspace').hidden = false;
+  const status = document.querySelector('#constraint-status');
+  const bodyA = document.querySelector('#constraint-a');
+  const bodyB = document.querySelector('#constraint-b');
+  const portA = document.querySelector('#constraint-port-a');
+  const portB = document.querySelector('#constraint-port-b');
+  const joints = document.querySelector('#constraint-joint-list');
+  let revision = -1;
+  let currentGraph = null;
+  function portOptions(bodySelector, portSelector, graph, keepValue) {
+    const body = graph.bodies.find(b => b.id === bodySelector.value);
+    if (!body) {portSelector.innerHTML='';return;}
+    portSelector.innerHTML = graphPorts(body, COMPONENTS).map(p =>
+      '<option value="' + safe(p.id) + '">' + safe(p.label) +
+      (p.source === 'connection-anchor' ? ' · native' : ' · datum') + '</option>'
+    ).join('');
+    if ([...portSelector.options].some(option => option.value === keepValue))
+      portSelector.value = keepValue;
+  }
+  function updateBodySelectors(graph) {
+    const oldA=bodyA.value, oldB=bodyB.value;
+    const oldPortA=portA.value, oldPortB=portB.value;
+    const markup=graph.bodies.map(b => '<option value="' + safe(b.id) + '">' +
+      safe(b.id) + ' · ' + safe(b.componentId) + '</option>').join('');
+    bodyA.innerHTML=markup;bodyB.innerHTML=markup;
+    bodyA.value=graph.bodies.some(b=>b.id===oldA)?oldA:graph.bodies[0].id;
+    bodyB.value=graph.bodies.some(b=>b.id===oldB)?oldB:
+      (graph.bodies[1]||graph.bodies[0]).id;
+    portOptions(bodyA,portA,graph,oldPortA);
+    portOptions(bodyB,portB,graph,oldPortB);
+  }
+  const kindLabel = {hinge:'铰链',shaft:'转轴',slider:'滑轨',fixed:'固定'};
+  function rebuildJoints(graph) {
+    joints.innerHTML = graph.joints.length ? graph.joints.map(j => {
+      const isDrive = Boolean(j.controlled);
+      const range=j.kind!=='fixed' ?
+        '<div class="constraint-joint-control"><button data-drive-joint="' + safe(j.id) +
+        '" class="' + (isDrive?'is-driven':'') + '">' + (isDrive?'DRIVE ON':'Set drive') +
+        '</button><input type="range" data-graph-angle="' + safe(j.id) +
+        '" min="' + j.limits[0] + '" max="' + j.limits[1] + '" step="1" value="' +
+        j.value + '"' + (isDrive?'':' disabled') + '/><output data-graph-output="' +
+        safe(j.id) + '"></output></div>' : '';
+      return '<div class="constraint-joint-item"><div class="constraint-joint-title"><span class="constraint-kind '+
+        safe(j.kind) + '">' + safe(kindLabel[j.kind]) + '</span><strong>' + safe(j.id) +
+        '</strong><button data-remove-joint="' + safe(j.id) + '" aria-label="Remove joint">×</button></div>' +
+        '<small>' + safe(j.a.bodyId) + ' / ' + safe(j.a.portId) + ' → ' +
+        safe(j.b.bodyId) + ' / ' + safe(j.b.portId) + '</small>' + range + '</div>';
+    }).join('') : '<p class="constraint-empty">暂无连接边。选择两个不同零件，设置接口并点击 Connect。</p>';
+  }
+  try {
+    constraintInstance = mountConstraintLab(document.querySelector('#constraint-canvas'), COMPONENTS, snapshot => {
+      currentGraph=snapshot.graph;
+      const {graph,solution}=snapshot;
+      document.querySelector('#constraint-body-count').textContent=String(graph.bodies.length);
+      document.querySelector('#constraint-joint-count').textContent=String(graph.joints.length);
+      document.querySelector('#constraint-cycle-count').textContent=String(solution.cycleCount);
+      document.querySelector('#constraint-error').textContent=solution.closureErrorMm.toFixed(2);
+      document.querySelector('#constraint-selected').textContent='Selected: ' + snapshot.selectedBody;
+      document.querySelector('#constraint-delete-body').disabled=graph.bodies.length<2;
+      document.querySelector('#constraint-motor').textContent=snapshot.motor?'Ⅱ Pause motor':'▶ Run motor';
+      document.querySelector('#constraint-gizmos').textContent=snapshot.showJoints?'◎ Hide markers':'◎ Joint markers';
+      document.querySelector('#constraint-undo').disabled=!snapshot.canUndo;
+      document.querySelector('#constraint-redo').disabled=!snapshot.canRedo;
+      status.textContent=snapshot.status;
+      if (snapshot.revision !== revision) {
+        revision=snapshot.revision;
+        document.querySelector('#constraint-preset').value=
+          GRAPH_PRESETS.some(p=>p.id===graph.id)?graph.id:'four-bar';
+        updateBodySelectors(graph);
+        rebuildJoints(graph);
+      }
+      const problem=solution.collisionPairs.length;
+      const closure=solution.closures.filter(c=>c.residualMm>0.2);
+      document.querySelector('#constraint-diagnostics').innerHTML =
+        '<p><strong>Closure</strong> ' + solution.closureErrorMm.toFixed(3) +
+        ' mm · ' + solution.iterations + ' iterations · ' + solution.cycleCount + ' closed loops</p>' +
+        '<p><strong>Collisions</strong> ' + problem + ' proxy pairs' +
+        (problem ? ' · ' + solution.collisionPairs.map(p =>
+          safe(p.bodyA) + ' × ' + safe(p.bodyB)).join(', ') : ' · None') + '</p>' +
+        (closure.length ? '<p><strong>Offending joints:</strong> ' +
+          closure.map(c=>safe(c.jointId)).join(', ') + '</p>' : '');
+      joints.querySelectorAll('[data-graph-output]').forEach(output => {
+        const id=output.dataset.graphOutput;
+        const joint=graph.joints.find(j=>j.id===id);
+        const measured=solution.values[id];
+        if(measured===undefined)return;
+        output.textContent=measured.toFixed(1) + (joint.kind==='slider'?' mm':'°');
+        const slider=joints.querySelector('[data-graph-angle="'+id+'"]');
+        if(slider && document.activeElement!==slider)slider.value=String(measured);
+      });
+    });
+    document.querySelector('#constraint-intro').hidden=true;
+    document.querySelector('#constraint-a').addEventListener('change', () =>
+      portOptions(bodyA,portA,currentGraph));
+    document.querySelector('#constraint-b').addEventListener('change', () =>
+      portOptions(bodyB,portB,currentGraph));
+    document.querySelector('#constraint-load').addEventListener('click', () =>
+      constraintInstance.loadPreset(document.querySelector('#constraint-preset').value));
+    document.querySelector('#constraint-add-body').addEventListener('click', () =>
+      constraintInstance.addBody(document.querySelector('#constraint-component').value));
+    document.querySelector('#constraint-delete-body').addEventListener('click', () => {
+      const selected=document.querySelector('#constraint-selected').textContent.replace('Selected: ','');
+      constraintInstance.removeBody(selected);
+    });
+    document.querySelector('#constraint-connect').addEventListener('click', () => {
+      constraintInstance.addJoint({
+        bodyA:bodyA.value,portA:portA.value,bodyB:bodyB.value,portB:portB.value,
+        kind:document.querySelector('#constraint-kind').value,
+        controlled:document.querySelector('#constraint-drive-new').checked,value:0
+      });
+    });
+    joints.addEventListener('click', event => {
+      const remove=event.target.closest('[data-remove-joint]');
+      if(remove) {constraintInstance.removeJoint(remove.dataset.removeJoint);return;}
+      const driven=event.target.closest('[data-drive-joint]');
+      if(driven)constraintInstance.toggleDriven(driven.dataset.driveJoint);
+    });
+    joints.addEventListener('input', event => {
+      const slider=event.target.closest('[data-graph-angle]');
+      if(slider)constraintInstance.setJointValue(slider.dataset.graphAngle,Number(slider.value));
+    });
+    const buttons={
+      '#constraint-motor':()=>constraintInstance.toggleMotor(),
+      '#constraint-gizmos':()=>constraintInstance.toggleGizmos(),
+      '#constraint-camera':()=>constraintInstance.resetCamera(),
+      '#constraint-undo':()=>constraintInstance.undo(),
+      '#constraint-redo':()=>constraintInstance.redo()
+    };
+    for(const [selector,callback] of Object.entries(buttons))
+      document.querySelector(selector).addEventListener('click',callback);
+    document.querySelector('#constraint-json').addEventListener('click', () => {
+      const blob=new Blob([JSON.stringify(constraintInstance.getDocument(),null,2)],
+        {type:'application/json'});
+      const url=URL.createObjectURL(blob),link=document.createElement('a');
+      link.href=url;link.download='brick-worlds-constraint-graph.json';link.click();
+      setTimeout(()=>URL.revokeObjectURL(url),2500);
+    });
+    document.querySelector('#constraint-import').addEventListener('click', () =>
+      document.querySelector('#constraint-file').click());
+    document.querySelector('#constraint-file').addEventListener('change',async event=>{
+      const input=event.currentTarget,file=input.files?.[0];
+      if(!file)return;
+      try{
+        if(file.size>120000)throw new Error('File exceeds 120KB');
+        constraintInstance.importJSON(await file.text());
+      }catch(error){status.textContent='导入失败：'+error.message;}
+      finally{input.value='';}
+    });
+    document.querySelector('#constraint-glb').addEventListener('click', async event=>{
+      const button=event.currentTarget;button.disabled=true;
+      try{
+        await downloadAssemblyGlb({
+          title:'Constraint Graph Assembly',slug:'brick-worlds-constraint-graph',
+          parts:constraintInstance.getParts()
+        });
+        status.textContent='GLB 已导出当前姿态；可编辑连接图须使用 JSON。';
+      }catch(error){console.error(error);status.textContent='GLB 导出失败：'+error.message;}
+      finally{button.disabled=false;}
+    });
+  }catch(error){status.textContent='Constraint Lab 启动失败：'+error.message;console.error(error);}
+});
+
 const mobileMenu = document.querySelector('#mobile-menu');
 mobileMenu.addEventListener('click', () => {
   const nav = document.querySelector('.main-nav');
@@ -775,4 +972,5 @@ window.addEventListener('beforeunload', () => {
   builderInstance?.dispose();
   mechanicsInstance?.dispose();
   hierarchyInstance?.dispose();
+  constraintInstance?.dispose();
 });
