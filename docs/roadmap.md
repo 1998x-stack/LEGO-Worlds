@@ -13,15 +13,17 @@
 - [x] Add 46 procedural geometry factory types and geometry regression coverage.
 - [x] Add per-instance connection anchor coordinates and typed compatibility rules for all 100 catalogue components.
 - [x] Add optional 3D anchor overlays to the assembly inspector.
-- [ ] Add rigid-transform anchor alignment, snap candidates and collision checks.
+- [x] Implement rigid stud/socket alignment, snap candidates and conservative brick-body collision checks.
 - [ ] Add animated assembly transitions and per-part isolation.
 - [ ] Add assembly BOM export (JSON/CSV).
 - [ ] Add model thumbnails generated from the same source manifests.
 
 ## V0.3 — Builder
-- [ ] Drag-and-drop parts onto a stud grid.
-- [ ] Snap candidates, alignment guides and collision warnings.
-- [ ] Save and restore custom assemblies as JSON.
+- [x] Drag-and-drop standard brick-grid parts onto compatible stud/socket interfaces.
+- [x] Snap candidates, alignment previews and conservative box collision warnings.
+- [x] Save and restore custom assemblies as versioned JSON with recalculated connection edges.
+- [x] Undo/redo, 90-degree rotation, vertical adjustment and GLB export.
+- [ ] Support Technic pin/axle/hinge/gear specialized constraint solvers and narrow-phase collision checks.
 - [ ] Shareable build URLs using versioned catalog IDs.
 
 ## V0.4 — Asset pipeline
