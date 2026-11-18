@@ -62,17 +62,17 @@ function bridge() {
           part('right_base_hinge', 'hinge-1x4', [0, 0, 20]),
           part('foundation_rock', 'rock', [-30, -6, 0])
         ] },
-      { ...hinge('left_deck', 'base', 'left_base_hinge', 'left_deck_hinge', 28, [-6, 78]),
+      { ...hinge('left_deck', 'base', 'left_base_hinge', 'left_deck_hinge', -28, [-78, 6]),
         parts: [
           part('left_deck_hinge', 'hinge-1x4', [0, 0, 0]),
-          part('left_road', 'balcony-floor', [0, 0, -12]),
-          part('left_rail', 'railing', [0, 5, -12])
+          part('left_road', 'balcony-floor', [0, 0, 12]),
+          part('left_rail', 'railing', [0, 5, 12])
         ] },
-      { ...hinge('right_deck', 'base', 'right_base_hinge', 'right_deck_hinge', -28, [-78, 6]),
+      { ...hinge('right_deck', 'base', 'right_base_hinge', 'right_deck_hinge', 28, [-6, 78]),
         parts: [
           part('right_deck_hinge', 'hinge-1x4', [0, 0, 0]),
-          part('right_road', 'balcony-floor', [0, 0, 12]),
-          part('right_rail', 'railing', [0, 5, 12])
+          part('right_road', 'balcony-floor', [0, 0, -12]),
+          part('right_rail', 'railing', [0, 5, -12])
         ] }
     ],
     couplings: [{ id: 'symmetric_lift', driver: 'left_deck', driven: 'right_deck', ratio: -1, offsetDeg: 0 }]
@@ -91,13 +91,13 @@ function observatory() {
           part('right_axis', 'hinge-1x2', [22, 1, 0], zAxis),
           part('antenna', 'bar-4', [0, 18, 0])
         ] },
-      { ...hinge('left_wing', 'base', 'left_axis', 'left_wing_hinge', 26, [-5, 90]),
+      { ...hinge('left_wing', 'base', 'left_axis', 'left_wing_hinge', -26, [-90, 5]),
         parts: [
           part('left_wing_hinge', 'hinge-1x2', [0, 0, 0], zAxis),
           part('left_solar_panel', 'wall-panel', [-24, 0, 0]),
           part('left_solar_tile', 'tile-2x4', [-24, 2, 0])
         ] },
-      { ...hinge('right_wing', 'base', 'right_axis', 'right_wing_hinge', -26, [-90, 5]),
+      { ...hinge('right_wing', 'base', 'right_axis', 'right_wing_hinge', 26, [-5, 90]),
         parts: [
           part('right_wing_hinge', 'hinge-1x2', [0, 0, 0], zAxis),
           part('right_solar_panel', 'wall-panel', [24, 0, 0]),
