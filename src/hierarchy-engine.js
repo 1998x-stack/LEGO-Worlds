@@ -342,6 +342,10 @@ export function createAssemblySequence(document, catalog) {
         dependsOn: [...new Set([previous, parentStep].filter(Boolean))],
         operation: number === 1 ? 'place-foundation' :
           node.parentId ? 'attach-subassembly-part' : 'attach-foundation-part',
+        operationZh: number === 1 ? '安放基础零件' :
+          node.parentId ? '安装到子总成' : '连接底座零件',
+        componentName: checked.lookup.get(part.componentId).name,
+        componentZh: checked.lookup.get(part.componentId).zh || checked.lookup.get(part.componentId).name,
         approachOffsetMm: offset,
         durationMs: 480
       });
